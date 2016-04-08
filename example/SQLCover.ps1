@@ -7,7 +7,7 @@ function Get-CoverTSql{
         )
 
     if(!(Test-Path $coverDllPath)){
-        Export-Error "SQLCover.dll path was not found ($coverDllPath)"
+        Write-Error "SQLCover.dll path was not found ($coverDllPath)"
         return
     }
     
@@ -28,7 +28,7 @@ function Get-CoverExe{
         )
 
     if(!(Test-Path $coverDllPath)){
-        Export-Error "SQLCover.dll path was not found ($coverDllPath)"
+        Write-Error "SQLCover.dll path was not found ($coverDllPath)"
         return
     }
     
@@ -50,14 +50,14 @@ function Get-CoverRedgateCITest{
     
         if(!(Get-Module -ListAvailable -Name "SQLRelease"))
         { 
-            Export-Error "Redgate SQLRelease Module missing." 
+            Write-Error "Redgate SQLRelease Module missing." 
             return    
         }
         
         Import-Module -Name "SQLRelease"
         
         if(!(Test-Path $coverDllPath)){
-            Export-Error "SQLCover.dll path was not found ($coverDllPath)"
+            Write-Error "SQLCover.dll path was not found ($coverDllPath)"
             return
         }      
         
@@ -94,7 +94,7 @@ function Start-ReportGenerator{
     $sourcePath = $outputPath
     
     if(!(Test-Path $sourcePath)){
-        Export-Error "Cannot find source path to convert into html report. Path = $sourcePath"
+        Write-Error "Cannot find source path to convert into html report. Path = $sourcePath"
     }
         
     $outputPath = Join-Path $outputPath -ChildPath "out"
@@ -104,7 +104,7 @@ function Start-ReportGenerator{
     $targetDir = "-targetDir:$outputPath" 
     $args = $report, $targetDir
     Start-Process -FilePath $reportGeneratorPath -ArgumentList $args -WorkingDirectory $sourcePath -Wait
-    Export-Verbose "Coverage Report Written to: $outputPath"
+    Write-Verbose "Coverage Report Written to: $outputPath"
 }
 
 function Export-Html{
