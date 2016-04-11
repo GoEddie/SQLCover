@@ -10,6 +10,8 @@ function Get-CoverTSql{
         Write-Error "SQLCover.dll path was not found ($coverDllPath)"
         return
     }
+
+    Unblock-File -Path $coverDllPath
     
     Add-Type -Path $coverDllPath
     
@@ -31,6 +33,8 @@ function Get-CoverExe{
         Write-Error "SQLCover.dll path was not found ($coverDllPath)"
         return
     }
+
+    Unblock-File -Path $coverDllPath
     
     Add-Type -Path $coverDllPath
     
@@ -60,6 +64,8 @@ function Get-CoverRedgateCITest{
             Write-Error "SQLCover.dll path was not found ($coverDllPath)"
             return
         }      
+
+	Unblock-File -Path $coverDllPath
         
         Add-Type -Path $coverDllPath
         
