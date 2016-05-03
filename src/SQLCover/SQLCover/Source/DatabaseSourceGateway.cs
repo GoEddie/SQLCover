@@ -31,7 +31,7 @@ namespace SQLCover.Source
         }
 
 
-        public IList<Batch> GetBatches(List<string> objectFilter)
+        public IEnumerable<Batch> GetBatches(List<string> objectFilter)
         {
             var table =
                 _databaseGateway.GetRecords(
@@ -64,10 +64,10 @@ namespace SQLCover.Source
 
             foreach (var batch in batches)
             {
-                batch.StatementCount = batch.Statements.Count;
+                batch.StatementCount = batch.Statements.Count(p => p.IsCoverable);
             }
 
-            return batches;
+            return batches.Where(p=>p.StatementCount > 0);
         }
 
         private List<string> GetExcludedObjects()

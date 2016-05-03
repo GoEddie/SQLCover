@@ -13,10 +13,10 @@ namespace SQLCover
 {
     public class CoverageResult : CoverageSummary
     {
-        private readonly IList<Batch> _batches;
+        private readonly IEnumerable<Batch> _batches;
         private readonly string _database;
         
-        public CoverageResult(IList<Batch> batches, List<string> xml, string database)
+        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database)
         {
             _batches = batches;
             _database = database;
@@ -52,10 +52,12 @@ namespace SQLCover
 
         private bool Overlaps(Statement statement, CoveredStatement coveredStatement)
         {
-            var coveredOffset = coveredStatement.Offset/2;
-            var coveredEnd = (coveredStatement.OffsetEnd == -1 ? statement.Text.Length : coveredStatement.OffsetEnd)/2;
-
             var statementEnd = statement.Offset + statement.Length;
+
+            var coveredOffset = coveredStatement.Offset/2;
+            var coveredEnd = (coveredStatement.OffsetEnd == -1 ? statementEnd + coveredOffset : coveredStatement.OffsetEnd)/2;
+
+            
 
             if (statement.Offset >= coveredOffset && statementEnd <= coveredEnd)
                 return true;

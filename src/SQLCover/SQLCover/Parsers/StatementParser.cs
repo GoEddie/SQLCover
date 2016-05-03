@@ -38,6 +38,7 @@ namespace SQLCover.Parsers
     {
         private readonly string _script;
         public readonly List<Statement> Statements = new List<Statement>();
+        private bool _stopEnumerating = false;
 
         public StatementVisitor(string script)
         {
@@ -46,6 +47,16 @@ namespace SQLCover.Parsers
 
         public override void Visit(TSqlStatement statement)
         {
+            if (_stopEnumerating)
+                return;
+
+            if (ShouldNotEnumerateChildren(statement))
+            {
+                Statements.Add(new Statement { Text = _script.Substring(statement.StartOffset, statement.FragmentLength), Offset = statement.StartOffset, Length = statement.FragmentLength, IsCoverable = false });
+                _stopEnumerating = true;       //maybe ExplicitVisit would be simpler??
+                return;
+            }
+
             base.Visit(statement);
 
             if (!IsIgnoredType(statement))
@@ -89,6 +100,13 @@ namespace SQLCover.Parsers
         }
 
 
+        private bool ShouldNotEnumerateChildren(TSqlStatement statement)
+        {
+            if (statement is CreateViewStatement)
+                return true;
+
+            return false;
+        }
         private bool CanBeCovered(TSqlStatement statement)
         {
             if (statement is BeginEndBlockStatement)
@@ -96,8 +114,7 @@ namespace SQLCover.Parsers
 
             if (statement is TryCatchStatement)
                 return false;
-
-
+                        
             if (statement is CreateProcedureStatement)
                 return false;
 
