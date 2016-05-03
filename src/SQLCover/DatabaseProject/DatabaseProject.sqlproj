@@ -65,6 +65,7 @@
     <Build Include="dbo\a_table.sql" />
     <Build Include="dbo\a_trigger.sql" />
     <Build Include="dbo\a_procedure.sql" />
+    <Build Include="dbo\a_large_procedure.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Deploy\LocalDbDeploy.ps1" />

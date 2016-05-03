@@ -29,7 +29,7 @@ namespace SQLCover.IntegrationTests
                 Console.WriteLine("batch: {0}", batch.Text);
             }
 
-            Assert.AreEqual(2, batches.Count);
+            Assert.AreEqual(3, batches.Count);
 
             var proc = batches.FirstOrDefault(p => p.ObjectName == "[dbo].[a_procedure]");
 

@@ -20,14 +20,13 @@ namespace SQLCover.Parsers
                 _xmlEvents = new List<string>();
                 return;
             }
-
-
+            
             _doc = XDocument.Parse(xmlEvents[_stringNumber++]);
         }
 
         public CoveredStatement GetNextStatement()
         {
-            if (_stringNumber >= _xmlEvents.Count)
+            if (_stringNumber > _xmlEvents.Count || _xmlEvents.Count == 0)
                 return null;
 
 
@@ -37,8 +36,11 @@ namespace SQLCover.Parsers
             statement.OffsetEnd = GetOffsetEnd();
             statement.ObjectId = GetIntValue("object_id");
 
-            _doc = XDocument.Parse(_xmlEvents[_stringNumber++]);
-
+            if (_stringNumber < _xmlEvents.Count)
+                _doc = XDocument.Parse(_xmlEvents[_stringNumber++]);
+            else
+                _stringNumber++;
+            
             return statement;
         }
 

@@ -47,6 +47,26 @@ namespace SQLCover.IntegrationTests
         }
 
         [Test]
+        public void Code_Coverage_Includes_Last_Statement_Of_Large_Procedure()
+        {
+            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName);
+            coverage.Start();
+            using (var con = new SqlConnection(TestServerConnectionString))
+            {
+                con.Open();
+                using (var cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = "exec [dbo].[a_large_procedure] 1, 1";
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            var result = coverage.Stop();
+
+            Assert.IsTrue(result.CoveredStatementCount == 2);
+        }
+
+        [Test]
         public void Code_Coverage_Filters_Statements()
         {
             var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName, new []{".*tSQLt.*", ".*proc.*"});
