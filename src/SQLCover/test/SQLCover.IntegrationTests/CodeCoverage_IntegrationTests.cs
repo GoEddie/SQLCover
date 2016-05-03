@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using TestLib;
 
@@ -21,13 +17,12 @@ namespace SQLCover.IntegrationTests
             Assert.IsNotNull(results);
 
             Console.WriteLine(results.RawXml());
-
         }
 
         [Test]
-        public void Code_Coverage_Returns_All_Covered_Statements()
+        public void Code_Coverage_Filters_Statements()
         {
-            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName);
+            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName, new[] {".*tSQLt.*", ".*proc.*"});
             coverage.Start();
             using (var con = new SqlConnection(TestServerConnectionString))
             {
@@ -37,13 +32,12 @@ namespace SQLCover.IntegrationTests
                     cmd.CommandText = "exec [dbo].[a_procedure]";
                     cmd.ExecuteNonQuery();
                 }
-
-
             }
 
             var result = coverage.Stop();
-            
-            Assert.IsTrue(result.RawXml().Contains("HitCount=\"1\""));
+
+            Assert.IsFalse(result.RawXml().Contains("HitCount=\"1\""));
+            Assert.IsFalse(result.RawXml().Contains("a_procedure"));
         }
 
         [Test]
@@ -67,9 +61,9 @@ namespace SQLCover.IntegrationTests
         }
 
         [Test]
-        public void Code_Coverage_Filters_Statements()
+        public void Code_Coverage_Returns_All_Covered_Statements()
         {
-            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName, new []{".*tSQLt.*", ".*proc.*"});
+            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName);
             coverage.Start();
             using (var con = new SqlConnection(TestServerConnectionString))
             {
@@ -79,15 +73,11 @@ namespace SQLCover.IntegrationTests
                     cmd.CommandText = "exec [dbo].[a_procedure]";
                     cmd.ExecuteNonQuery();
                 }
-
-
             }
 
             var result = coverage.Stop();
 
-            Assert.IsFalse(result.RawXml().Contains("HitCount=\"1\""));
-            Assert.IsFalse(result.RawXml().Contains("a_procedure"));
+            Assert.IsTrue(result.RawXml().Contains("HitCount=\"1\""));
         }
     }
 }
-
