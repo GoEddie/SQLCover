@@ -72,12 +72,12 @@ select  v.value('(/event/@timestamp)[1]', 'datetime'), v from a
             {
                 try
                 {
-                    var records = Gateway.GetRecords(string.Format(ReadTraceFormat, Name, maxDateReceived.ToString("yyyy-MM-dd HH:mm:ss.ms")));
-                    Console.WriteLine("errm prob will be 3 of these");
+                    var records = Gateway.GetRecords(string.Format(ReadTraceFormat, Name, maxDateReceived.ToString("yyyy-MM-dd HH:mm:ss.fff")));
+                    
                     foreach (DataRow row in records.Rows)
                     {
                         _events.Add(row.ItemArray[1].ToString());
-                        var date = DateTime.Parse(row.ItemArray[0].ToString());
+                        var date = (DateTime)row.ItemArray[0];
 
                         if (date > maxDateReceived)
                             maxDateReceived = date;
