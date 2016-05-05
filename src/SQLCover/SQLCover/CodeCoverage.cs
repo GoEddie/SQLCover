@@ -54,7 +54,7 @@ namespace SQLCover
 
         public void Start()
         {
-            _trace = new TraceController(_database, _databaseName);
+            _trace = new TraceControllerBuilder().GetTraceController(_database, _databaseName);
             _trace.Start();
         }
 

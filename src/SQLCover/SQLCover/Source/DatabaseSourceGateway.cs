@@ -31,6 +31,12 @@ namespace SQLCover.Source
         }
 
 
+        public bool IsAzure()
+        {
+            var versionString = _databaseGateway.GetString("select @@version");
+            return versionString.Contains("Azure");
+        }
+
         public IEnumerable<Batch> GetBatches(List<string> objectFilter)
         {
             var table =
