@@ -15,8 +15,10 @@ namespace SQLCover
     {
         private readonly IEnumerable<Batch> _batches;
         private readonly string _database;
-        
-        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database)
+ 
+        public string Warnings { get; private set; }
+               
+        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string warnings)
         {
             _batches = batches;
             _database = database;
@@ -48,6 +50,10 @@ namespace SQLCover
             CoveredStatementCount = _batches.Sum(p => p.CoveredStatementCount);
             StatementCount = _batches.Sum(p => p.StatementCount);
             HitCount = _batches.Sum(p => p.HitCount);
+
+            Warnings = warnings;
+
+
         }
 
         private bool Overlaps(Statement statement, CoveredStatement coveredStatement)
@@ -56,9 +62,7 @@ namespace SQLCover
 
             var coveredOffset = coveredStatement.Offset/2;
             var coveredEnd = (coveredStatement.OffsetEnd == -1 ? statementEnd + coveredOffset : coveredStatement.OffsetEnd)/2;
-
             
-
             if (statement.Offset >= coveredOffset && statementEnd <= coveredEnd)
                 return true;
 
@@ -70,8 +74,7 @@ namespace SQLCover
 
             if (coveredOffset >= statement.Offset && coveredEnd <= statementEnd)
                 return true;
-
-
+            
             return false;
         }
 

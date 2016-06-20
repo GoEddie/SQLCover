@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using SQLCover.Gateway;
 using SQLCover.Objects;
@@ -60,8 +61,11 @@ namespace SQLCover.Source
                     
                 if (DoesNotMatchFilter(name, objectFilter, excludedObjects))
                 {
-                    batches.Add(
-                        new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine((string)row["definition"]), null, name, (int) row["object_id"]));
+                    if (row["definition"] != DBNull.Value)
+                    {
+                        batches.Add(
+                        new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine((string)row["definition"]), null, name, (int)row["object_id"]));
+                    }
                 }
                 
             }
@@ -74,6 +78,26 @@ namespace SQLCover.Source
             }
 
             return batches.Where(p=>p.StatementCount > 0);
+        }
+
+        public string GetWarnings()
+        {
+            var warnings = new StringBuilder();
+
+            var table =
+                _databaseGateway.GetRecords(
+                    "select \'[\' + object_schema_name(object_id) + \'].[\' + object_name(object_id) + \']\' as object_name from sys.sql_modules where object_id not in (select object_id from sys.objects where type = 'IF') and definition is null");
+
+
+            foreach (DataRow row in table.Rows)
+            {
+                var name = (string) row["object_name"];
+
+                warnings.AppendFormat("The object definition for {0} was not found, unable to provide code coverage results", name);
+
+            }
+
+            return warnings.ToString();
         }
 
         private static string EndDefinitionWithNewLine(string definition)
