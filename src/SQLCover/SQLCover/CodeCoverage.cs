@@ -84,7 +84,7 @@ namespace SQLCover
                 Console.WriteLine(message, args);
         }
 
-        public CoverageResult Cover(string command)
+        public CoverageResult Cover(string command, int timeOut =30)
         {
             try
             {
@@ -96,7 +96,7 @@ namespace SQLCover
                 Debug("Executing Command: {0}", command);
                 try
                 {
-                    _database.Execute(command); //todo read messages or rowcounts or something
+                    _database.Execute(command, timeOut); //todo read messages or rowcounts or something
                 }
                 catch (Exception e)
                 {

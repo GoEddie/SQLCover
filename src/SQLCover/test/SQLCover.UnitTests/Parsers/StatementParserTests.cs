@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.SqlServer.Dac.Model;
+using System.Threading.Tasks; 
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using NUnit.Framework;
 using SQLCover.Parsers;
