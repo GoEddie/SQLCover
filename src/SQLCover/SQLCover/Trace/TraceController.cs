@@ -25,12 +25,12 @@ namespace SQLCover.Trace
         public abstract void Drop();
 
 
-        protected void RunScript(string query, string error)
+        protected void RunScript(string query, string error, int timeout =30)
         {
             var script = GetScript(query);
             try
             {
-                Gateway.Execute(script);
+                Gateway.Execute(script, timeout);
             }
             catch (Exception ex)
             {
