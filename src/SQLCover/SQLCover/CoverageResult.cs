@@ -52,27 +52,18 @@ namespace SQLCover
 
         private bool Overlaps(Statement statement, CoveredStatement coveredStatement)
         {
+            var coveredOffset = coveredStatement.Offset / 2;
+
+            if (coveredStatement.OffsetEnd == -1)
+            {
+                // Last statement in the batch, so only covered if the 'start' is equal to or less than the statement start
+                return (statement.Offset >= coveredOffset);
+            }
+
             var statementEnd = statement.Offset + statement.Length;
+            var coveredEnd = coveredStatement.OffsetEnd / 2;
 
-            var coveredOffset = coveredStatement.Offset/2;
-            var coveredEnd = (coveredStatement.OffsetEnd == -1 ? statementEnd + coveredOffset : coveredStatement.OffsetEnd)/2;
-
-            
-
-            if (statement.Offset >= coveredOffset && statementEnd <= coveredEnd)
-                return true;
-
-            if (statement.Offset <= coveredOffset && statementEnd >= coveredEnd)
-                return true;
-
-            if (statement.Offset >= coveredOffset && statementEnd <= coveredEnd)
-                return true;
-
-            if (coveredOffset >= statement.Offset && coveredEnd <= statementEnd)
-                return true;
-
-
-            return false;
+            return (statement.Offset >= coveredOffset && statementEnd <= coveredEnd);
         }
 
         public string RawXml()
