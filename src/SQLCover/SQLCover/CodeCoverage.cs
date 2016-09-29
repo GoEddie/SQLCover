@@ -16,6 +16,7 @@ namespace SQLCover
         private readonly DatabaseGateway _database;
         private readonly string _databaseName;
         private readonly bool _debugger;
+        private readonly TraceControllerType _traceType;
         private readonly List<string> _excludeFilter;
         private readonly bool _logging;
         private readonly SourceGateway _source;
@@ -24,19 +25,19 @@ namespace SQLCover
         private TraceController _trace;
 
         //This is to better support powershell and optional parameters
-        public CodeCoverage(string connectionString, string databaseName) : this(connectionString, databaseName, null, false, false)
+        public CodeCoverage(string connectionString, string databaseName) : this(connectionString, databaseName, null, false, false, TraceControllerType.Default)
         {
         }
 
-        public CodeCoverage(string connectionString, string databaseName, string[] excludeFilter) : this(connectionString, databaseName, excludeFilter, false, false)
+        public CodeCoverage(string connectionString, string databaseName, string[] excludeFilter) : this(connectionString, databaseName, excludeFilter, false, false, TraceControllerType.Default)
         {
         }
 
-        public CodeCoverage(string connectionString, string databaseName, string[] excludeFilter, bool logging) : this(connectionString, databaseName, excludeFilter, logging, false)
+        public CodeCoverage(string connectionString, string databaseName, string[] excludeFilter, bool logging) : this(connectionString, databaseName, excludeFilter, logging, false, TraceControllerType.Default)
         {
         }
 
-        public CodeCoverage(string connectionString, string databaseName, string[] excludeFilter, bool logging, bool debugger)
+        public CodeCoverage(string connectionString, string databaseName, string[] excludeFilter, bool logging, bool debugger, TraceControllerType traceType)
         {
             if (debugger)
                 Debugger.Launch();
@@ -48,13 +49,14 @@ namespace SQLCover
             _excludeFilter = excludeFilter.ToList();
             _logging = logging;
             _debugger = debugger;
+            _traceType = traceType;
             _database = new DatabaseGateway(connectionString, databaseName);
             _source = new DatabaseSourceGateway(_database);
         }
 
         public void Start()
         {
-            _trace = new TraceControllerBuilder().GetTraceController(_database, _databaseName);
+            _trace = new TraceControllerBuilder().GetTraceController(_database, _databaseName, _traceType);
             _trace.Start();
         }
 
