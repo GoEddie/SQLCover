@@ -15,8 +15,6 @@
 
     public class Statement : CoverageInformation
     {
-
-
         public string Text;
         public int Offset;
         public int Length;

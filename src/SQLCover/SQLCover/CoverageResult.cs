@@ -15,6 +15,7 @@ namespace SQLCover
     {
         private readonly IEnumerable<Batch> _batches;
         private readonly string _database;
+        private readonly StatementChecker _statementChecker = new StatementChecker();
         
         public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database)
         {
@@ -29,7 +30,7 @@ namespace SQLCover
                 var batch = _batches.FirstOrDefault(p => p.ObjectId == statement.ObjectId);
                 if (batch != null)
                 {
-                    var item = batch.Statements.FirstOrDefault(p => Overlaps(p, statement));
+                    var item = batch.Statements.FirstOrDefault(p => _statementChecker.Overlaps(p, statement));
                     if (item != null)
                     {
                         item.HitCount++;
@@ -49,23 +50,7 @@ namespace SQLCover
             StatementCount = _batches.Sum(p => p.StatementCount);
             HitCount = _batches.Sum(p => p.HitCount);
         }
-
-        private bool Overlaps(Statement statement, CoveredStatement coveredStatement)
-        {
-            var coveredOffset = coveredStatement.Offset / 2;
-
-            if (coveredStatement.OffsetEnd == -1)
-            {
-                // Last statement in the batch, so only covered if the 'start' is equal to or less than the statement start
-                return (statement.Offset >= coveredOffset);
-            }
-
-            var statementEnd = statement.Offset + statement.Length;
-            var coveredEnd = coveredStatement.OffsetEnd / 2;
-
-            return (statement.Offset >= coveredOffset && statementEnd <= coveredEnd);
-        }
-
+        
         public string RawXml()
         {
             var statements = _batches.Sum(p => p.StatementCount);
