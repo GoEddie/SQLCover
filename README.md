@@ -24,8 +24,9 @@ Navigation:
  - [Usage](#usage)
    - [1. Redgate DLM Automation Suite](#1-redgate-dlm-automation-suite)
    - [2. Cover T-SQL Script](#2-cover-t-sql-script)
-   - [3. Cover anything else](3-cover-anything-else)
- - [A final word...](a-final-word)
+   - [3. Cover anything else](#3-cover-anything-else)
+ - [A final word...](#a-final-word)
+ - [License](#license)
 
 
 ## Installation
