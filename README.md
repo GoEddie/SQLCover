@@ -1,11 +1,32 @@
 # SQLCover - Code coverage for SQL Server T-SQL
- 
+[![licence badge]][licence]
+[![stars badge]][stars]
+[![forks badge]][forks]
+[![issues badge]][issues]
+
+[licence badge]:https://img.shields.io/badge/license-MIT-blue.svg
+[stars badge]:https://img.shields.io/github/stars/GoEddie/SQLCover.svg
+[forks badge]:https://img.shields.io/github/forks/GoEddie/SQLCover.svg
+[issues badge]:https://img.shields.io/github/issues/GoEddie/SQLCover.svg
+
+[licence]:https://github.com/GoEddie/SQLCover/blob/master/LICENSE.md
+[stars]:https://github.com/GoEddie/SQLCover/stargazers
+[forks]:https://github.com/GoEddie/SQLCover/network
+[issues]:https://github.com/GoEddie/SQLCover/issues
+
 This is a code coverage tool for SQL Server 2008+, it was designed to be generic
 to work with any build server and tests but includes specific filters to mean
 that it is well suited to running tSQLt tests using the Redgate DLM Automation
 Suite.
 
- 
+Navigation:
+ - [Installation](#installation)
+ - [Usage](#usage)
+   - [1. Redgate DLM Automation Suite](#1-redgate-dlm-automation-suite)
+   - [2. Cover T-SQL Script](#2-cover-t-sql-script)
+   - [3. Cover anything else](3-cover-anything-else)
+ - [A final word...](a-final-word)
+
 
 ## Installation
 You will either need to build the project and grab the output SQLCover.dll or
@@ -41,8 +62,8 @@ SQLCover.CoverageResult
 
 This has two public properties:
 ```
-    public long StatementCount;
-    public long CoveredStatementCount;
+public long StatementCount;
+public long CoveredStatementCount;
 ```
 
 It also has two public methods:
@@ -70,7 +91,6 @@ $results = Get-CoverRedgateCITest "path\to\SQLCover.dll" "server=.;integrated se
  
 
 ### 2. Cover T-SQL Script
-
 If you have a script you want to cover then you can call:
 ```
 Get-CoverTSql  "SQLCover-path.dll" "server=servername;integrated security=sspi;"  "database-name" "exec tSQLt.RunAll
@@ -81,7 +101,6 @@ statement covered or output the full html or xml report.
  
 
 ### 3. Cover anything else
-
 If you want to have more control over what is covered, you can start a coverage
 session, run whatever queries you like from whatever application and then stop
 the coverage trace and get the CoverageResults which you can then use to
@@ -97,3 +116,7 @@ $coverageResults = $coverage.Stop()
 
 ## A final word...
 Thanks to Redgate for sponsoring the open source project
+
+
+## License
+MIT
