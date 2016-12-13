@@ -116,8 +116,9 @@ $coverageResults = $coverage.Stop()
  
 
 ## A final word...
-Thanks to Redgate for sponsoring the open source project
+Thanks to Redgate for suppoorting this open source project
 
+![Supported by Redgate](https://github.com/goeddie/sqlcover/raw/master/redgate/redgate/supported-by-redgate.jpg "Supported by Redgate")
 
 ## License
-MIT
+Apache 2.0
