@@ -57,7 +57,7 @@ namespace SQLCover.IntegrationTests
 
             var result = coverage.Stop();
 
-            Assert.IsTrue(result.CoveredStatementCount == 2);
+            Assert.That(result.CoveredStatementCount, Is.EqualTo(2));
 
             var xml = result.OpenCoverXml();
             
@@ -81,7 +81,7 @@ namespace SQLCover.IntegrationTests
 
             var result = coverage.Stop();
 
-            Assert.IsTrue(result.RawXml().Contains("HitCount=\"1\""));
+            Assert.That(result.RawXml(), Is.StringContaining("HitCount=\"1\""));
         }
 
         [Test]
