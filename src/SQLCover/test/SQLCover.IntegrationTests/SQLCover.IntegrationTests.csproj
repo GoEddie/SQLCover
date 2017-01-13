@@ -61,10 +61,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeCoverage_IntegrationTests.cs" />
+    <Compile Include="ConnectionStringReader.cs" />
     <Compile Include="DatabaseSource_IntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ConnectionString.appVeyor.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ConnectionString.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
