@@ -11,7 +11,7 @@ namespace SQLCover.IntegrationTests
         [Test]
         public void Can_Get_All_Batches()
         {
-            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName);
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName);
             var results = coverage.Cover("select 1");
 
             Assert.IsNotNull(results);
@@ -22,9 +22,9 @@ namespace SQLCover.IntegrationTests
         [Test]
         public void Code_Coverage_Filters_Statements()
         {
-            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName, new[] {".*tSQLt.*", ".*proc.*"});
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName, new[] {".*tSQLt.*", ".*proc.*"});
             coverage.Start();
-            using (var con = new SqlConnection(TestServerConnectionString))
+            using (var con = new SqlConnection(ConnectionStringReader.GetIntegration()))
             {
                 con.Open();
                 using (var cmd = con.CreateCommand())
@@ -43,9 +43,9 @@ namespace SQLCover.IntegrationTests
         [Test]
         public void Code_Coverage_Includes_Last_Statement_Of_Large_Procedure()
         {
-            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName);
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName);
             coverage.Start();
-            using (var con = new SqlConnection(TestServerConnectionString))
+            using (var con = new SqlConnection(ConnectionStringReader.GetIntegration()))
             {
                 con.Open();
                 using (var cmd = con.CreateCommand())
@@ -67,9 +67,9 @@ namespace SQLCover.IntegrationTests
         [Test]
         public void Code_Coverage_Returns_All_Covered_Statements()
         {
-            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName);
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName);
             coverage.Start();
-            using (var con = new SqlConnection(TestServerConnectionString))
+            using (var con = new SqlConnection(ConnectionStringReader.GetIntegration()))
             {
                 con.Open();
                 using (var cmd = con.CreateCommand())
@@ -87,9 +87,9 @@ namespace SQLCover.IntegrationTests
         [Test]
         public void Code_Coverage_Covers_Set_Statements()
         {
-            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName);
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName);
             coverage.Start();
-            using (var con = new SqlConnection(TestServerConnectionString))
+            using (var con = new SqlConnection(ConnectionStringReader.GetIntegration()))
             {
                 con.Open();
                 using (var cmd = con.CreateCommand())
@@ -107,9 +107,9 @@ namespace SQLCover.IntegrationTests
         [Test]
         public void Code_Coverage_Covers_Last_Statement()
         {
-            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName);
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName);
             coverage.Start();
-            using (var con = new SqlConnection(TestServerConnectionString))
+            using (var con = new SqlConnection(ConnectionStringReader.GetIntegration()))
             {
                 con.Open();
                 using (var cmd = con.CreateCommand())
@@ -128,9 +128,9 @@ namespace SQLCover.IntegrationTests
         public void Does_Not_Cover_Views()
         {
 
-            var coverage = new CodeCoverage(TestServerConnectionString, TestDatabaseName);
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName);
             coverage.Start();
-            using (var con = new SqlConnection(TestServerConnectionString))
+            using (var con = new SqlConnection(ConnectionStringReader.GetIntegration()))
             {
                 con.Open();
                 using (var cmd = con.CreateCommand())
