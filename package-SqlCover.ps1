@@ -8,10 +8,10 @@ new-item -Path $lib -ItemType directory
 new-item -Path $root\.nupkg -ItemType directory -force
 Copy-Item $root\src\SQLCover\SQLCover\bin\Debug\* $lib
 
-Write-Host "Setting .nuspec version tag to 0.4"
+Write-Host "Setting .nuspec version tag to $env:nugetVersion"
 
 $content = (Get-Content $root\SqlCover.nuspec -Encoding UTF8) 
-$content = $content -replace '\$version\$','0.4'
+$content = $content -replace '\$version\$',$env:nugetVersion
 
 $content | Out-File $root\.package\SqlCover.compiled.nuspec -Encoding UTF8
 
@@ -27,4 +27,4 @@ If (!(Test-Path $root\.nuget\nuget.exe))
     Set-Alias nuget $targetNugetExe -Scope Global -Verbose
 }
 
-& nuget pack $root\.package\SqlCover.compiled.nuspec -Version '0.4' -OutputDirectory $root\.nupkg
+& nuget pack $root\.package\SqlCover.compiled.nuspec -Version $env:nugetVersion -OutputDirectory $root\.nupkg
