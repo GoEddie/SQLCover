@@ -1,0 +1,17 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+  <metadata>
+    <id>SqlCover</id>
+    <version>$version$</version>
+    <title>SqlCover</title>
+    <authors>Ed Elliott</authors>
+    <owners>Ed Elliott</owners>
+    <licenseUrl>https://github.com/GoEddie/SQLCover/blob/master/LICENSE</licenseUrl>
+    <projectUrl>http://github.com/GoEddie/SQLCover</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Code coverage tool for SQL Server 2008+</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2016-2017</copyright>
+    <tags>sql coverage</tags>
+  </metadata>
+</package>
