@@ -6,6 +6,7 @@
 
 
 [licence badge]:https://img.shields.io/badge/License-Apache%202.0-blue.svg
+
 [stars badge]:https://img.shields.io/github/stars/GoEddie/SQLCover.svg
 [forks badge]:https://img.shields.io/github/forks/GoEddie/SQLCover.svg
 [issues badge]:https://img.shields.io/github/issues/GoEddie/SQLCover.svg
