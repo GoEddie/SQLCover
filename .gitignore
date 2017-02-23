@@ -213,7 +213,8 @@ _Pvt_Extensions/
 ModelManifest.xml
 
 # Database projects
-*.jfm
 
 # The package folder can be ignored because of Package Compilation
 .package/
+*.jfm
+
