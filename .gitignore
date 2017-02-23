@@ -4,6 +4,7 @@
 # User-specific files
 *.suo
 *.user
+*.user.config
 *.userosscache
 *.sln.docstates
 
@@ -210,3 +211,6 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+
+# Database projects
+*.jfm
