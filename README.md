@@ -75,8 +75,7 @@ public string Html()
 ```
 
 This creates a basic html report to view the code coverage, highlighting the
-lines of code in the database which have been covered and:
-```
+lines of code in the database which have been covered and:```
 public string OpenCoverXml()
 ```
 
@@ -116,6 +115,8 @@ $coverage.Start()
 $coverageResults = $coverage.Stop()
 ```
  
+ ### 4. Tidying up
+ When we target local sql instances we delete the trace files but when targetting remote instances we are unable to delete the files as we do not (or potentially) do not have access. If this is the case keep an eye on the log directory and remove old "SQLCover-Trace-*.xel" and "SQLCover-Trace-*.xem" files. 
 
 ## A final word...
 Thanks to Redgate for suppoorting this open source project
