@@ -52,7 +52,7 @@ namespace SQLCover.Parsers
 
             if (ShouldNotEnumerateChildren(statement))
             {
-                Statements.Add(new Statement { Text = _script.Substring(statement.StartOffset, statement.FragmentLength), Offset = statement.StartOffset, Length = statement.FragmentLength, IsCoverable = false });
+                Statements.Add(new Statement (_script.Substring(statement.StartOffset, statement.FragmentLength),  statement.StartOffset, statement.FragmentLength, false));
                 _stopEnumerating = true;       //maybe ExplicitVisit would be simpler??
                 return;
             }
@@ -61,7 +61,7 @@ namespace SQLCover.Parsers
 
             if (!IsIgnoredType(statement))
             {
-                Statements.Add(new Statement {Text = _script.Substring(statement.StartOffset, statement.FragmentLength), Offset = statement.StartOffset, Length = statement.FragmentLength, IsCoverable = CanBeCovered(statement)});
+                Statements.Add(new Statement (_script.Substring(statement.StartOffset, statement.FragmentLength), statement.StartOffset, statement.FragmentLength, CanBeCovered(statement)));
             }
 
             if (statement is IfStatement)
@@ -70,7 +70,7 @@ namespace SQLCover.Parsers
 
                 var offset = statement.StartOffset;
                 var length = ifStatement.Predicate.StartOffset + ifStatement.Predicate.FragmentLength - statement.StartOffset;
-                Statements.Add(new Statement {Text = _script.Substring(offset, length), Offset = offset, Length = length, IsCoverable = CanBeCovered(statement)});
+                Statements.Add(new Statement (_script.Substring(offset, length), offset, length, CanBeCovered(statement)));
             }
 
             if (statement is WhileStatement)
@@ -79,7 +79,7 @@ namespace SQLCover.Parsers
 
                 var offset = statement.StartOffset;
                 var length = whileStatement.Predicate.StartOffset + whileStatement.Predicate.FragmentLength - statement.StartOffset;
-                Statements.Add(new Statement {Text = _script.Substring(offset, length), Offset = offset, Length = length, IsCoverable = CanBeCovered(statement)});
+                Statements.Add(new Statement (_script.Substring(offset, length), offset, length, CanBeCovered(statement)));
             }
         }
 

@@ -41,7 +41,26 @@ namespace SQLCover.IntegrationTests
         }
 
         [Test]
-        [Ignore("Not sure why failing. Feedback from GoEddie needed.")]
+        public void TimeoutCalling_Cover_Fails_With_Timeout_Exception()
+        {
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName, new[] { ".*tSQLt.*", ".*proc.*" });
+            try
+            {
+                coverage.Cover("WAITFOR DELAY '1:00:00'", 1);
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                if (e.Number == -2)
+                {
+                    return;
+                }
+            }
+
+            Assert.Fail("expected sql exception with -2 number");
+        }
+
+        [Test]
+      //  [Ignore("Not sure why failing. Feedback from GoEddie needed.")]
         public void Code_Coverage_Includes_Last_Statement_Of_Large_Procedure()
         {
             var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName);
@@ -66,8 +85,7 @@ namespace SQLCover.IntegrationTests
         }
 
         [Test]
-        [Ignore("Not sure why failing. Feedback from GoEddie needed.")]
-        public void Code_Coverage_Returns_All_Covered_Statements()
+       public void Code_Coverage_Returns_All_Covered_Statements()
         {
             var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName);
             coverage.Start();

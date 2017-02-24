@@ -38,7 +38,8 @@ namespace SQLCover.Source
             return versionString.Contains("Azure");
         }
 
-        public IEnumerable<Batch> GetBatches(List<string> objectFilter)
+
+public IEnumerable<Batch> GetBatches(List<string> objectFilter)
         {
             var table =
                 _databaseGateway.GetRecords(
@@ -61,11 +62,9 @@ namespace SQLCover.Source
                     
                 if (DoesNotMatchFilter(name, objectFilter, excludedObjects))
                 {
-                    if (row["definition"] != DBNull.Value)
-                    {
-                        batches.Add(
-                        new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine((string)row["definition"]), null, name, (int)row["object_id"]));
-                    }
+                    batches.Add(
+                        new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine(GetDefinition(row)), null, name, (int) row["object_id"]));
+
                 }
                 
             }
@@ -80,6 +79,18 @@ namespace SQLCover.Source
             return batches.Where(p=>p.StatementCount > 0);
         }
 
+        private static string GetDefinition(DataRow row)
+        {
+            if (row["definition"] is string)
+            {
+                var definition = row["definition"] as string;
+                if (!String.IsNullOrEmpty(definition))
+                    return definition;
+            }
+
+            return String.Empty;
+            
+  }
         public string GetWarnings()
         {
             var warnings = new StringBuilder();
@@ -98,6 +109,7 @@ namespace SQLCover.Source
             }
 
             return warnings.ToString();
+
         }
 
         private static string EndDefinitionWithNewLine(string definition)

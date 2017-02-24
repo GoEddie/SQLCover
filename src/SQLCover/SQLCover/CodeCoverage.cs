@@ -21,6 +21,8 @@ namespace SQLCover
         private readonly bool _logging;
         private readonly SourceGateway _source;
         private CoverageResult _result;
+        public const short TIMEOUT_EXPIRED = -2; //From TdsEnums
+
 
         private TraceController _trace;
 
@@ -53,11 +55,19 @@ namespace SQLCover
             _database = new DatabaseGateway(connectionString, databaseName);
             _source = new DatabaseSourceGateway(_database);
         }
-
-        public void Start()
+                public bool Start()
         {
-            _trace = new TraceControllerBuilder().GetTraceController(_database, _databaseName, _traceType);
-            _trace.Start();
+            try
+            {
+                _trace = new TraceControllerBuilder().GetTraceController(_database, _databaseName, _traceType);
+                _trace.Start();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug("Error starting trace: {0}", ex);
+                return false;
+            }
         }
 
         private List<string> StopInternal()
@@ -88,26 +98,39 @@ namespace SQLCover
 
         public CoverageResult Cover(string command, int timeOut =30)
         {
+
+        Debug("Starting Code Coverage");
+
+            if (!Start())
+            {
+                throw new SqlCoverException("Unable to start the trace - errors are recorded in the debug output");
+
+            }
+            Debug("Starting Code Coverage...Done");
+
+            Debug("Executing Command: {0}", command);
+
             try
             {
-                Debug("Starting Code Coverage");
-
-                Start();
-                Debug("Starting Code Coverage...Done");
-
-                Debug("Executing Command: {0}", command);
-                try
+                _database.Execute(command, timeOut); //todo read messages or rowcounts or something
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                if (e.Number == -2)
                 {
-                    _database.Execute(command, timeOut); //todo read messages or rowcounts or something
+                    throw;
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Exception running command: {0} - error: {1}", command, e.Message);
-                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception running command: {0} - error: {1}", command, e.Message);
+            }
 
-                Debug("Executing Command: {0}...done", command);
-                WaitForTraceMaxLatency();
-                Debug("Stopping Code Coverage");
+            Debug("Executing Command: {0}...done", command);
+            WaitForTraceMaxLatency();
+            Debug("Stopping Code Coverage");
+            try
+            {
                 var rawEvents = StopInternal();
                 Debug("Stopping Code Coverage...done");
 
@@ -117,7 +140,7 @@ namespace SQLCover
             }
             catch (Exception e)
             {
-                Debug("Exception running code coverage: {0}\r\n{1}", e.Message, e.StackTrace);
+                throw new SqlCoverException("Exception gathering the results", e);
             }
 
             return _result;
