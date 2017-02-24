@@ -15,6 +15,7 @@ namespace SQLCover
     {
         private readonly IEnumerable<Batch> _batches;
         private readonly string _database;
+
         private readonly StatementChecker _statementChecker = new StatementChecker();
 
         public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database)
@@ -49,6 +50,10 @@ namespace SQLCover
             CoveredStatementCount = _batches.Sum(p => p.CoveredStatementCount);
             StatementCount = _batches.Sum(p => p.StatementCount);
             HitCount = _batches.Sum(p => p.HitCount);
+
+            Warnings = warnings;
+
+
         }
 
         public string RawXml()

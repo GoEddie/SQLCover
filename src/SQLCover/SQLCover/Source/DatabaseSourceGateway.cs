@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using SQLCover.Gateway;
 using SQLCover.Objects;
@@ -37,7 +38,8 @@ namespace SQLCover.Source
             return versionString.Contains("Azure");
         }
 
-        public IEnumerable<Batch> GetBatches(List<string> objectFilter)
+
+public IEnumerable<Batch> GetBatches(List<string> objectFilter)
         {
             var table =
                 _databaseGateway.GetRecords(
@@ -62,6 +64,7 @@ namespace SQLCover.Source
                 {
                     batches.Add(
                         new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine(GetDefinition(row)), null, name, (int) row["object_id"]));
+
                 }
                 
             }
@@ -86,6 +89,27 @@ namespace SQLCover.Source
             }
 
             return String.Empty;
+            
+  }
+        public string GetWarnings()
+        {
+            var warnings = new StringBuilder();
+
+            var table =
+                _databaseGateway.GetRecords(
+                    "select \'[\' + object_schema_name(object_id) + \'].[\' + object_name(object_id) + \']\' as object_name from sys.sql_modules where object_id not in (select object_id from sys.objects where type = 'IF') and definition is null");
+
+
+            foreach (DataRow row in table.Rows)
+            {
+                var name = (string) row["object_name"];
+
+                warnings.AppendFormat("The object definition for {0} was not found, unable to provide code coverage results", name);
+
+            }
+
+            return warnings.ToString();
+
         }
 
         private static string EndDefinitionWithNewLine(string definition)

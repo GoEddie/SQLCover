@@ -197,7 +197,7 @@ namespace SQLCover
         private void GenerateResults(List<string> filter, List<string> xml)
         {
             var batches = _source.GetBatches(filter);
-            _result = new CoverageResult(batches, xml, _databaseName);
+            _result = new CoverageResult(batches, xml, _databaseName, _source.GetWarnings());
         }
 
         public CoverageResult Results()
