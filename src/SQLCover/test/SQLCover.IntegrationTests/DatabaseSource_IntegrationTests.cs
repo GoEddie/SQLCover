@@ -68,7 +68,7 @@ begin
 	exec sp_executesql N'create procedure enc with encryption 
 	as
 	select 100;'
-end");
+end", 15);
             var source = new DatabaseSourceGateway(databaseGateway);
             var batches = source.GetBatches(null);
             
@@ -95,7 +95,7 @@ begin
 	exec sp_executesql N'create procedure enc with encryption 
 	as
 	select 100;'
-end");
+end", 15);
             var source = new DatabaseSourceGateway(databaseGateway);
             var warnings = source.GetWarnings();
             Assert.IsTrue(

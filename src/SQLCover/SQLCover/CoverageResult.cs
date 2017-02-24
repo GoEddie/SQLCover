@@ -50,9 +50,7 @@ namespace SQLCover
             CoveredStatementCount = _batches.Sum(p => p.CoveredStatementCount);
             StatementCount = _batches.Sum(p => p.StatementCount);
             HitCount = _batches.Sum(p => p.HitCount);
-
-            Warnings = warnings;
-
+            
 
         }
 
