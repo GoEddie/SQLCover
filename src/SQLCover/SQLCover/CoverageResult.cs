@@ -15,10 +15,10 @@ namespace SQLCover
     {
         private readonly IEnumerable<Batch> _batches;
         private readonly string _database;
- 
-        public string Warnings { get; private set; }
-               
-        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string warnings)
+
+        private readonly StatementChecker _statementChecker = new StatementChecker();
+        
+        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database)
         {
             _batches = batches;
             _database = database;
@@ -31,7 +31,7 @@ namespace SQLCover
                 var batch = _batches.FirstOrDefault(p => p.ObjectId == statement.ObjectId);
                 if (batch != null)
                 {
-                    var item = batch.Statements.FirstOrDefault(p => Overlaps(p, statement));
+                    var item = batch.Statements.FirstOrDefault(p => _statementChecker.Overlaps(p, statement));
                     if (item != null)
                     {
                         item.HitCount++;
@@ -54,28 +54,6 @@ namespace SQLCover
             Warnings = warnings;
 
 
-        }
-
-        private bool Overlaps(Statement statement, CoveredStatement coveredStatement)
-        {
-            var statementEnd = statement.Offset + statement.Length;
-
-            var coveredOffset = coveredStatement.Offset/2;
-            var coveredEnd = (coveredStatement.OffsetEnd == -1 ? statementEnd + coveredOffset : coveredStatement.OffsetEnd)/2;
-            
-            if (statement.Offset >= coveredOffset && statementEnd <= coveredEnd)
-                return true;
-
-            if (statement.Offset <= coveredOffset && statementEnd >= coveredEnd)
-                return true;
-
-            if (statement.Offset >= coveredOffset && statementEnd <= coveredEnd)
-                return true;
-
-            if (coveredOffset >= statement.Offset && coveredEnd <= statementEnd)
-                return true;
-            
-            return false;
         }
 
         public string RawXml()

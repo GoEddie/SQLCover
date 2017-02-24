@@ -1,0 +1,37 @@
+version: CI-{build}
+init:
+- ps: >-
+    $env:buildVersion = "$env:packageVersion.$env:appveyor_build_number"
+    $env:nugetVersion = "$env:packageVersion-ci-$env:appveyor_build_number"
+    Update-AppveyorBuild -Version $env:nugetVersion
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: $(buildVersion)
+  assembly_file_version: $(buildVersion)
+  assembly_informational_version: $(nugetVersion)
+environment:
+  packageVersion: 0.4.0
+services: mssql2014
+before_build:
+- cmd: nuget restore "src\SQLCover\SQLCover.sln"
+build:
+  project: src\SQLCover\SQLCover.sln
+  verbosity: minimal
+before_package:
+- ps: .\package-SqlCover.ps1
+after_build:
+- cmd: >-
+    if exist "src\SQLCover\test\SQLCover.IntegrationTests\bin\Debug\ConnectionString.config" del "src\SQLCover\test\SQLCover.IntegrationTests\bin\Debug\ConnectionString.config"
+    copy "src\SQLCover\test\SQLCover.IntegrationTests\bin\Debug\ConnectionString.appVeyor.config" "src\SQLCover\test\SQLCover.IntegrationTests\bin\Debug\ConnectionString.config"
+before_test:
+- cmd: '"C:\Program Files (x86)\Microsoft SQL Server\120\DAC\bin\SqlPackage.exe" /Action:Publish /SourceFile:"src\SQLCover\DatabaseProject\bin\Debug\DatabaseProject.dacpac" /TargetDatabaseName:DatabaseProject /TargetServerName:.'
+test:
+  assemblies:
+  - src\SQLCover\test\SQLCover.UnitTests\bin\Debug\SQLCover.UnitTests.dll
+  - src\SQLCover\test\SQLCover.IntegrationTests\bin\Debug\SQLCover.IntegrationTests.dll
+artifacts:
+- path: src\SQLCover\SQLCover\bin\Debug\
+  name: SqlCover-Binary
+- path: .nupkg\*.nupkg
+  name: Nuget package

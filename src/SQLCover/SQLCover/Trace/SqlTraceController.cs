@@ -25,10 +25,7 @@ WITH (MAX_MEMORY=100 MB,EVENT_RETENTION_MODE=NO_EVENT_LOSS,MAX_DISPATCH_LATENCY=
         private const string DropTraceFormat = @"drop EVENT SESSION [{0}] ON SERVER ";
 
         private const string ReadTraceFormat = @"select
-    object_name,
-    event_data,
-    file_name,
-    file_offset
+    event_data
 FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
 
         private const string GetLogDir = @"EXEC xp_readerrorlog 0, 1, N'Logging SQL Server messages in file'";
@@ -65,11 +62,11 @@ FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
 
         public override List<string> ReadTrace()
         {
-            var data = Gateway.GetRecords(string.Format(ReadTraceFormat, FileName));
+            var data = Gateway.GetTraceRecords(string.Format(ReadTraceFormat, FileName));
             var events = new List<string>();
             foreach (DataRow row in data.Rows)
             {
-                events.Add(row.ItemArray[1].ToString());
+                events.Add(row.ItemArray[0].ToString());
             }
 
 

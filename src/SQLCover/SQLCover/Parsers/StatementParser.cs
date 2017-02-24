@@ -127,6 +127,9 @@ namespace SQLCover.Parsers
             if (statement is DeclareVariableStatement)
                 return false;
 
+            if (statement is DeclareTableVariableStatement)
+                return false;
+
             return true;
         }
     }

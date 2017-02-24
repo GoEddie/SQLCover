@@ -19,7 +19,7 @@ namespace SQLCover.IntegrationTests
         [Test]
         public void Retrives_All_Batches()
         {
-            var databaseGateway = new DatabaseGateway(TestServerConnectionString, TestDatabaseName);
+            var databaseGateway = new DatabaseGateway(ConnectionStringReader.GetIntegration(), TestDatabaseName);
 
             var source = new DatabaseSourceGateway(databaseGateway);
             var batches = source.GetBatches(null);
@@ -40,7 +40,7 @@ namespace SQLCover.IntegrationTests
         [Test]
         public void Retrieves_Last_Statement_In_Large_Procedure()
         {
-            var databaseGateway = new DatabaseGateway(TestServerConnectionString, TestDatabaseName);
+            var databaseGateway = new DatabaseGateway(ConnectionStringReader.GetIntegration(), TestDatabaseName);
 
             var source = new DatabaseSourceGateway(databaseGateway);
             var batches = source.GetBatches(null);
