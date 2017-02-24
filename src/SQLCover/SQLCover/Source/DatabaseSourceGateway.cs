@@ -61,7 +61,7 @@ namespace SQLCover.Source
                 if (DoesNotMatchFilter(name, objectFilter, excludedObjects))
                 {
                     batches.Add(
-                        new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine((string)row["definition"]), null, name, (int) row["object_id"]));
+                        new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine(GetDefinition(row)), null, name, (int) row["object_id"]));
                 }
                 
             }
@@ -74,6 +74,18 @@ namespace SQLCover.Source
             }
 
             return batches.Where(p=>p.StatementCount > 0);
+        }
+
+        private static string GetDefinition(DataRow row)
+        {
+            if (row["definition"] is string)
+            {
+                var definition = row["definition"] as string;
+                if (!String.IsNullOrEmpty(definition))
+                    return definition;
+            }
+
+            return String.Empty;
         }
 
         private static string EndDefinitionWithNewLine(string definition)

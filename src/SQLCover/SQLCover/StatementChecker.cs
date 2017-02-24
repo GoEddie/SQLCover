@@ -19,7 +19,27 @@ namespace SQLCover
             var statementEnd = statementStart + statement.Length;
             coveredOffsetEnd = coveredStatement.OffsetEnd / 2;
 
-            return (statementStart >= coveredOffsetStart && statementEnd <= coveredOffsetEnd);
+            if (statementStart >= coveredOffsetStart && statementEnd <= coveredOffsetEnd)
+            {
+                return true;
+            }
+
+            //this is a little painful:
+            // https://connect.microsoft.com/SQLServer/feedback/details/3124768
+            /*
+                i don't think this is an actual problem because on the offsetEnd is wrong, the offsetStart is right so even if there was something like:
+                    exec a;b; 
+                    which would execute proc a and b, we wouldn't mark b as executed when a was executed because the start would be before b
+             */
+            coveredOffsetEnd = coveredOffsetEnd +2;
+
+            if (statementStart >= coveredOffsetStart && statementEnd <= coveredOffsetEnd)
+            {
+                return true;
+            }
+
+            return false;
+
         }
     }
 }

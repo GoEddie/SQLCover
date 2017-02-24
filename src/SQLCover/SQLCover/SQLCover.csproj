@@ -58,6 +58,7 @@
     <Compile Include="Source\SourceGateway.cs" />
     <Compile Include="Objects\SqlServerVersion.cs" />
     <Compile Include="Objects\Statement.cs" />
+    <Compile Include="SqlCoverException.cs" />
     <Compile Include="StatementChecker.cs" />
     <Compile Include="Trace\AzureTraceController.cs" />
     <Compile Include="Trace\SqlTraceController.cs" />
