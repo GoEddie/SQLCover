@@ -75,10 +75,10 @@ public string Html()
 ```
 
 This creates a basic html report to view the code coverage, highlighting the
-lines of code in the database which have been covered and:```
+lines of code in the database which have been covered and:
+```
 public string OpenCoverXml()
 ```
-
 which creates an xml file in the OpenCoverageXml format which can be converted
 into a very pretty looking report using reportgenerator: 
 https://github.com/danielpalme/ReportGenerator
@@ -90,7 +90,6 @@ $results = Get-CoverRedgateCITest "path\to\SQLCover.dll" "server=.;integrated se
     Export-OpenXml $results[1] "c:\output\path\for\xml\results"
     Start-ReportGenerator "c:\output\path\for\xml\results" "c:\path\to\reportgenerator.exe"
 ```
- 
 
 ### 2. Cover T-SQL Script
 If you have a script you want to cover then you can call:
