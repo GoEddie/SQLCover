@@ -19,8 +19,9 @@
 ### Redgate
 Thanks to Redgate for supporting this open source project
 
-[![Supported by Redgate](https://github.com/goeddie/sqlcover/raw/master/redgate/supported-by-redgate.jpg "Supported by Redgate")](http://www.red-gate.com/community/open-source-projects)
+<a href="http://www.red-gate.com/community/open-source-projects" title="Supported by Redgate"><img src="https://github.com/goeddie/sqlcover/raw/master/redgate/supported-by-redgate.jpg" width="250" alt="Supported by Redgate" /></a>
 
+### Overview
 
 This is a code coverage tool for SQL Server 2008+, it was designed to be generic
 to work with any build server and tests but includes specific filters to mean
