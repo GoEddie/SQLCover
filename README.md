@@ -16,6 +16,12 @@
 [forks]:https://github.com/GoEddie/SQLCover/network
 [issues]:https://github.com/GoEddie/SQLCover/issues
 
+### Redgate
+Thanks to Redgate for supporting this open source project
+
+[![Supported by Redgate](https://github.com/goeddie/sqlcover/raw/master/redgate/supported-by-redgate.jpg "Supported by Redgate")](http://www.red-gate.com/community/open-source-projects)
+
+
 This is a code coverage tool for SQL Server 2008+, it was designed to be generic
 to work with any build server and tests but includes specific filters to mean
 that it is well suited to running tSQLt tests using the Redgate DLM Automation
@@ -116,11 +122,6 @@ $coverageResults = $coverage.Stop()
  
  ### 4. Tidying up
  When we target local sql instances we delete the trace files but when targetting remote instances we are unable to delete the files as we do not (or potentially) do not have access. If this is the case keep an eye on the log directory and remove old "SQLCover-Trace-*.xel" and "SQLCover-Trace-*.xem" files. 
-
-## A final word...
-Thanks to Redgate for suppoorting this open source project
-
-[![Supported by Redgate](https://github.com/goeddie/sqlcover/raw/master/redgate/supported-by-redgate.jpg "Supported by Redgate")](http://www.red-gate.com/community/open-source-projects)
 
 ## License
 Apache 2.0
