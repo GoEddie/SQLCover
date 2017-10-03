@@ -146,6 +146,48 @@ namespace SQLCover
             }
         }
 
+        /// <summary>
+        /// https://raw.githubusercontent.com/jenkinsci/cobertura-plugin/master/src/test/resources/hudson/plugins/cobertura/coverage-with-data.xml
+        /// http://cobertura.sourceforge.net/xml/coverage-03.dtd
+        /// </summary>
+        /// <returns></returns>
+        public string Cobertura()
+        {
+            var statements = _batches.Sum(p => p.StatementCount);
+            var coveredStatements = _batches.Sum(p => p.CoveredStatementCount);
+
+            var builder = new StringBuilder();
+            builder.Append("<?xml version=\"1.0\"?>");
+            builder.Append("<!--DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-03.dtd\"-->");
+            builder.AppendFormat("<coverage line-rate=\"{0}\" branch-rate=\"0.0\" version=\"1.9\" timestamp=\"{1}\"><packages>", coveredStatements / (float)statements, (DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds);
+
+            var fileMap = new Dictionary<string, int>();
+            var i = 1;
+            foreach (var batch in _batches)
+            {
+                fileMap[batch.ObjectName] = i++;
+            }
+
+            builder.Append("<package name=\"t-sql\" line-rate=\"0.0\" branch-rate=\"0.0\" complexity=\"0.0\"><classes>\r\n");
+
+            foreach (var pair in fileMap)
+            {
+                builder.AppendFormat("\t<class name=\"{0}\" filename=\"{0}\" line-rate=\"0.0\" branch-rate=\"0.0\" complexity=\"0.0\">\r\n", pair.Key);
+                builder.Append("<methods>");
+
+
+
+                builder.Append("</methods>");
+            }
+
+            builder.Append("</classes></package></packages>\r\n");
+
+
+
+            return builder.ToString();
+
+        }
+
         public string OpenCoverXml()
         {
             var statements = _batches.Sum(p => p.StatementCount);
