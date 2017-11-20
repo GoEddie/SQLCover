@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+    <metadata>
+    <id>GOEddie.SQLCover</id>
+    <version>0.4.1</version>
+    <title>GOEddie.SQLCover</title>
+    <authors>GOEddie</authors>
+    <owners>GOEddie</owners>
+    <licenseUrl>https://github.com/GoEddie/SQLCover/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/GoEddie/SQLCover</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>SQLCover, code coverage for T-SQL</description>
+    <releaseNotes>Added support for a summary in corbertura version.</releaseNotes>
+    <copyright>Copyright Ed Elliott 2017</copyright>
+    <tags>SQLCover tSQLt T-SQL CodeCoverage</tags>
+    </metadata>
+    <files>
+        <file src="..\src\SQLCover\releases\template\*.*" target="" />
+    </files>
+</package>
