@@ -218,3 +218,6 @@ ModelManifest.xml
 .package/
 *.jfm
 
+nuspec/CredentialProvider.VSS.exe
+nuspec/EULA_Microsoft Visual Studio Team Services Credential Provider.docx
+nuspec/NuGet.exe
