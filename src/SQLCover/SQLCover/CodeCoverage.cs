@@ -21,8 +21,10 @@ namespace SQLCover
         private readonly bool _logging;
         private readonly SourceGateway _source;
         private CoverageResult _result;
-        public const short TIMEOUT_EXPIRED = -2; //From TdsEnums
 
+        public const short TIMEOUT_EXPIRED = -2; //From TdsEnums
+        public SqlCoverException Exception { get; private set; } = null;
+        public bool IsStarted { get; private set; } = false;
 
         private TraceController _trace;
 
@@ -59,17 +61,22 @@ namespace SQLCover
             _database = new DatabaseGateway(connectionString, databaseName);
             _source = new DatabaseSourceGateway(_database);
         }
-                public bool Start()
+
+        public bool Start()
         {
+            Exception = null;
             try
             {
                 _trace = new TraceControllerBuilder().GetTraceController(_database, _databaseName, _traceType);
                 _trace.Start();
+                IsStarted = true;
                 return true;
             }
             catch (Exception ex)
             {
                 Debug("Error starting trace: {0}", ex);
+                Exception = new SqlCoverException("SQL Cover failed to start.", ex);
+                IsStarted = false;
                 return false;
             }
         }
@@ -85,6 +92,11 @@ namespace SQLCover
 
         public CoverageResult Stop()
         {
+            if(!IsStarted)
+                throw new SqlCoverException("SQL Cover was not started, or did not start correctly.");
+
+            IsStarted = false;
+
             WaitForTraceMaxLatency();
 
             var results = StopInternal();

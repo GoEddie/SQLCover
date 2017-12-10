@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace SQLCover
 {
     [Serializable]
-    internal class SqlCoverException : Exception
+    public class SqlCoverException : Exception
     {
         public SqlCoverException()
         {
