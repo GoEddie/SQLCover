@@ -9,6 +9,9 @@ namespace SQLCover.Gateway
     {
         private readonly string _connectionString;
         private readonly string _databaseName;
+        private readonly SqlConnectionStringBuilder _connectionStringBuilder;
+
+        public string DataSource { get { return _connectionStringBuilder.DataSource; } }
 
         public DatabaseGateway()
         {
@@ -18,6 +21,7 @@ namespace SQLCover.Gateway
         {
             _connectionString = connectionString;
             _databaseName = databaseName;
+            _connectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
         }
 
         public virtual string GetString(string query)
