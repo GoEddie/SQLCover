@@ -16,7 +16,9 @@ None.
     <DirectoryRef Id="INSTALLDIR">
       <Component Id="RedGate.ThirdParty.SQLCover">
         <File Source="RedGate.ThirdParty.SQLCover.dll" />
-		<File Source="Microsoft.SqlServer.TransactSql.ScriptDom.dll" />
+      </Component>
+	  <Component Id="RedGate.ThirdParty.SQLCover">
+        <File Source="Microsoft.SqlServer.TransactSql.ScriptDom.dll" />
       </Component>
     </DirectoryRef>
   </Fragment>
