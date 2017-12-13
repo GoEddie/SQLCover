@@ -22,4 +22,12 @@ None.
       </Component>
     </DirectoryRef>
   </Fragment>
+  
+    <Fragment>
+    <ComponentGroup Id="RedGate.ThirdParty.SQLCover">
+      <ComponentRef Id="RedGate.ThirdParty.SQLCover"/>
+      <ComponentRef Id="Microsoft.SqlServer.TransactSql.ScriptDom"/>
+    </ComponentGroup>
+  </Fragment>
+  
 </Wix>
