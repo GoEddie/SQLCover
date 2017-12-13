@@ -14,14 +14,17 @@ namespace SQLCover
     public class CoverageResult : CoverageSummary
     {
         private readonly IEnumerable<Batch> _batches;
-        private readonly string _database;
+
+        public string DatabaseName { get; }
+        public string DataSource { get; }
 
         private readonly StatementChecker _statementChecker = new StatementChecker();
 
-        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database)
+        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string dataSource)
         {
             _batches = batches;
-            _database = database;
+            DatabaseName = database;
+            DataSource = dataSource;
             var parser = new EventsParser(xml);
 
             var statement = parser.GetNextStatement();
@@ -179,8 +182,8 @@ namespace SQLCover
                 , statements, coveredStatements, coveredStatements / (float) statements * 100.0);
 
             builder.Append("<Module hash=\"ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE\">");
-            builder.AppendFormat("<FullName>{0}</FullName>", _database);
-            builder.AppendFormat("<ModuleName>{0}</ModuleName>", _database);
+            builder.AppendFormat("<FullName>{0}</FullName>", DatabaseName);
+            builder.AppendFormat("<ModuleName>{0}</ModuleName>", DatabaseName);
 
             var fileMap = new Dictionary<string, int>();
             var i = 1;
