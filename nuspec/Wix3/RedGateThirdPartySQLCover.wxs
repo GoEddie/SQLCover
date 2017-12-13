@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 
-# Installer fragment for RedGate.Logging.Interfaces
+# Installer fragment for RedGate.ThirdParty.SQLCover
    
 ## Dependencies ##
-None.
+Microsoft.SqlServer.TransactSql.ScriptDom.dll
 ## Referenceable entry-points ##
 | Id                         | Type      | Comments                                                                     |
 |============================|===========|==============================================================================|
-| RedGate.Logging.Interfaces | Component | Reference this to get RedGate.Logging.Interfaces.dll installed in INSTALLDIR |
+| RedGate.ThirdParty.SQLCover.dll | Component | Reference this to get RedGate.ThirdParty.SQLCover.dll installed in INSTALLDIR |
 ## Wix Variables ##
 None.
 -->
