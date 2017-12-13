@@ -17,7 +17,7 @@ None.
       <Component Id="RedGate.ThirdParty.SQLCover">
         <File Source="RedGate.ThirdParty.SQLCover.dll" />
       </Component>
-	  <Component Id="RedGate.ThirdParty.SQLCover">
+	  <Component Id="Microsoft.SqlServer.TransactSql.ScriptDom">
         <File Source="Microsoft.SqlServer.TransactSql.ScriptDom.dll" />
       </Component>
     </DirectoryRef>
