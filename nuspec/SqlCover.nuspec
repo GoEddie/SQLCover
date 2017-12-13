@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
     <id>RedGate.ThirdParty.SqlCover</id>
-    <version>1.0.6.0</version>
+    <version>1.0.7.0</version>
     <title>SQL Cover</title>
     <authors>Ed Elliott</authors>
     <owners>Ed Elliott</owners>
@@ -22,5 +22,6 @@
   </metadata>
   <files>
     <file src="..\src\SQLCover\SQLCover\bin\Release\RedGate.ThirdParty.SQLCover.dll" target="lib" />
+	<file src="Wix3\RedGateThirdPartySQLCover.wxs" target="wix3" />
   </files>
 </package>
