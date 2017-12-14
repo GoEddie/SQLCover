@@ -20,12 +20,17 @@ None.
 	  <Component Id="Microsoft.SqlServer.TransactSql.ScriptDom">
         <File Source="Microsoft.SqlServer.TransactSql.ScriptDom.dll" />
       </Component>
+	  </Component>
+	  <Component Id="SQLCOVER_LICENSE">
+        <File Source="SQLCOVER_LICENSE" />
+      </Component>
     </DirectoryRef>
   </Fragment>
   
     <Fragment>
     <ComponentGroup Id="RedGate.ThirdParty.SQLCover">
       <ComponentRef Id="RedGate.ThirdParty.SQLCover"/>
+	  <ComponentRef Id="SQLCOVER_LICENSE"/>
       <ComponentRef Id="Microsoft.SqlServer.TransactSql.ScriptDom"/>
     </ComponentGroup>
   </Fragment>
