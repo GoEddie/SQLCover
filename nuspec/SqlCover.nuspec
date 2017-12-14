@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
     <id>RedGate.ThirdParty.SqlCover</id>
-    <version>1.0.11.0</version>
+    <version>1.0.12.0</version>
     <title>SQL Cover</title>
     <authors>Ed Elliott</authors>
     <owners>Ed Elliott</owners>
