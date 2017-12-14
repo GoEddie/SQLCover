@@ -61,15 +61,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeCoverage_IntegrationTests.cs" />
-    <Compile Include="ConnectionStringReader.cs" />
     <Compile Include="DatabaseSource_IntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlCoverTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ConnectionString.appVeyor.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="ConnectionString.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -79,18 +76,9 @@
       <Project>{2AB093C7-88AE-4F6B-940E-9AE6DBC4CC87}</Project>
       <Name>SQLCover</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TestLib\TestLib.csproj">
-      <Project>{892698FB-618A-4D80-B035-3520148603BF}</Project>
-      <Name>TestLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <MyOptionalItems Include="ConnectionString.user.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </MyOptionalItems>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

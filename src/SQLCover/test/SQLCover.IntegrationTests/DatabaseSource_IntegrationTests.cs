@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.Remoting;
 using NUnit.Framework;
 using SQLCover.Gateway;
 using SQLCover.Source;
-using TestLib;
 
 namespace SQLCover.IntegrationTests
 {
@@ -19,7 +17,7 @@ namespace SQLCover.IntegrationTests
         [Test]
         public void Retrives_All_Batches()
         {
-            var databaseGateway = new DatabaseGateway(ConnectionStringReader.GetIntegration(), TestDatabaseName);
+            var databaseGateway = new DatabaseGateway(TestServerConnectionString, TestDatabaseName);
 
             var source = new DatabaseSourceGateway(databaseGateway);
             var batches = source.GetBatches(null);
@@ -40,7 +38,7 @@ namespace SQLCover.IntegrationTests
         [Test]
         public void Retrieves_Last_Statement_In_Large_Procedure()
         {
-            var databaseGateway = new DatabaseGateway(ConnectionStringReader.GetIntegration(), TestDatabaseName);
+            var databaseGateway = new DatabaseGateway(TestServerConnectionString, TestDatabaseName);
 
             var source = new DatabaseSourceGateway(databaseGateway);
             var batches = source.GetBatches(null);
