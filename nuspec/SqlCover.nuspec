@@ -23,6 +23,6 @@
   <files>
     <file src="..\src\SQLCover\SQLCover\bin\Release\RedGate.ThirdParty.SQLCover.dll" target="lib" />
 	<file src="Wix3\RedGateThirdPartySQLCover.wxs" target="wix3" />
-	<file src="..\SQLCOVER_LICENSE" target="lib" />
+	<file src="..\SQLCOVER_LICENSE.txt" target="lib" />
   </files>
 </package>

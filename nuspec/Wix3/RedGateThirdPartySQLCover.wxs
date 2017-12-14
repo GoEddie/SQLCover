@@ -22,7 +22,7 @@ None.
       </Component>
 	  </Component>
 	  <Component Id="SQLCOVER_LICENSE">
-        <File Source="SQLCOVER_LICENSE" />
+        <File Source="SQLCOVER_LICENSE.txt" />
       </Component>
     </DirectoryRef>
   </Fragment>
