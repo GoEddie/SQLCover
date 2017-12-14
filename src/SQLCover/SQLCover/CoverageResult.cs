@@ -93,7 +93,7 @@ namespace SQLCover
 
             var builder = new StringBuilder();
 
-            builder.Append("<html><title>SQLCover Code Coverage Results</title></head>\r\n<body>");
+            builder.Append("<html><style>body{font - family:verdana,arial,sans-serif}</style><title>SQLCover Code Coverage Results</title></head>\r\n<body>");
             builder.Append(
                 "<table><thead><td>object name</td><td>statement count</td><td>covered statement count</td><td>coverage %</td></thead>");
 
