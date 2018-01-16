@@ -25,7 +25,8 @@ This is a fork which lets us create a properly signed SQL Cover package that can
 * Launch .sln file in VS
 * Restore nuget packages (sometimes this doesn't work unless done manually)
 * Build solution
-* Load nuspec/SqlCover.nuspec in Nuget Package Explorer (available from Windows Store)
+* Change version in nuspec file in nuspec folder
+* Load nuspec file in Nuget Package Explorer (available from Windows Store)
 * Use 'Save As...' to get a nupkg file
 * Publish that nupkg file using the invocation in push.txt (updating the file name) - you may have to go and find nuget.exe from somewhere if it isn't in your path
 
