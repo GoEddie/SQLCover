@@ -95,7 +95,7 @@ namespace SQLCover
 
             builder.Append("<html><style>body{font - family:verdana,arial,sans-serif}</style><title>SQLCover Code Coverage Results</title></head>\r\n<body>");
             builder.Append(
-                "<table><thead><td>object name</td><td>statement count</td><td>covered statement count</td><td>coverage %</td></thead>");
+                "<table><thead><td>Object name</td><td>Statement count</td><td>Covered statement count</td><td>Coverage %</td></thead>");
 
             builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3:0.00}</td></tr>", "<b>Total</b>",
                 statements, coveredStatements, (float) coveredStatements / (float) statements * 100.0);
