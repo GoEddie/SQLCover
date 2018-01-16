@@ -16,6 +16,18 @@
 [forks]:https://github.com/GoEddie/SQLCover/network
 [issues]:https://github.com/GoEddie/SQLCover/issues
 
+### This local fork
+
+This is a fork which lets us create a properly signed SQL Cover package that can be used by our SSMS addins.
+
+#### Building the package
+
+* Launch .sln file in VS
+* Restore nuget packages (sometimes this doesn't work unless done manually)
+* Build solution
+* Load nuspec/SqlCover.nuspec in Nuget Package Explorer (available from Windows Store)
+
+
 ### Redgate
 Thanks to Redgate for supporting this open source project
 
