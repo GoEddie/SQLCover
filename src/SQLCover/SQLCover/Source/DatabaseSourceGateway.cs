@@ -41,9 +41,15 @@ namespace SQLCover.Source
 
 public IEnumerable<Batch> GetBatches(List<string> objectFilter)
         {
+            // object_name() can return NULL on permissions failures
             var table =
                 _databaseGateway.GetRecords(
-                    "select object_id, \'[\' + object_schema_name(object_id) + \'].[\' + object_name(object_id) + \']\' as object_name, definition, uses_quoted_identifier from sys.sql_modules where object_id not in (select object_id from sys.objects where type = 'IF')");
+                    @"
+select object_id, '[' + object_schema_name(object_id) + '].[' + object_name(object_id) + ']' as object_name, definition, uses_quoted_identifier 
+from sys.sql_modules 
+where object_id not in (select object_id from sys.objects where type = 'IF')
+and object_name(object_id) is not null
+");
 
             var batches = new List<Batch>();
             
@@ -97,7 +103,13 @@ public IEnumerable<Batch> GetBatches(List<string> objectFilter)
 
             var table =
                 _databaseGateway.GetRecords(
-                    "select \'[\' + object_schema_name(object_id) + \'].[\' + object_name(object_id) + \']\' as object_name from sys.sql_modules where object_id not in (select object_id from sys.objects where type = 'IF') and definition is null");
+                    @"
+select '[' + object_schema_name(object_id) + '].[' + object_name(object_id) + ']' as object_name 
+from sys.sql_modules 
+where object_id not in (select object_id from sys.objects where type = 'IF') 
+and definition is null
+and object_name(object_id) is not null
+");
 
 
             foreach (DataRow row in table.Rows)
@@ -123,11 +135,13 @@ public IEnumerable<Batch> GetBatches(List<string> objectFilter)
         private List<string> GetExcludedObjects()
         {
             var tSQLtObjects =
-                _databaseGateway.GetRecords(
-                    @"select  '[' + object_schema_name(object_id) + '].[' + object_name(object_id) + ']' as object_name from sys.procedures
-	where schema_id in (
-select major_id from sys.extended_properties ep
-	where class_desc = 'SCHEMA' and name = 'tSQLt.TestClass' )");
+                _databaseGateway.GetRecords(@"
+select  '[' + object_schema_name(object_id) + '].[' + object_name(object_id) + ']' as object_name 
+from sys.procedures
+where schema_id in (
+    select major_id from sys.extended_properties ep
+    where class_desc = 'SCHEMA' and name = 'tSQLt.TestClass' )
+and object_name(object_id) is not null");
 
             var excludedObjects = new List<string>();
 

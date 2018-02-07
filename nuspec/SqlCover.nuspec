@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
   <metadata>
     <id>RedGate.ThirdParty.SqlCover</id>
-    <version>1.0.15.0</version>
+    <version>1.0.19.0</version>
     <title>SQL Cover</title>
     <authors>Ed Elliott</authors>
     <owners>Ed Elliott</owners>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Code coverage tool for SQL Server 2008+</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2016-2017</copyright>
+    <copyright>Copyright 2016-2018</copyright>
     <tags>sql tsqlt test code coverage</tags>
 	<references>
 		<reference file="RedGate.ThirdParty.SQLCover.dll" />
