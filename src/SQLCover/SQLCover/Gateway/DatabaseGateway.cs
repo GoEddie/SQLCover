@@ -32,7 +32,12 @@ namespace SQLCover.Gateway
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = query;
-                    return cmd.ExecuteScalar().ToString();
+
+                    var scalarResult = cmd.ExecuteScalar();
+
+                    if (scalarResult != null) return scalarResult.ToString();
+
+                    return null;
                 }
             }
         }
