@@ -1,0 +1,60 @@
+resources:
+- repo: self
+  fetchDepth: 15
+queue:
+  name: Hosted VS2017
+  demands: 
+  - msbuild
+  - visualstudio
+  - vstest
+
+steps:
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 4.4.1'
+  inputs:
+    versionSpec: 4.4.1
+
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: '$(Parameters.solution)'
+
+
+- task: VSBuild@1
+  displayName: 'Build solution'
+  inputs:
+    solution: 'src/SQLCover/SQLCover.sln'
+
+    platform: '$(BuildPlatform)'
+
+    configuration: '$(BuildConfiguration)'
+
+# - task: VSTest@2
+#   displayName: 'VsTest - testAssemblies'
+#   inputs:
+#     testAssemblyVer2: |
+#      **\$(BuildConfiguration)\*test*.dll
+#      !**\obj\**
+
+#     platform: '$(BuildPlatform)'
+
+#     configuration: '$(BuildConfiguration)'
+
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+  inputs:
+    SourceFolder: '$(system.defaultworkingdirectory)'
+
+    Contents: '**\bin\$(BuildConfiguration)\**'
+
+    TargetFolder: '$(build.artifactstagingdirectory)'
+
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+
+
