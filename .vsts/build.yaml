@@ -22,9 +22,9 @@ steps:
 
 
 - task: VSBuild@1
-  displayName: 'Build solution **\*.sln'
+  displayName: 'Build solution'
   inputs:
-    solution: '$(Parameters.solution)'
+    solution: 'src/SQLCover/SQLCover.sln'
 
     platform: '$(BuildPlatform)'
 
