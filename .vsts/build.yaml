@@ -26,9 +26,9 @@ steps:
   inputs:
     solution: 'src/SQLCover/SQLCover.sln'
 
-    platform: '$(BuildPlatform)'
+    platform: 'Any CPU'
 
-    configuration: '$(BuildConfiguration)'
+    configuration: 'Release'
 
 # - task: VSTest@2
 #   displayName: 'VsTest - testAssemblies'
