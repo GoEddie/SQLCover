@@ -18,7 +18,7 @@ steps:
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
-    restoreSolution: '$(Parameters.solution)'
+    restoreSolution: 'src/SQLCover/SQLCover.sln'
 
 
 - task: VSBuild@1
