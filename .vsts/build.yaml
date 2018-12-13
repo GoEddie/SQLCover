@@ -30,6 +30,12 @@ steps:
 
     configuration: 'Release'
 
+- task: PowerShell@2
+  displayName: 'Ensure Sql Local Db'
+  inputs:
+    targetType: ./
+    filePath: 'src\SQLCover\test\CreateLocalDbInstance.ps1'
+
 # - task: VSTest@2
 #   displayName: 'VsTest - testAssemblies'
 #   inputs:
