@@ -5,22 +5,28 @@ namespace SQLCover.IntegrationTests
 {
     class ConnectionStringReader
     {
+        private static string GetPipeName()
+        {
+
+            var processInfo = new System.Diagnostics.ProcessStartInfo();
+            processInfo.Arguments = "-Command \"&{ (sqllocaldb i SQLCover |%{ if ($_.Contains('pipe')){$_} }).Split(':')[2]}\"";
+            
+            processInfo.FileName = "powershell.exe";
+            processInfo.RedirectStandardOutput = true;
+            processInfo.UseShellExecute = false;
+
+            var process = System.Diagnostics.Process.Start(processInfo);
+            process.WaitForExit();
+            return process.StandardOutput.ReadToEnd();
+
+        }
+
         private static string Get(string name)
         {
-            var xmldoc = new XmlDocument();
-            xmldoc.Load(GetFilename());
-            XmlNodeList nodes = xmldoc.GetElementsByTagName("add");
-            foreach (XmlNode node in nodes)
-            {
-                if (node.Attributes["name"].Value == name)
-                {
-                    Console.WriteLine("Connection String = " + node.Attributes["connectionString"].Value);
-                    return node.Attributes["connectionString"].Value;
-                }
-            }
-
-            throw new Exception();
-        }
+            var connectionString = $"Data Source={GetPipeName()};integrated security=sspi;initial catalog=DatabaseProject";
+            Console.WriteLine("Connection String = " + connectionString);
+            return connectionString;
+         }
 
 
         public static string GetIntegration()
