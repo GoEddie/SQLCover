@@ -49,8 +49,7 @@ steps:
   inputs:
     pathtoCustomTestAdapters: 'src/SQLCover/packages'
     testAssemblyVer2: |
-     **\$(BuildConfiguration)\*test*.dll
-     !**\obj\**
+     **\*tests*.dll
     platform: 'Any CPU'
     configuration: 'Release'
 
