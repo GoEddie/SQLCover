@@ -47,12 +47,11 @@ steps:
 - task: VSTest@2
   displayName: 'VsTest - testAssemblies'
   inputs:
+    pathtoCustomTestAdapters: 'src/SQLCover/packages'
     testAssemblyVer2: |
      **\$(BuildConfiguration)\*test*.dll
      !**\obj\**
-
     platform: 'Any CPU'
-
     configuration: 'Release'
 
 
