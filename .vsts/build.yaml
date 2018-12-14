@@ -32,9 +32,16 @@ steps:
     configuration: 'Release'
 
 - task: PowerShell@2
+  displayName: 'Create Sql Local Db'
+  inputs:
+    filePath: 'src\SQLCover\test\CreateLocalDbInstance.ps1'
+
+
+- task: PowerShell@2
   displayName: 'Deploy Test Databases to Sql Local Db'
   inputs:
-    filePath: 'src\SQLCover\test\testLocal.ps1'
+    filePath: 'src\SQLCover\test\deployLocal.ps1'
+
 
 - task: VSTest@2
   displayName: 'VsTest - testAssemblies'
