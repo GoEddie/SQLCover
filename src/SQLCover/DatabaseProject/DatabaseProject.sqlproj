@@ -68,6 +68,7 @@
     <Build Include="dbo\a_large_procedure.sql" />
     <Build Include="dbo\set_statements.sql" />
     <Build Include="dbo\a_view.sql" />
+    <Build Include="dbo\a_procedure_with_goto.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Deploy\LocalDbDeploy.ps1" />

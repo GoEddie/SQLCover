@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLCover", "SQLCover\SQLCover.csproj", "{2AB093C7-88AE-4F6B-940E-9AE6DBC4CC87}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DB9215AD-D611-49A3-8061-2AA1E957F12C}"
+	ProjectSection(SolutionItems) = preProject
+		DeployDatabasesForTesting.ps1 = DeployDatabasesForTesting.ps1
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLCover.UnitTests", "test\SQLCover.UnitTests\SQLCover.UnitTests.csproj", "{A5CB51AE-7313-489E-A1F4-C791FE76824E}"
 EndProject

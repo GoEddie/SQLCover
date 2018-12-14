@@ -60,7 +60,6 @@ namespace SQLCover.IntegrationTests
         }
 
         [Test]
-      //  [Ignore("Not sure why failing. Feedback from GoEddie needed.")]
         public void Code_Coverage_Includes_Last_Statement_Of_Large_Procedure()
         {
             var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName);
@@ -79,8 +78,31 @@ namespace SQLCover.IntegrationTests
 
             Assert.That(result.CoveredStatementCount, Is.EqualTo(2));
 
-            var xml = result.OpenCoverXml();
+            var xml = result.OpenCoverXml();           
+
+        }
+
+        [Test]
+        public void Code_Coverage_Excludes_Label_From_Lines_That_Can_Be_Covered()
+        {
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName);
+            coverage.Start();
+            using (var con = new SqlConnection(ConnectionStringReader.GetIntegration()))
+            {
+                con.Open();
+                using (var cmd = con.CreateCommand())
+                {
+                    cmd.CommandText = "exec [dbo].[a_procedure_with_goto]";
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            var result = coverage.Stop();
             
+            
+            Assert.That(result.CoveredStatementCount, Is.EqualTo(4));
+            Assert.That(result.StatementCount, Is.EqualTo(22));
+            var xml = result.OpenCoverXml();
 
         }
 
