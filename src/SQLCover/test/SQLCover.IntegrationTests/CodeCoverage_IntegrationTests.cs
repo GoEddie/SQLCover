@@ -2,15 +2,20 @@
 using System.Data.SqlClient;
 using NUnit.Framework;
 using TestLib;
+using System.Threading;
 
 namespace SQLCover.IntegrationTests
 {
     [TestFixture]
+    [Apartment(ApartmentState.STA)]
     public class CodeCoverage_IntegrationTests : SQLCoverTest
     {
+
         [Test]
         public void Can_Get_All_Batches()
         {
+
+            
             var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName, null, true, false);
             var results = coverage.Cover("select 1");
 
@@ -123,7 +128,7 @@ namespace SQLCover.IntegrationTests
 
             var result = coverage.Stop();
 
-            Assert.That(result.RawXml(), Is.StringContaining("HitCount=\"1\""));
+            Assert.That(result.RawXml().Contains("HitCount=\"1\""), Is.True);
         }
 
         [Test]
