@@ -11,8 +11,14 @@ namespace SQLCover.IntegrationTests
             xmldoc.Load(GetFilename());
             XmlNodeList nodes = xmldoc.GetElementsByTagName("add");
             foreach (XmlNode node in nodes)
+            {
                 if (node.Attributes["name"].Value == name)
+                {
+                    Console.WriteLine("Connection String = " + node.Attributes["connectionString"].Value);
                     return node.Attributes["connectionString"].Value;
+                }
+            }
+
             throw new Exception();
         }
 
