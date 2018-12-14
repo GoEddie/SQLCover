@@ -44,6 +44,7 @@ namespace SQLCover.Gateway
 
         public virtual DataTable GetRecords(string query)
         {
+            Console.WriteLine("ConnectionString: " + _connectionString);
             using (var conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
