@@ -10,13 +10,6 @@ queue:
 
 steps:
 
-
-- task: PowerShell@2
-  displayName: 'hey yo'
-  inputs:
-    filePath: 'src\SQLCover\test\a.ps1'
-
-
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 4.4.1'
   inputs:
@@ -41,20 +34,18 @@ steps:
 - task: PowerShell@2
   displayName: 'Deploy Test Databases to Sql Local Db'
   inputs:
-    targetType: ./
-
     filePath: 'src\SQLCover\test\testLocal.ps1'
 
-# - task: VSTest@2
-#   displayName: 'VsTest - testAssemblies'
-#   inputs:
-#     testAssemblyVer2: |
-#      **\$(BuildConfiguration)\*test*.dll
-#      !**\obj\**
+- task: VSTest@2
+  displayName: 'VsTest - testAssemblies'
+  inputs:
+    testAssemblyVer2: |
+     **\$(BuildConfiguration)\*test*.dll
+     !**\obj\**
 
-#     platform: '$(BuildPlatform)'
+    platform: 'Any CPU'
 
-#     configuration: '$(BuildConfiguration)'
+    configuration: 'Release'
 
 
 - task: CopyFiles@2
