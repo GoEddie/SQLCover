@@ -11,7 +11,7 @@ namespace SQLCover.IntegrationTests
         [Test]
         public void Can_Get_All_Batches()
         {
-            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName);
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName, null, true, true);
             var results = coverage.Cover("select 1");
 
             Assert.IsNotNull(results);
