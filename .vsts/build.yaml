@@ -14,8 +14,6 @@ steps:
 - task: PowerShell@2
   displayName: 'hey yo'
   inputs:
-    targetType: ./
-    
     filePath: 'src\SQLCover\test\a.ps1'
 
 
