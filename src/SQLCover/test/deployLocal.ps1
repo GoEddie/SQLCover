@@ -1,4 +1,7 @@
-
+param(
+    $configuration = 'Debug'
+)
+#when i run locally i want debug but from he build agent i want debug, if i default to debug then i dont need to pass it in locally and am happy for the yaml build definition to include it
 
 Function Get-SqlPackagePath{
 
@@ -22,5 +25,4 @@ Function Get-SqlPackagePath{
 
 }
 
-
-&"$(Get-SqlPackagePath)" /Action:Publish /SourceFile:"$($PSCommandPath | Split-Path -Parent)\..\DatabaseProject\bin\Debug\DatabaseProject.dacpac" /TargetServerName:"(localdb)\SQLCover" /TargetDatabaseName:DatabaseProject
+&"$(Get-SqlPackagePath)" /Action:Publish /SourceFile:"$($PSCommandPath | Split-Path -Parent)\..\DatabaseProject\bin\$($configuration)\DatabaseProject.dacpac" /TargetServerName:"(localdb)\SQLCover" /TargetDatabaseName:DatabaseProject

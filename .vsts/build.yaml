@@ -41,6 +41,7 @@ steps:
   displayName: 'Deploy Test Databases to Sql Local Db'
   inputs:
     filePath: 'src\SQLCover\test\deployLocal.ps1'
+    arguments: '-configuration Release'
 
 
 - task: VSTest@2
