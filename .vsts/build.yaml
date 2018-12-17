@@ -35,7 +35,7 @@ steps:
   inputs:
     pathtoCustomTestAdapters: 'src/SQLCover/packages'
     testAssemblyVer2: |
-     **\*IntegrationTests*.dll
+     **\*UnitTests*.dll
     platform: 'Any CPU'
     configuration: 'Release'
 
