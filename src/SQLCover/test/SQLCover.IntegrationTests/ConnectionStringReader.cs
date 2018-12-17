@@ -46,7 +46,7 @@ namespace SQLCover.IntegrationTests
             ///This is a text file with a single line of text with the connection string
             ///   I know it is weird but simple :)
             var localOverrideFile =  Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ConnectionString.user.config");
-;
+
 
             if (File.Exists(localOverrideFile))
             {
@@ -56,7 +56,6 @@ namespace SQLCover.IntegrationTests
             {
                 // var connectionString = $"Server=np:{GetPipeName()};integrated security=sspi;initial catalog=DatabaseProject";
                 var connectionString = $"Server=tcp:{GetContainerIP()};uid=sa;pwd=Psgsgsfsfs!!!!!;initial catalog=DatabaseProject";
-                Console.WriteLine("Connection String = " + connectionString);
                 return connectionString;
             }
         }

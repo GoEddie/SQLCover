@@ -13,9 +13,7 @@ namespace SQLCover.IntegrationTests
 
         [Test]
         public void Can_Get_All_Batches()
-        {
-
-            
+        {            
             var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName, null, true, false);
             var results = coverage.Cover("select 1");
 
@@ -53,7 +51,7 @@ namespace SQLCover.IntegrationTests
             {
                 coverage.Cover("WAITFOR DELAY '1:00:00'", 1);
             }
-            catch (System.Data.SqlClient.SqlException e)
+            catch (SqlException e)
             {
                 if (e.Number == -2)
                 {

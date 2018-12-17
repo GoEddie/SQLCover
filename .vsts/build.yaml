@@ -9,7 +9,6 @@ queue:
   - vstest
 
 steps:
-
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 4.4.1'
   inputs:
