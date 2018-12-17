@@ -21,7 +21,6 @@ steps:
   inputs:
     restoreSolution: 'src/SQLCover/SQLCover.sln'
 
-
 - task: VSBuild@1
   displayName: 'Build solution'
   inputs:
@@ -31,10 +30,19 @@ steps:
 
     configuration: 'Release'
 
-- task: PowerShell@2
-  displayName: 'Create Sql Local Db'
+- task: VSTest@2
+  displayName: 'Unit Tests'
   inputs:
-    filePath: 'src\SQLCover\test\CreateLocalDbInstance.ps1'
+    pathtoCustomTestAdapters: 'src/SQLCover/packages'
+    testAssemblyVer2: |
+     **\*IntegrationTests*.dll
+    platform: 'Any CPU'
+    configuration: 'Release'
+
+- task: PowerShell@2
+  displayName: 'Create Docker Sql'
+  inputs:
+    filePath: 'src\SQLCover\test\CreateDockerDbInstance.ps1'
 
 
 - task: PowerShell@2
@@ -45,11 +53,11 @@ steps:
 
 
 - task: VSTest@2
-  displayName: 'VsTest - testAssemblies'
+  displayName: 'Integration Tests'
   inputs:
     pathtoCustomTestAdapters: 'src/SQLCover/packages'
     testAssemblyVer2: |
-     **\*tests*.dll
+     **\*IntegrationTests*.dll
     platform: 'Any CPU'
     configuration: 'Release'
 
