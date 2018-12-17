@@ -24,7 +24,7 @@ namespace SQLCover.IntegrationTests
    
         public static string GetIntegration()
         {
-            var connectionString = $"Data Source={GetPipeName()};integrated security=sspi;initial catalog=DatabaseProject";
+            var connectionString = $"Server=np:{GetPipeName()};integrated security=sspi;initial catalog=DatabaseProject";
             Console.WriteLine("Connection String = " + connectionString);
             return connectionString;
         }
