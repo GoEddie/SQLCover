@@ -126,3 +126,8 @@ $coverageResults = $coverage.Stop()
 
 ## License
 Apache 2.0
+
+
+## Development
+
+To run the integration tests, create a sql instance or using the `./src/SQLCover/test/CreateDockerDbInstance.ps1` script to create a docker version of sql. Then run `./src/SQLCover/test/deployLocal.ps1` (if you use your own instance deploy the `DatabaseProject` ssdt project to the instance). The connection string that the integration tests use is `Server=tcp:docker-instance-ip;uid=sa;pwd=Psgsgsfsfs!!!!!;initial catalog=DatabaseProject` where docker-instance-ip is the ip address of the container created by `./src/SQLCover/test/CreateDockerDbInstance.ps1`. If you want the tests to use a different connection string, in the `\src\SQLCover\DatabaseProject\bin\Debug` folder put a `ConnectionString.user.config` which is a text file with one line that is the connection string that you want to use. The unit tests need no connection string.
