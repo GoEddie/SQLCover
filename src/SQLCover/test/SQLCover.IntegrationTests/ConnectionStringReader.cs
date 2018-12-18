@@ -26,7 +26,7 @@ namespace SQLCover.IntegrationTests
         {
 
             var processInfo = new System.Diagnostics.ProcessStartInfo();
-            processInfo.Arguments = "-Command \"&{ (docker inspect SQLCover | ConvertFrom-Json).NetworkSettings.IPAddress}\"";
+            processInfo.Arguments = "-Command \"&{ (docker inspect SQLCover | ConvertFrom-Json).NetworkSettings.Networks.nat.IPAddress}\"";
 
             processInfo.FileName = "powershell.exe";
             processInfo.RedirectStandardOutput = true;

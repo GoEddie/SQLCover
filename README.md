@@ -39,19 +39,14 @@ Navigation:
 
 
 ## Installation
-You will either need to build the project and grab the output SQLCover.dll or
-you can download the pre-built binary from: http://the.agilesql.club/SQLCover/download.php
+You will either need to build the project and grab the output SQLCover.dll or you can download the pre-built binary from: http://the.agilesql.club/SQLCover/download.php
 
 
 # Usage
 There are three basic ways to use it:
 
 ### 1. Redgate DLM Automation Suite
-If you have the DLM automation suite then create a nuget package of your
-database, deploy the project to a test database and then use the example
-powershell script
-(https://github.com/GoEddie/SQLCover/blob/master/example/SQLCover.ps1 and
-included in the download above):
+If you have the DLM automation suite then create a nuget package of your database, deploy the project to a test database and then use the example powershell script (https://github.com/GoEddie/SQLCover/blob/master/example/SQLCover.ps1 and included in the download above):
 ```
 Get-CoverRedgateCITest "SQLCover-path.dll" "server=servername;integrated security=sspi;" "nuget-package-path.nupkg" "servername" "database-name"
 ```
@@ -126,7 +121,6 @@ $coverageResults = $coverage.Stop()
 
 ## License
 Apache 2.0
-
 
 ## Development
 

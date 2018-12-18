@@ -25,4 +25,4 @@ Function Get-SqlPackagePath{
 
 }
 
-&"$(Get-SqlPackagePath)" /Action:Publish /SourceFile:"$($PSCommandPath | Split-Path -Parent)\..\DatabaseProject\bin\$($configuration)\DatabaseProject.dacpac" /TargetServerName:"tcp:.,1433" /TargetDatabaseName:DatabaseProject /TargetUser:sa /TargetPassword:Psgsgsfsfs!!!!!
+&"$(Get-SqlPackagePath)" /Action:Publish /SourceFile:"$($PSCommandPath | Split-Path -Parent)\..\DatabaseProject\bin\$($configuration)\DatabaseProject.dacpac" /TargetServerName:"tcp:$((docker inspect SQLCover | ConvertFrom-Json).NetworkSettings.Networks.nat.IPAddress),1433" /TargetDatabaseName:DatabaseProject /TargetUser:sa /TargetPassword:Psgsgsfsfs!!!!!
