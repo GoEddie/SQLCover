@@ -6,6 +6,7 @@
 
 
 [licence badge]:https://img.shields.io/badge/License-Apache%202.0-blue.svg
+[![build status]:(https://sqlcover.visualstudio.com/SQLCover/_apis/build/status/SQLCover-CI?branchName=master)](https://sqlcover.visualstudio.com/SQLCover/_build/latest?definitionId=5?branchName=master)
 
 [stars badge]:https://img.shields.io/github/stars/GoEddie/SQLCover.svg
 [forks badge]:https://img.shields.io/github/forks/GoEddie/SQLCover.svg
