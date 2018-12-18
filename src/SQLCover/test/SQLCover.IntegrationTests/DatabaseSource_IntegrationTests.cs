@@ -69,19 +69,10 @@ begin
 	as
 	select 100;'
 end", 15);
-            var source = new DatabaseSourceGateway(databaseGateway);
-            var batches = source.GetBatches(null);
-            
-            foreach (var batch in batches)
-            {
-                Console.WriteLine("batch: {0}", batch.Text);
-            }
-            
 
-            var proc = batches.FirstOrDefault(p => p.ObjectName == "[dbo].[a_large_procedure]");
-
-            Assert.AreEqual(2, proc.StatementCount);
-            
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName, null, true, false);
+            var results = coverage.Cover("exec enc");
+            //if we dont die we are good
         }
 
 
