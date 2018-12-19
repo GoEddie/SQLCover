@@ -19,6 +19,8 @@ namespace SQLCover.UnitTests.Source
         [TestCase(SqlServerVersion.Sql110)]
         [TestCase(SqlServerVersion.Sql120)]
         [TestCase(SqlServerVersion.Sql130)]
+        [TestCase(SqlServerVersion.Sql140)]
+        [TestCase(SqlServerVersion.Sql150)]
         public void GetVersion_Detects_SQL_Version(SqlServerVersion expected)
         {
             var gateway = GetGateway(expected);
@@ -46,6 +48,12 @@ namespace SQLCover.UnitTests.Source
                     break;
                 case SqlServerVersion.Sql130:
                     gateway.Setup(p => p.GetString(It.IsAny<string>())).Returns("130");
+                    break;
+                case SqlServerVersion.Sql140:
+                    gateway.Setup(p => p.GetString(It.IsAny<string>())).Returns("140");
+                    break;
+                case SqlServerVersion.Sql150:
+                    gateway.Setup(p => p.GetString(It.IsAny<string>())).Returns("150");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(expected), expected, null);

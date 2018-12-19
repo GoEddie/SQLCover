@@ -104,7 +104,7 @@ namespace SQLCover.IntegrationTests
             
             
             Assert.That(result.CoveredStatementCount, Is.EqualTo(4));
-            Assert.That(result.StatementCount, Is.EqualTo(22));
+            Assert.That(result.StatementCount, Is.EqualTo(24));
             var xml = result.OpenCoverXml();
 
         }
