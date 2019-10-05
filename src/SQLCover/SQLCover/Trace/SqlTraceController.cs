@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using SQLCover.Gateway;
 
@@ -8,7 +9,6 @@ namespace SQLCover.Trace
 {
     class SqlTraceController : TraceController
     {
-        
         private const string CreateTrace = @"CREATE EVENT SESSION [{0}] ON SERVER 
 ADD EVENT sqlserver.sp_statement_starting(action (sqlserver.plan_handle, sqlserver.tsql_stack) where ([sqlserver].[database_id]=({1})))
 ADD TARGET package0.asynchronous_file_target(
@@ -29,21 +29,30 @@ WITH (MAX_MEMORY=100 MB,EVENT_RETENTION_MODE=NO_EVENT_LOSS,MAX_DISPATCH_LATENCY=
 FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
 
         private const string GetLogDir = @"EXEC xp_readerrorlog 0, 1, N'Logging SQL Server messages in file'";
-        
+
         public SqlTraceController(DatabaseGateway gateway, string databaseName) : base(gateway, databaseName)
         {
-            
         }
 
         private void Create()
         {
-            var logDir = Gateway.GetRecords(GetLogDir).Rows[0].ItemArray[2].ToString();
-            if (string.IsNullOrEmpty(logDir))
+            string logDir = null;
+            try
             {
-                throw new InvalidOperationException("Unable to use xp_readerrorlog to find log directory to write extended event file");
+                logDir = Gateway.GetRecords(GetLogDir).Rows[0].ItemArray[2].ToString();
+            }
+            catch (SqlException sqlEx)
+            {
+                // handle SqlException: Failed to open loopback connection.Please see event log for more information. Error log location not found.
+                if (sqlEx.Message.IndexOf("Error log location not found.", StringComparison.OrdinalIgnoreCase) == -1) throw;
             }
 
+            // default logDir to TempPath/SqlTraceController if null
+            logDir = logDir ?? Path.Combine(Path.GetTempPath(), nameof(SqlTraceController));
+            if (!Directory.Exists(logDir)) { Directory.CreateDirectory(logDir); }
+
             logDir = logDir.ToUpper().Replace("Logging SQL Server messages in file '".ToUpper(), "").Replace("'", "").Replace("ERRORLOG.", "").Replace("ERROR.LOG", "");
+
             FileName = Path.Combine(logDir, Name);
 
             RunScript(CreateTrace, "Error creating the extended events trace, error: {0}");
@@ -69,7 +78,6 @@ FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
                 events.Add(row.ItemArray[0].ToString());
             }
 
-
             return events;
         }
 
@@ -87,7 +95,5 @@ FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
             {
             }
         }
-
-        
     }
 }
