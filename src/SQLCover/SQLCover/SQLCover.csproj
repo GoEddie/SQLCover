@@ -76,6 +76,7 @@
     <Compile Include="SqlCoverException.cs" />
     <Compile Include="StatementChecker.cs" />
     <Compile Include="Trace\AzureTraceController.cs" />
+    <Compile Include="Trace\SqlLocalDbTraceController.cs" />
     <Compile Include="Trace\SqlTraceController.cs" />
     <Compile Include="Trace\TraceController.cs" />
     <Compile Include="Trace\TraceControllerBuilder.cs" />

@@ -35,7 +35,7 @@ FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
             
         }
 
-        private void Create()
+        protected virtual void Create()
         {
             var logDir = Gateway.GetRecords(GetLogDir).Rows[0].ItemArray[2].ToString();
             if (string.IsNullOrEmpty(logDir))
