@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using SQLCover.Objects;
 using SQLCover.Parsers;
@@ -154,11 +155,12 @@ namespace SQLCover
         /// http://cobertura.sourceforge.net/xml/coverage-03.dtd
         /// </summary>
         /// <returns></returns>
-        public string Cobertura(string packageName = "sql", Func<Batch, string> getFilename = null)
+        public string Cobertura(string packageName = "sql", Action<CustomCoverageUpdateParameter> customCoverageUpdater = null)
         {
             var statements = _batches.Sum(p => p.StatementCount);
             var coveredStatements = _batches.Sum(p => p.CoveredStatementCount);
 
+            // gen coverage header
             var builder = new StringBuilder();
             builder.AppendLine(Unquote($@"<?xml version='1.0'?>
 <!--DOCTYPE coverage SYSTEM 'http://cobertura.sourceforge.net/xml/coverage-03.dtd'-->
@@ -172,25 +174,32 @@ namespace SQLCover
             {
                 var lines = file.Sum(b => b.StatementCount);
                 var coveredLines = file.Sum(b => b.CoveredStatementCount);
-                var anyBatch = file.First();
-                var objectName = anyBatch.ObjectName.ToLower();
-                var filename = getFilename?.Invoke(anyBatch) ?? anyBatch.FileName;
-                filename = filename.Replace(@"\", "/");
 
+                var anyBatch = file.First();
+                var coverageUpdateParam = new CustomCoverageUpdateParameter() { Batch = anyBatch };
+                customCoverageUpdater?.Invoke(coverageUpdateParam);
+
+                var objectName = anyBatch.ObjectName;
+                var filename = anyBatch.FileName;
+
+                // gen file header
                 builder.AppendLine(Unquote($"    <class name='{objectName}' filename='{filename}' lines-valid='{lines}' lines-covered='{coveredLines}' line-rate='{coveredLines / (float)lines}' >"));
                 builder.AppendLine("     <methods/>");
                 builder.AppendLine("     <lines>");
 
+                // gen lines info
                 foreach (var line in file.SelectMany(batch => batch.Statements))
                 {
-                    var offsetInfo = GetOffsets(line.Offset, line.Length, anyBatch.Text);
+                    var offsetInfo = GetOffsets(line.Offset + coverageUpdateParam.OffsetCorrection, line.Length, anyBatch.Text, lineStart: 1 + coverageUpdateParam.LineCorrection);
                     builder.AppendLine(Unquote($"      <line number='{offsetInfo.StartLine}' hits='{line.HitCount}' branch='false' />"));
                 }
 
+                // gen file footer
                 builder.AppendLine("     </lines>");
                 builder.AppendLine("    </class>");
             }
 
+            // gen coverage footer
             builder.AppendLine(@"
    </classes>
   </package>
@@ -294,12 +303,12 @@ namespace SQLCover
         private OpenCoverOffsets GetOffsets(Statement statement, string text)
             => GetOffsets(statement.Offset, statement.Length, text);
 
-        private OpenCoverOffsets GetOffsets(int offset, int length, string text)
+        private OpenCoverOffsets GetOffsets(int offset, int length, string text, int lineStart = 1)
         {
             var offsets = new OpenCoverOffsets();
 
             var column = 1;
-            var line = 1;
+            var line = lineStart;
             var index = 0;
 
             while (index < text.Length)
@@ -347,5 +356,12 @@ namespace SQLCover
         public int EndLine;
         public int StartColumn;
         public int EndColumn;
+    }
+
+    public class CustomCoverageUpdateParameter
+    {
+        public Batch Batch { get; internal set; }
+        public int LineCorrection { get; set; } = 0;
+        public int OffsetCorrection { get; set; } = 0;
     }
 }
