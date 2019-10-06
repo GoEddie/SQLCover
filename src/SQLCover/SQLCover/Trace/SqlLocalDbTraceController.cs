@@ -15,6 +15,8 @@ namespace SQLCover.Trace
             if (!Directory.Exists(logDir)) { Directory.CreateDirectory(logDir); }
 
             this.FileName = Path.Combine(logDir, Name);
+
+            RunScript(CreateTrace, "Error creating the extended events trace, error: {0}");
         }
     }
 }

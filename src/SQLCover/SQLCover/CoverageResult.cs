@@ -163,7 +163,7 @@ namespace SQLCover
             builder.Append("<?xml version=\"1.0\"?>");
             builder.Append("<!--DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-03.dtd\"-->");
             builder.AppendFormat("<coverage lines-valid=\"{0}\" lines-covered=\"{1}\" line-rate=\"{2}\" branch-rate=\"0.0\" version=\"1.9\" timestamp=\"{3}\">", statements, coveredStatements,coveredStatements / (float)statements, (DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds);
-            builder.Append("<coverage>\r\n");
+            builder.Append("</coverage>\r\n");
 
             return builder.ToString();
 

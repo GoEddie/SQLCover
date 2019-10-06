@@ -9,7 +9,7 @@ namespace SQLCover.Trace
     class SqlTraceController : TraceController
     {
         
-        private const string CreateTrace = @"CREATE EVENT SESSION [{0}] ON SERVER 
+        protected const string CreateTrace = @"CREATE EVENT SESSION [{0}] ON SERVER 
 ADD EVENT sqlserver.sp_statement_starting(action (sqlserver.plan_handle, sqlserver.tsql_stack) where ([sqlserver].[database_id]=({1})))
 ADD TARGET package0.asynchronous_file_target(
      SET filename='{2}')
