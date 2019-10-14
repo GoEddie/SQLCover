@@ -62,11 +62,12 @@ namespace SQLCover
             _source = new DatabaseSourceGateway(_database);
         }
 
-        public bool Start()
+        public bool Start(int timeOut = 30)
         {
             Exception = null;
             try
             {
+                _database.TimeOut = timeOut;
                 _trace = new TraceControllerBuilder().GetTraceController(_database, _databaseName, _traceType);
                 _trace.Start();
                 IsStarted = true;
@@ -112,16 +113,19 @@ namespace SQLCover
                 Console.WriteLine(message, args);
         }
 
-        public CoverageResult Cover(string command, int timeOut =30)
+        public CoverageResult Cover(string command, int timeOut = 30)
         {
 
-        Debug("Starting Code Coverage");
+            Debug("Starting Code Coverage");
+
+            _database.TimeOut = timeOut;
 
             if (!Start())
             {
                 throw new SqlCoverException("Unable to start the trace - errors are recorded in the debug output");
 
             }
+
             Debug("Starting Code Coverage...Done");
 
             Debug("Executing Command: {0}", command);

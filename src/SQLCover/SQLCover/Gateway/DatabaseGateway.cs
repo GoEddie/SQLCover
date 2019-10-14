@@ -12,12 +12,15 @@ namespace SQLCover.Gateway
         private readonly SqlConnectionStringBuilder _connectionStringBuilder;
         public string DataSource { get { return _connectionStringBuilder.DataSource; } }
 
+        public int TimeOut { get; set; }
+
         public DatabaseGateway()
         {
             //for mocking.
         }
         public DatabaseGateway(string connectionString, string databaseName)
         {
+            TimeOut = 30;
             _connectionString = connectionString;
             _databaseName = databaseName;
             _connectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
@@ -32,6 +35,7 @@ namespace SQLCover.Gateway
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = query;
+                    cmd.CommandTimeout = TimeOut;
 
                     var scalarResult = cmd.ExecuteScalar();
 
@@ -51,6 +55,7 @@ namespace SQLCover.Gateway
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = query;
+                    cmd.CommandTimeout = TimeOut;
                     using (var reader = cmd.ExecuteReader())
                     {
                         var ds = new DataTable();
@@ -69,6 +74,7 @@ namespace SQLCover.Gateway
                 conn.ChangeDatabase(_databaseName);
                 using (var cmd = conn.CreateCommand())
                 {
+                    cmd.CommandTimeout = TimeOut;
                     cmd.CommandText = query;
                     using (var reader = cmd.ExecuteReader())
                     {
