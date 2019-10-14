@@ -92,7 +92,32 @@ namespace SQLCover
 
             var builder = new StringBuilder();
 
-            builder.Append("<html><title>SQLCover Code Coverage Results</title></head>\r\n<body>");
+            builder.Append(@"<html>
+<head>
+    <title>SQLCover Code Coverage Results</title>
+    <style>
+     
+        html{
+            font-family: ""Roboto"",""Helvetica Neue"",Arial,Sans-serif;
+            font-size: 100%;
+            line-height: 26px;
+            word-break: break-word;
+        }
+        
+        i{
+            border: solid black;
+            border-width: 0 3px 3px 0;
+            display: inline-block;
+            padding: 3px;
+        }
+
+        .up {
+            transform: rotate(-135deg);
+            -webkit-transform: rotate(-135deg);
+        }
+    </style>
+</head>
+<body id=""top"">");
             builder.Append(
                 "<table><thead><td>object name</td><td>statement count</td><td>covered statement count</td><td>coverage %</td></thead>");
 
@@ -131,7 +156,7 @@ namespace SQLCover
                     }
                 }
 
-                builder.Append(tempBuffer + "</div></a></pre>");
+                builder.Append(tempBuffer + "</div></a></pre><a href=\"#top\"><i class=\"up\"></i></a>");
             }
 
 
