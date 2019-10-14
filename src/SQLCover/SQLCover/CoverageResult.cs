@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
-using System.Windows.Forms.VisualStyles;
 using SQLCover.Objects;
 using SQLCover.Parsers;
 
@@ -53,7 +52,7 @@ namespace SQLCover
             CoveredStatementCount = _batches.Sum(p => p.CoveredStatementCount);
             StatementCount = _batches.Sum(p => p.StatementCount);
             HitCount = _batches.Sum(p => p.HitCount);
-            
+
 
         }
 
@@ -98,17 +97,17 @@ namespace SQLCover
                 "<table><thead><td>object name</td><td>statement count</td><td>covered statement count</td><td>coverage %</td></thead>");
 
             builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3:0.00}</td></tr>", "<b>Total</b>",
-                statements, coveredStatements, (float) coveredStatements / (float) statements * 100.0);
+                statements, coveredStatements, (float)coveredStatements / (float)statements * 100.0);
 
             foreach (
                 var batch in
                 _batches.Where(p => !p.ObjectName.Contains("tSQLt"))
-                    .OrderByDescending(p => (float) p.CoveredStatementCount / (float) p.StatementCount))
+                    .OrderByDescending(p => (float)p.CoveredStatementCount / (float)p.StatementCount))
             {
                 builder.AppendFormat(
                     "<tr><td><a href=\"#{0}\">{0}</a></td><td>{1}</td><td>{2}</td><td>{3:0.00}</td></tr>",
                     batch.ObjectName, batch.StatementCount, batch.CoveredStatementCount,
-                    (float) batch.CoveredStatementCount / (float) batch.StatementCount * 100.0);
+                    (float)batch.CoveredStatementCount / (float)batch.StatementCount * 100.0);
             }
 
             builder.Append("</table>");
@@ -154,20 +153,61 @@ namespace SQLCover
         /// http://cobertura.sourceforge.net/xml/coverage-03.dtd
         /// </summary>
         /// <returns></returns>
-        public string Cobertura()
+        public string Cobertura(string packageName = "sql", Action<CustomCoverageUpdateParameter> customCoverageUpdater = null)
         {
             var statements = _batches.Sum(p => p.StatementCount);
             var coveredStatements = _batches.Sum(p => p.CoveredStatementCount);
 
+            // gen coverage header
             var builder = new StringBuilder();
-            builder.Append("<?xml version=\"1.0\"?>");
-            builder.Append("<!--DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-03.dtd\"-->");
-            builder.AppendFormat("<coverage lines-valid=\"{0}\" lines-covered=\"{1}\" line-rate=\"{2}\" branch-rate=\"0.0\" version=\"1.9\" timestamp=\"{3}\">", statements, coveredStatements,coveredStatements / (float)statements, (DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds);
-            builder.Append("<coverage>\r\n");
+            builder.AppendLine(Unquote($@"<?xml version='1.0'?>
+<!--DOCTYPE coverage SYSTEM 'http://cobertura.sourceforge.net/xml/coverage-03.dtd'-->
+<coverage lines-valid='{statements}' lines-covered='{coveredStatements}' line-rate='{coveredStatements / (float)statements}' version='1.9' timestamp='{(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds}'>
+ <packages>
+  <package name='{packageName}'>
+    <classes>"));
+
+            var fileMap = _batches.GroupBy(b => b.ObjectName, StringComparer.OrdinalIgnoreCase);
+            foreach (var file in fileMap)
+            {
+                var lines = file.Sum(b => b.StatementCount);
+                var coveredLines = file.Sum(b => b.CoveredStatementCount);
+
+                var anyBatch = file.First();
+                var coverageUpdateParam = new CustomCoverageUpdateParameter() { Batch = anyBatch };
+                customCoverageUpdater?.Invoke(coverageUpdateParam);
+
+                var objectName = anyBatch.ObjectName;
+                var filename = anyBatch.FileName;
+
+                // gen file header
+                builder.AppendLine(Unquote($"    <class name='{objectName}' filename='{filename}' lines-valid='{lines}' lines-covered='{coveredLines}' line-rate='{coveredLines / (float)lines}' >"));
+                builder.AppendLine("     <methods/>");
+                builder.AppendLine("     <lines>");
+
+                // gen lines info
+                foreach (var line in file.SelectMany(batch => batch.Statements))
+                {
+                    var offsetInfo = GetOffsets(line.Offset + coverageUpdateParam.OffsetCorrection, line.Length, anyBatch.Text, lineStart: 1 + coverageUpdateParam.LineCorrection);
+                    builder.AppendLine(Unquote($"      <line number='{offsetInfo.StartLine}' hits='{line.HitCount}' branch='false' />"));
+                }
+
+                // gen file footer
+                builder.AppendLine("     </lines>");
+                builder.AppendLine("    </class>");
+            }
+
+            // gen coverage footer
+            builder.AppendLine(@"
+   </classes>
+  </package>
+ </packages>
+</coverage>");
 
             return builder.ToString();
-
         }
+
+        private static string Unquote(string quotedStr) => quotedStr.Replace("'", "\"");
 
         public string OpenCoverXml()
         {
@@ -179,7 +219,7 @@ namespace SQLCover
             builder.AppendFormat(
                 "<CoverageSession xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                 "<Summary numSequencePoints=\"{0}\" visitedSequencePoints=\"{1}\" numBranchPoints=\"0\" visitedBranchPoints=\"0\" sequenceCoverage=\"{2}\" branchCoverage=\"0.0\" maxCyclomaticComplexity=\"0\" minCyclomaticComplexity=\"0\" /><Modules>\r\n"
-                , statements, coveredStatements, coveredStatements / (float) statements * 100.0);
+                , statements, coveredStatements, coveredStatements / (float)statements * 100.0);
 
             builder.Append("<Module hash=\"ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE\">");
             builder.AppendFormat("<FullName>{0}</FullName>", DatabaseName);
@@ -206,19 +246,19 @@ namespace SQLCover
                 builder.AppendFormat(
                     "<Class><Summary numSequencePoints=\"{0}\" visitedSequencePoints=\"{1}\" numBranchPoints=\"0\" visitedBranchPoints=\"0\" sequenceCoverage=\"{2}\" branchCoverage=\"0\" maxCyclomaticComplexity=\"0\" minCyclomaticComplexity=\"0\" /><FullName>{3}</FullName><Methods>"
                     , batch.Statements.Count, batch.CoveredStatementCount,
-                    (float) batch.CoveredStatementCount / (float) batch.StatementCount * 100.0
+                    (float)batch.CoveredStatementCount / (float)batch.StatementCount * 100.0
                     , batch.ObjectName);
 
 
                 builder.AppendFormat(
                     "\t\t<Method visited=\"{0}\" cyclomaticComplexity=\"0\" sequenceCoverage=\"{1}\" branchCoverage=\"0\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"true\" isSetter=\"false\">\r\n",
                     batch.CoveredStatementCount > 0 ? "true" : "false",
-                    batch.CoveredStatementCount / (float) batch.StatementCount * 100.0);
+                    batch.CoveredStatementCount / (float)batch.StatementCount * 100.0);
 
                 builder.AppendFormat(
                     "\t\t<Summary numSequencePoints=\"{1}\" visitedSequencePoints=\"0\" numBranchPoints=\"0\" visitedBranchPoints=\"0\" sequenceCoverage=\"{2}\" branchCoverage=\"0\" maxCyclomaticComplexity=\"0\" minCyclomaticComplexity=\"0\" />\r\n",
                     batch.StatementCount, batch.CoveredStatementCount,
-                    batch.CoveredStatementCount / (float) batch.StatementCount * 100.0);
+                    batch.CoveredStatementCount / (float)batch.StatementCount * 100.0);
 
 
                 builder.AppendFormat(
@@ -259,11 +299,14 @@ namespace SQLCover
         }
 
         private OpenCoverOffsets GetOffsets(Statement statement, string text)
+            => GetOffsets(statement.Offset, statement.Length, text);
+
+        private OpenCoverOffsets GetOffsets(int offset, int length, string text, int lineStart = 1)
         {
             var offsets = new OpenCoverOffsets();
 
             var column = 1;
-            var line = 1;
+            var line = lineStart;
             var index = 0;
 
             while (index < text.Length)
@@ -276,13 +319,13 @@ namespace SQLCover
                         break;
                     default:
 
-                        if (index == statement.Offset)
+                        if (index == offset)
                         {
                             offsets.StartLine = line;
                             offsets.StartColumn = column;
                         }
 
-                        if (index == statement.Offset + statement.Length)
+                        if (index == offset + length)
                         {
                             offsets.EndLine = line;
                             offsets.EndColumn = column;
@@ -311,5 +354,12 @@ namespace SQLCover
         public int EndLine;
         public int StartColumn;
         public int EndColumn;
+    }
+
+    public class CustomCoverageUpdateParameter
+    {
+        public Batch Batch { get; internal set; }
+        public int LineCorrection { get; set; } = 0;
+        public int OffsetCorrection { get; set; } = 0;
     }
 }

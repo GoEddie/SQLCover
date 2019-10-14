@@ -16,6 +16,8 @@ namespace SQLCover.Trace
                     return new AzureTraceController(gateway, databaseName);
                 case TraceControllerType.Sql:
                     return new SqlTraceController(gateway, databaseName);
+                case TraceControllerType.SqlLocalDb:
+                    return new SqlLocalDbTraceController(gateway, databaseName);
             }
 
             var source = new DatabaseSourceGateway(gateway);
@@ -37,6 +39,7 @@ namespace SQLCover.Trace
         Default,
         Sql,
         Azure,
-        Exp
+        Exp,
+        SqlLocalDb
     }
 }
