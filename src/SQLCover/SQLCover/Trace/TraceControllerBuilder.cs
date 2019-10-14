@@ -1,5 +1,4 @@
 using System;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
 using SQLCover.Gateway;
 using SQLCover.Objects;
 using SQLCover.Source;
@@ -10,6 +9,8 @@ namespace SQLCover.Trace
     {
         public TraceController GetTraceController(DatabaseGateway gateway, string databaseName, TraceControllerType type)
         {
+
+         
             switch(type)
             {
                 case TraceControllerType.Azure:
@@ -21,6 +22,13 @@ namespace SQLCover.Trace
             }
 
             var source = new DatabaseSourceGateway(gateway);
+
+            if (LooksLikeLocalDb(gateway.DataSource))
+            {
+                return new SqlLocalDbTraceController(gateway, databaseName);
+            }
+
+
             var isAzure = source.IsAzure();
 
             if(!isAzure)
@@ -31,6 +39,11 @@ namespace SQLCover.Trace
                 throw  new Exception("SQL Azure is only supported from Version 12");
 
             return new AzureTraceController(gateway, databaseName);
+        }
+
+        private bool LooksLikeLocalDb(string dataSource)
+        {
+            return dataSource.ToLowerInvariant().Contains("(localdb)");
         }
     }
 
