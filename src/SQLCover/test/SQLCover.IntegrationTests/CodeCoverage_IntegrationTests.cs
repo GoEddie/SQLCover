@@ -165,7 +165,7 @@ namespace SQLCover.IntegrationTests
             }
 
             var result = coverage.Stop();
-
+            System.IO.File.WriteAllText(@"C:\git\SQLCover\src\SQLCover\test\SQLCover.IntegrationTests\bin\Debug\top.html", result.Html2());
             Assert.AreEqual(5, result.CoveredStatementCount);   //not sure why SET QUOTED_IDENTIFIER ON is not covered - don't get xevent on 2008
         }
 

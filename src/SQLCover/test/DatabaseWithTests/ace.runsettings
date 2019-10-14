@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+<TestRunParameters> 
+<Parameter name="TestDatabaseConnectionString" value="server=.;initial catalog=tSQLt_Example;uid=sas;pwd=helloThere!" /> 
+<!-- <Parameter name="IncludePath" value="AcceleratorTests" /> -->
+</TestRunParameters> 
+</RunSettings>
