@@ -5,8 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using SQLCover.Objects;
 using SQLCover.Parsers;
 
