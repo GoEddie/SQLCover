@@ -18,6 +18,10 @@ namespace SQLCover
         public string DatabaseName { get; }
         public string DataSource { get; }
 
+        public List<string> SqlExceptions
+        {
+            get { return _sqlExceptions; }
+        }
         private readonly StatementChecker _statementChecker = new StatementChecker();
 
         public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string dataSource, List<string> sqlExceptions)
@@ -88,7 +92,7 @@ namespace SQLCover
 
                 foreach (var e in _sqlExceptions)
                 {
-                    builder.AppendFormat("\t<SqlException>{0}</SqlException>", e);
+                    builder.AppendFormat("\t<SqlException>{0}</SqlException>", XmlTextEncoder.Encode(e));
                 }
 
                 builder.Append("</SqlExceptions>");
@@ -195,87 +199,7 @@ namespace SQLCover
 
             return builder.ToString();
         }
-
-        public string Html2()
-        {
-            string GetHeader()
-            {
-                return @"
-<html>
-    <head>
-        <title>SQLCover Code Coverage Results</title>
-        <link media=""all"" rel=""stylesheet"" href=""SQLCover.css"" />
-        <style>
-            i{
-                border: solid black;
-                border-width: 0 3px 3px 0;
-                display: inline-block;
-                padding: 3px;
-              }
-  
-              .up {
-                transform: rotate(-135deg);
-                -webkit-transform: rotate(-135deg);
-              }
-
-        </style>
-    </head>
-";
-            }
-
-            var statements = _batches.Sum(p => p.StatementCount);
-            var coveredStatements = _batches.Sum(p => p.CoveredStatementCount);
-
-            var builder = new StringBuilder();
-
-            builder.Append($"{GetHeader()}\r\n<body id=\"top\">");
-            builder.Append(
-                "<table class=\"summary-table\"><thead class=\"header\"><td>object name</td><td>statement count</td><td>covered statement count</td><td>coverage %</td></thead>");
-
-            builder.AppendFormat("<tr class=\"summary-row total\"><td>{0}</td><td>{1}</td><td>{2}</td><td>{3:0.00}</td></tr>", "Total",
-                statements, coveredStatements, (float)coveredStatements / (float)statements * 100.0);
-
-            foreach (
-                var batch in
-                _batches.Where(p => !p.ObjectName.Contains("tSQLt"))
-                    .OrderByDescending(p => (float)p.CoveredStatementCount / (float)p.StatementCount))
-            {
-                builder.AppendFormat(
-                    "<tr class=\"summary-row\"><td><a href=\"#{0}\">{0}</a></td><td>{1}</td><td>{2}</td><td>{3:0.00}</td></tr>",
-                    batch.ObjectName, batch.StatementCount, batch.CoveredStatementCount,
-                    (float)batch.CoveredStatementCount / (float)batch.StatementCount * 100.0);
-            }
-
-            builder.Append("</table>");
-
-            foreach (var b in _batches)
-            {
-                builder.AppendFormat("<pre><a name=\"{0}\"><div class=\"batch\">", b.ObjectName);
-
-                var tempBuffer = b.Text;
-                foreach (var statement in b.Statements.OrderByDescending(p => p.Offset))
-                {
-                    if (statement.HitCount > 0)
-                    {
-                        var start = tempBuffer.Substring(0, statement.Offset + statement.Length);
-                        var end = tempBuffer.Substring(statement.Offset + statement.Length);
-                        tempBuffer = start + "</span>" + end;
-
-                        start = tempBuffer.Substring(0, statement.Offset);
-                        end = tempBuffer.Substring(statement.Offset);
-                        tempBuffer = start + "<span class=\"covered-statement\" style=\"background-color: greenyellow\">" + end;
-                    }
-                }
-
-                builder.Append(tempBuffer + "</div></a></pre><a href=\"#top\"><i class=\"up\"></i></a>");
-            }
-            //
-
-            builder.AppendFormat("</body></html>");
-
-            return builder.ToString();
-        }
-
+        
         public void SaveSourceFiles(string path)
         {
             foreach (var batch in _batches)
