@@ -102,7 +102,7 @@ namespace SQLCover
 
             var results = StopInternal();
 
-            GenerateResults(_excludeFilter, results, new List<string>());
+            GenerateResults(_excludeFilter, results, new List<string>(), "SQLCover result of running external process");
 
             return _result;
         }
@@ -159,7 +159,7 @@ namespace SQLCover
                 Debug("Stopping Code Coverage...done");
 
                 Debug("Getting Code Coverage Result");
-                GenerateResults(_excludeFilter, rawEvents, sqlExceptions);
+                GenerateResults(_excludeFilter, rawEvents, sqlExceptions, $"SQLCover result of running '{command}'");
                 Debug("Getting Code Coverage Result..done");
             }
             catch (Exception e)
@@ -188,7 +188,7 @@ namespace SQLCover
                 Debug("Stopping Code Coverage...done");
 
                 Debug("Getting Code Coverage Result");
-                GenerateResults(_excludeFilter, rawEvents, new List<string>());
+                GenerateResults(_excludeFilter, rawEvents, new List<string>(), $"SQLCover result of running {exe} {args}");
                 Debug("Getting Code Coverage Result..done");
                 
             }
@@ -218,10 +218,10 @@ namespace SQLCover
         }
 
 
-        private void GenerateResults(List<string> filter, List<string> xml, List<string> sqlExceptions)
+        private void GenerateResults(List<string> filter, List<string> xml, List<string> sqlExceptions, string commandDetail)
         {
             var batches = _source.GetBatches(filter);
-            _result = new CoverageResult(batches, xml, _databaseName, _database.DataSource, sqlExceptions);
+            _result = new CoverageResult(batches, xml, _databaseName, _database.DataSource, sqlExceptions, commandDetail);
         }
 
         public CoverageResult Results()

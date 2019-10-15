@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security;
+using System.Security.Cryptography;
 using System.Text;
 using SQLCover.Objects;
 using SQLCover.Parsers;
@@ -14,6 +15,7 @@ namespace SQLCover
     {
         private readonly IEnumerable<Batch> _batches;
         private readonly List<string> _sqlExceptions;
+        private readonly string _commandDetail;
 
         public string DatabaseName { get; }
         public string DataSource { get; }
@@ -24,10 +26,11 @@ namespace SQLCover
         }
         private readonly StatementChecker _statementChecker = new StatementChecker();
 
-        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string dataSource, List<string> sqlExceptions)
+        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string dataSource, List<string> sqlExceptions, string commandDetail)
         {
             _batches = batches;
             _sqlExceptions = sqlExceptions;
+            _commandDetail = $"{commandDetail} at {DateTime.Now}";
             DatabaseName = database;
             DataSource = dataSource;
             var parser = new EventsParser(xml);
@@ -134,9 +137,25 @@ namespace SQLCover
             transform: rotate(-135deg);
             -webkit-transform: rotate(-135deg);
         }
+
+        .covered-statement{
+            background-color: greenyellow;
+        }
+            
+        table{
+            background-color: lightgrey;
+        }
+
+        thead{
+            background-color: gray;
+            color: whitesmoke;
+        }
     </style>
-</head>
+    <link media=""all"" rel=""stylesheet"" type=""text/css"" href=""sqlcover.css"" />
+  
+</ head>
 <body id=""top"">");
+            builder.Append($"<h2 class=\"header\">{_commandDetail}</h2>");
             builder.Append(
                 "<table><thead><td>object name</td><td>statement count</td><td>covered statement count</td><td>coverage %</td></thead>");
 
@@ -158,7 +177,7 @@ namespace SQLCover
 
             if (_sqlExceptions.Count > 0)
             {
-                builder.Append("<div class=\"warning\">There were sql exceptions running the batch, see <a href=\"#sql-exceptions\">here</a>");
+                builder.Append("<div class=\"sql-exceptions\">There were sql exceptions running the batch, see <a href=\"#sql-exceptions\">here</a></div>");
             }
 
             foreach (var b in _batches)
@@ -176,7 +195,7 @@ namespace SQLCover
 
                         start = tempBuffer.Substring(0, statement.Offset);
                         end = tempBuffer.Substring(statement.Offset);
-                        tempBuffer = start + "<span style=\"background-color: greenyellow\">" + end;
+                        tempBuffer = start + "<span class=\"covered-statement\">" + end;
                     }
                 }
 
@@ -189,10 +208,10 @@ namespace SQLCover
 
                 foreach (var e in _sqlExceptions)
                 {
-                    builder.AppendFormat("\t<p class=\"sql-exception\">{0}</p>", e);
+                    builder.AppendFormat("\t<pre class=\"sql-exception\">{0}</pre>", e);
                 }
 
-                builder.Append("</div></a><a href=\"#top\"><i class=\"up\"></i></a>");
+                builder.Append("</div></a><a href=\"#top\"><i class=\"up sql-exceptions\"></i></a>");
             }
 
             builder.AppendFormat("</body></html>");
