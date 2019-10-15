@@ -84,7 +84,7 @@ namespace SQLCover
 
             if (_sqlExceptions.Count > 0)
             {
-                builder.Append("<SqlException>");
+                builder.Append("<SqlExceptions>");
 
                 foreach (var e in _sqlExceptions)
                 {
