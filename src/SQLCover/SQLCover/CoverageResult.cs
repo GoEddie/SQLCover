@@ -47,7 +47,7 @@ namespace SQLCover
                     {
                         item.HitCount++;
                     }
-                } //254084
+                }
 
                 statement = parser.GetNextStatement();
             }
@@ -182,8 +182,10 @@ namespace SQLCover
 
             foreach (var b in _batches)
             {
-                builder.AppendFormat("<pre><a name=\"{0}\"><div class=\"batch\">", b.ObjectName);
-
+                builder.AppendFormat("<a name=\"{0}\"><div class=\"batch\">", b.ObjectName);
+                builder.AppendFormat("<div><p class=\"batch-summary\">'{3}' summary: statement count: {0}, covered statement count: {1}, coverage %: {2}</p></div>", b.StatementCount, b.CoveredStatementCount,
+                    (float) b.CoveredStatementCount / (float) b.StatementCount, b.ObjectName);
+                builder.Append("<pre>");
                 var tempBuffer = b.Text;
                 foreach (var statement in b.Statements.OrderByDescending(p => p.Offset))
                 {
