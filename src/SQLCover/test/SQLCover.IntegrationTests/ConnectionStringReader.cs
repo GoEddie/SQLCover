@@ -55,7 +55,8 @@ namespace SQLCover.IntegrationTests
             else
             {
                 // var connectionString = $"Server=np:{GetPipeName()};integrated security=sspi;initial catalog=DatabaseProject";
-                var connectionString = $"Server=tcp:{GetContainerIP()};uid=sa;pwd=Psgsgsfsfs!!!!!;initial catalog=DatabaseProject";
+                //var connectionString = $"Server=tcp:{GetContainerIP()};uid=sa;pwd=Psgsgsfsfs!!!!!;initial catalog=DatabaseProject";
+                var connectionString = "Server=(localdb)\\SQLCover;integrated security=SSPI;initial catalog=DatabaseProject";
                 return connectionString;
             }
         }

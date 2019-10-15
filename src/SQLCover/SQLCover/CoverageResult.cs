@@ -137,19 +137,92 @@ namespace SQLCover
             transform: rotate(-135deg);
             -webkit-transform: rotate(-135deg);
         }
+    </style>
+</head>
+<body id=""top"">");
+            builder.Append(
+                "<table><thead><td>object name</td><td>statement count</td><td>covered statement count</td><td>coverage %</td></thead>");
+
+            builder.AppendFormat("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3:0.00}</td></tr>", "<b>Total</b>",
+                statements, coveredStatements, (float)coveredStatements / (float)statements * 100.0);
+
+            foreach (
+                var batch in
+                _batches.Where(p => !p.ObjectName.Contains("tSQLt"))
+                    .OrderByDescending(p => (float)p.CoveredStatementCount / (float)p.StatementCount))
+            {
+                builder.AppendFormat(
+                    "<tr><td><a href=\"#{0}\">{0}</a></td><td>{1}</td><td>{2}</td><td>{3:0.00}</td></tr>",
+                    batch.ObjectName, batch.StatementCount, batch.CoveredStatementCount,
+                    (float)batch.CoveredStatementCount / (float)batch.StatementCount * 100.0);
+            }
+
+            builder.Append("</table>");
+
+            foreach (var b in _batches)
+            {
+                builder.AppendFormat("<pre><a name=\"{0}\"><div class=\"batch\">", b.ObjectName);
+
+                var tempBuffer = b.Text;
+                foreach (var statement in b.Statements.OrderByDescending(p => p.Offset))
+                {
+                    if (statement.HitCount > 0)
+                    {
+                        var start = tempBuffer.Substring(0, statement.Offset + statement.Length);
+                        var end = tempBuffer.Substring(statement.Offset + statement.Length);
+                        tempBuffer = start + "</span>" + end;
+
+                        start = tempBuffer.Substring(0, statement.Offset);
+                        end = tempBuffer.Substring(statement.Offset);
+                        tempBuffer = start + "<span style=\"background-color: greenyellow\">" + end;
+                    }
+                }
+
+                builder.Append(tempBuffer + "</div></a></pre><a href=\"#top\"><i class=\"up\"></i></a>");
+            }
+
+
+            builder.AppendFormat("</body></html>");
+
+            return builder.ToString();
+        }
+
+        public string Html2()
+        {
+            var statements = _batches.Sum(p => p.StatementCount);
+            var coveredStatements = _batches.Sum(p => p.CoveredStatementCount);
+
+            var builder = new StringBuilder();
+
+            builder.Append(@"<html>
+<head>
+    <title>SQLCover Code Coverage Results</title>
+    <style>
+     
+        html{
+            font-family: ""Roboto"",""Helvetica Neue"",Arial,Sans-serif;
+            font-size: 100%;
+            line-height: 26px;
+            word-break: break-word;
+        }
+        
+        i{
+            border: solid black;
+            border-width: 0 3px 3px 0;
+            display: inline-block;
+            padding: 3px;
+        }
+
+        .up {
+            transform: rotate(-135deg);
+            -webkit-transform: rotate(-135deg);
+        }
 
         .covered-statement{
             background-color: greenyellow;
         }
             
-        table{
-            background-color: lightgrey;
-        }
-
-        thead{
-            background-color: gray;
-            color: whitesmoke;
-        }
+       
     </style>
     <link media=""all"" rel=""stylesheet"" type=""text/css"" href=""sqlcover.css"" />
   

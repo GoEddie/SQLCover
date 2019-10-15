@@ -124,6 +124,16 @@ function Export-Html{
     $result.SaveSourceFiles($outputPath)    
 }
 
+function Export-Html2{
+    param(        
+        [SQLCover.CoverageResult] $result
+        ,[string]$outputPath
+    )
+
+    $xmlPath = Join-Path -Path $outputPath -ChildPath "Coverage2.html"
+    $result.Html2() | Out-File $xmlPath
+    $result.SaveSourceFiles($outputPath)    
+}
 
 #EXAMPLE:
 <#
