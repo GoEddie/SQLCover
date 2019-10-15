@@ -24,13 +24,7 @@ namespace SQLCover.IntegrationTests
             var source = new DatabaseSourceGateway(databaseGateway);
             var batches = source.GetBatches(null);
 
-
-            foreach (var batch in batches)
-            {
-                Console.WriteLine("batch: {0}", batch.Text);
-            }
-
-            Assert.AreEqual(5, batches.Count());
+            Assert.AreEqual(6, batches.Count());
 
             var proc = batches.FirstOrDefault(p => p.ObjectName == "[dbo].[a_procedure]");
 
@@ -45,13 +39,7 @@ namespace SQLCover.IntegrationTests
             var source = new DatabaseSourceGateway(databaseGateway);
             var batches = source.GetBatches(null);
 
-
-            foreach (var batch in batches)
-            {
-                Console.WriteLine("batch: {0}", batch.Text);
-            }
-
-            Assert.AreEqual(5, batches.Count());
+            Assert.AreEqual(6, batches.Count());
 
             var proc = batches.FirstOrDefault(p => p.ObjectName == "[dbo].[a_large_procedure]");
             
@@ -72,6 +60,22 @@ end", 15);
 
             var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName, null, true, false);
             var results = coverage.Cover("exec enc");
+            //if we dont die we are good
+        }
+        [Test]
+        public void Doesnt_Die_When_Table_Trigger_Code()
+        {
+             var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName, null, true, false);
+            var results = coverage.Cover("insert into a_table select 100");
+            //if we dont die we are good
+        }
+
+
+        [Test]
+        public void Doesnt_Die_When_Database_Trigger_Code()
+        {
+            var coverage = new CodeCoverage(ConnectionStringReader.GetIntegration(), TestDatabaseName, null, true, false);
+            var results = coverage.Cover("create synonym abd for a_table");
             //if we dont die we are good
         }
 
