@@ -829,6 +829,7 @@
     <Build Include="security\login tests.sql" />
     <Build Include="security\security.sql" />
     <Build Include="security\tSQLt.sql" />
+    <Build Include="Accelerator\Stored Procedures\DeclareTableCiShouldNotBeCoverable.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assemblies\tSQLtCLR.dll" />
@@ -844,7 +845,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-  
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac">
       <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\130\SqlSchemas\master.dacpac</HintPath>
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>

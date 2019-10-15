@@ -102,7 +102,7 @@ namespace SQLCover
 
             var results = StopInternal();
 
-            GenerateResults(_excludeFilter, results);
+            GenerateResults(_excludeFilter, results, new List<string>());
 
             return _result;
         }
@@ -130,6 +130,8 @@ namespace SQLCover
 
             Debug("Executing Command: {0}", command);
 
+            var sqlExceptions = new List<string>();
+
             try
             {
                 _database.Execute(command, timeOut); //todo read messages or rowcounts or something
@@ -140,6 +142,8 @@ namespace SQLCover
                 {
                     throw;
                 }
+
+                sqlExceptions.Add(e.Message);
             }
             catch (Exception e)
             {
@@ -155,7 +159,7 @@ namespace SQLCover
                 Debug("Stopping Code Coverage...done");
 
                 Debug("Getting Code Coverage Result");
-                GenerateResults(_excludeFilter, rawEvents);
+                GenerateResults(_excludeFilter, rawEvents, sqlExceptions);
                 Debug("Getting Code Coverage Result..done");
             }
             catch (Exception e)
@@ -184,7 +188,7 @@ namespace SQLCover
                 Debug("Stopping Code Coverage...done");
 
                 Debug("Getting Code Coverage Result");
-                GenerateResults(_excludeFilter, rawEvents);
+                GenerateResults(_excludeFilter, rawEvents, new List<string>());
                 Debug("Getting Code Coverage Result..done");
                 
             }
@@ -214,10 +218,10 @@ namespace SQLCover
         }
 
 
-        private void GenerateResults(List<string> filter, List<string> xml)
+        private void GenerateResults(List<string> filter, List<string> xml, List<string> sqlExceptions)
         {
             var batches = _source.GetBatches(filter);
-            _result = new CoverageResult(batches, xml, _databaseName, _database.DataSource);
+            _result = new CoverageResult(batches, xml, _databaseName, _database.DataSource, sqlExceptions);
         }
 
         public CoverageResult Results()

@@ -13,15 +13,17 @@ namespace SQLCover
     public class CoverageResult : CoverageSummary
     {
         private readonly IEnumerable<Batch> _batches;
+        private readonly List<string> _sqlExceptions;
 
         public string DatabaseName { get; }
         public string DataSource { get; }
 
         private readonly StatementChecker _statementChecker = new StatementChecker();
 
-        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string dataSource)
+        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string dataSource, List<string> sqlExceptions)
         {
             _batches = batches;
+            _sqlExceptions = sqlExceptions;
             DatabaseName = database;
             DataSource = dataSource;
             var parser = new EventsParser(xml);
@@ -79,6 +81,19 @@ namespace SQLCover
 
                 builder.Append("</Batch>");
             }
+
+            if (_sqlExceptions.Count > 0)
+            {
+                builder.Append("<SqlException>");
+
+                foreach (var e in _sqlExceptions)
+                {
+                    builder.AppendFormat("\t<SqlException>{0}</SqlException>", e);
+                }
+
+                builder.Append("</SqlExceptions>");
+            }
+
             builder.Append("\r\n</CodeCoverage>");
             var s = builder.ToString();
 
@@ -137,6 +152,11 @@ namespace SQLCover
 
             builder.Append("</table>");
 
+            if (_sqlExceptions.Count > 0)
+            {
+                builder.Append("<div class=\"warning\">There were sql exceptions running the batch, see <a href=\"#sql-exceptions\">here</a>");
+            }
+
             foreach (var b in _batches)
             {
                 builder.AppendFormat("<pre><a name=\"{0}\"><div class=\"batch\">", b.ObjectName);
@@ -159,6 +179,17 @@ namespace SQLCover
                 builder.Append(tempBuffer + "</div></a></pre><a href=\"#top\"><i class=\"up\"></i></a>");
             }
 
+            if (_sqlExceptions.Count > 0)
+            {
+                builder.Append("<a name=\"sql-exceptions\"><div class=\"sql-exceptions\">");
+
+                foreach (var e in _sqlExceptions)
+                {
+                    builder.AppendFormat("\t<p class=\"sql-exception\">{0}</p>", e);
+                }
+
+                builder.Append("</div></a><a href=\"#top\"><i class=\"up\"></i></a>");
+            }
 
             builder.AppendFormat("</body></html>");
 
