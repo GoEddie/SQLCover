@@ -47,7 +47,6 @@ namespace SQLCover.IntegrationTests
             ///   I know it is weird but simple :)
             var localOverrideFile =  Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ConnectionString.user.config");
 
-
             if (File.Exists(localOverrideFile))
             {
                 return File.ReadAllText(localOverrideFile);
@@ -55,8 +54,8 @@ namespace SQLCover.IntegrationTests
             else
             {
                 // var connectionString = $"Server=np:{GetPipeName()};integrated security=sspi;initial catalog=DatabaseProject";
-                //var connectionString = $"Server=tcp:{GetContainerIP()};uid=sa;pwd=Psgsgsfsfs!!!!!;initial catalog=DatabaseProject";
-                var connectionString = "Server=(localdb)\\SQLCover;integrated security=SSPI;initial catalog=DatabaseProject";
+                var connectionString = $"Server=tcp:{GetContainerIP()};uid=sa;pwd=Psgsgsfsfs!!!!!;initial catalog=DatabaseProject";
+//                var connectionString = "Server=(localdb)\\SQLCover;integrated security=SSPI;initial catalog=DatabaseProject";
                 return connectionString;
             }
         }
