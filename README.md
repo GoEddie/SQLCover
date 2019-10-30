@@ -13,6 +13,8 @@
 [forks]:https://github.com/GoEddie/SQLCover/network
 [issues]:https://github.com/GoEddie/SQLCover/issues
 
+[licence badge]:https://img.shields.io/badge/License-Apache%202.0-blue.svg
+
 ### Redgate
 Thanks to Redgate for supporting this open source project
 
