@@ -64,7 +64,7 @@ public IEnumerable<Batch> GetBatches(List<string> objectFilter)
                 if (name != null && row["object_id"] as int? != null &&  DoesNotMatchFilter(name, objectFilter, excludedObjects))
                 {
                     batches.Add(
-                        new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine(GetDefinition(row)), null, name, (int) row["object_id"]));
+                        new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine(GetDefinition(row)), name, name, (int) row["object_id"]));
 
                 }
                 
