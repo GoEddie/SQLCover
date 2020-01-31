@@ -343,7 +343,9 @@ namespace SQLCover
                 foreach (var line in file.SelectMany(batch => batch.Statements))
                 {
                     var offsetInfo = GetOffsets(line.Offset + coverageUpdateParam.OffsetCorrection, line.Length, anyBatch.Text, lineStart: 1 + coverageUpdateParam.LineCorrection);
-                    builder.AppendLine(Unquote($"      <line number='{offsetInfo.StartLine}' hits='{line.HitCount}' branch='false' />"));
+                    int lNum = offsetInfo.StartLine;
+                    while (lNum <= offsetInfo.EndLine)
+                        builder.AppendLine(Unquote($"      <line number='{lNum++}' hits='{line.HitCount}' branch='false' />"));
                 }
 
                 // gen file footer
