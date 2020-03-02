@@ -9,7 +9,7 @@ namespace SQLCover.Trace
     internal class AzureTraceController : TraceController
     {
         private const string CreateTrace = @"CREATE EVENT SESSION [{0}] ON DATABASE 
-ADD EVENT sqlserver.sp_statement_starting(action (sqlserver.plan_handle, sqlserver.tsql_stack) where ([sqlserver].[database_id]=({1})))
+ADD EVENT sqlserver.sp_statement_starting( where ([sqlserver].[database_id]=({1})))
 add target package0.ring_buffer(set max_memory = 500
 ) /* not file {2}*/
 WITH (EVENT_RETENTION_MODE=ALLOW_MULTIPLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=1 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=NONE,TRACK_CAUSALITY=OFF,STARTUP_STATE=OFF) 
