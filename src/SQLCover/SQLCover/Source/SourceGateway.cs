@@ -8,5 +8,6 @@ namespace SQLCover.Source
         SqlServerVersion GetVersion();
         IEnumerable<Batch> GetBatches(List<string> objectFilter);
         string GetWarnings();
+        Dictionary<string, List<string>> GetSqlGrouping(string sqlGrouping);
     }
 }

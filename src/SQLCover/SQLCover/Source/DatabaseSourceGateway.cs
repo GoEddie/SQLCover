@@ -39,7 +39,7 @@ namespace SQLCover.Source
         }
 
 
-public IEnumerable<Batch> GetBatches(List<string> objectFilter)
+        public IEnumerable<Batch> GetBatches(List<string> objectFilter)
         {
             var table =
                 _databaseGateway.GetRecords(
@@ -78,6 +78,35 @@ public IEnumerable<Batch> GetBatches(List<string> objectFilter)
             }
 
             return batches.Where(p=>p.StatementCount > 0);
+        }
+
+        /**
+         * This can be used to group database objects based on schema name or any other custom grouping
+         * Example:
+         *  SELECT OBJECT_SCHEMA_NAME(sm.object_id) sql_group, ISNULL('[' + OBJECT_SCHEMA_NAME(sm.object_id) + '].[' + OBJECT_NAME(sm.object_id) + ']', '[' + st.name + ']')  object_name
+            FROM sys.sql_modules sm LEFT JOIN sys.triggers st ON st.object_id = sm.object_id 
+            WHERE sm.object_id NOT IN(SELECT object_id FROM sys.objects WHERE type = 'IF');
+         * */
+        public Dictionary<string,List<string>> GetSqlGrouping(string sqlGrouping)
+        {
+            var table = _databaseGateway.GetRecords(sqlGrouping);
+            Dictionary<string, List<String>> results = new Dictionary<string, List<string>>();
+
+            foreach (DataRow row in table.Rows)
+            {
+                string group = row["sql_group"] as string;
+                string objectName = row["object_name"] as string;
+                if (!results.ContainsKey(group))
+                    results.Add(group, new List<string>() { objectName });
+                else
+                {
+                    results.TryGetValue(group, out List<string> value);
+                    value.Add(objectName);
+                }
+            }
+
+            table.Dispose();
+            return results;
         }
 
         private static string GetDefinition(DataRow row)

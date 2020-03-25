@@ -30,6 +30,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Data.Tools.Schema.Sql, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.SqlServer.DacFx.x64.150.4538.1\lib\net46\Microsoft.Data.Tools.Schema.Sql.dll</HintPath>
@@ -67,6 +70,7 @@
     <Compile Include="Parsers\EventsParser.cs" />
     <Compile Include="Gateway\DatabaseGateway.cs" />
     <Compile Include="Parsers\TSqlParserBuilder.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Parsers\StatementParser.cs" />
     <Compile Include="Source\DatabaseSourceGateway.cs" />

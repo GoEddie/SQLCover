@@ -20,6 +20,7 @@ namespace SQLCover
         private readonly List<string> _excludeFilter;
         private readonly bool _logging;
         private readonly SourceGateway _source;
+        private readonly string _sqlGrouping;
         private CoverageResult _result;
 
         public const short TIMEOUT_EXPIRED = -2; //From TdsEnums
@@ -45,7 +46,11 @@ namespace SQLCover
         {
         }
 
-        public CodeCoverage(string connectionString, string databaseName, string[] excludeFilter, bool logging, bool debugger, TraceControllerType traceType)
+        public CodeCoverage(string connectionString, string databaseName, string[] excludeFilter, bool logging, bool debugger, TraceControllerType traceType) : this(connectionString, databaseName, excludeFilter, logging, debugger, TraceControllerType.Default, "")
+        {
+        }
+
+        public CodeCoverage(string connectionString, string databaseName, string[] excludeFilter, bool logging, bool debugger, TraceControllerType traceType, string sqlGrouping)
         {
             if (debugger)
                 Debugger.Launch();
@@ -60,6 +65,7 @@ namespace SQLCover
             _traceType = traceType;
             _database = new DatabaseGateway(connectionString, databaseName);
             _source = new DatabaseSourceGateway(_database);
+            _sqlGrouping = sqlGrouping;
         }
 
         public bool Start(int timeOut = 30)
@@ -221,7 +227,8 @@ namespace SQLCover
         private void GenerateResults(List<string> filter, List<string> xml, List<string> sqlExceptions, string commandDetail)
         {
             var batches = _source.GetBatches(filter);
-            _result = new CoverageResult(batches, xml, _databaseName, _database.DataSource, sqlExceptions, commandDetail);
+            Dictionary<string, List<string>> sqlGrouping = _sqlGrouping == "" ? null : _source.GetSqlGrouping(_sqlGrouping);
+            _result = new CoverageResult(batches, xml, _databaseName, _database.DataSource, sqlExceptions, commandDetail, sqlGrouping);
         }
 
         public CoverageResult Results()

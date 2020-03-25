@@ -16,6 +16,7 @@ namespace SQLCover
         private readonly IEnumerable<Batch> _batches;
         private readonly List<string> _sqlExceptions;
         private readonly string _commandDetail;
+        private Dictionary<string, List<string>> _sqlGrouping;
 
         public string DatabaseName { get; }
         public string DataSource { get; }
@@ -26,11 +27,12 @@ namespace SQLCover
         }
         private readonly StatementChecker _statementChecker = new StatementChecker();
 
-        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string dataSource, List<string> sqlExceptions, string commandDetail)
+        public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string dataSource, List<string> sqlExceptions, string commandDetail, Dictionary<string,List<string>> sqlGrouping)
         {
             _batches = batches;
             _sqlExceptions = sqlExceptions;
             _commandDetail = $"{commandDetail} at {DateTime.Now}";
+            _sqlGrouping = sqlGrouping;
             DatabaseName = database;
             DataSource = dataSource;
             var parser = new EventsParser(xml);
@@ -311,53 +313,64 @@ namespace SQLCover
         {
             var statements = _batches.Sum(p => p.StatementCount);
             var coveredStatements = _batches.Sum(p => p.CoveredStatementCount);
+            if (_sqlGrouping is null)
+                _sqlGrouping = new Dictionary<string, List<string>> { { packageName, null } };
 
             // gen coverage header
             var builder = new StringBuilder();
             builder.AppendLine(Unquote($@"<?xml version='1.0'?>
 <!--DOCTYPE coverage SYSTEM 'http://cobertura.sourceforge.net/xml/coverage-03.dtd'-->
 <coverage lines-valid='{statements}' lines-covered='{coveredStatements}' line-rate='{coveredStatements / (float)statements}' version='1.9' timestamp='{(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds}'>
- <packages>
-  <package name='{packageName}'>
-    <classes>"));
-
-            var fileMap = _batches.GroupBy(b => b.ObjectName, StringComparer.OrdinalIgnoreCase);
-            foreach (var file in fileMap)
+ <packages>"));
+            foreach (string group in _sqlGrouping.Keys)
             {
-                var lines = file.Sum(b => b.StatementCount);
-                var coveredLines = file.Sum(b => b.CoveredStatementCount);
-
-                var anyBatch = file.First();
-                var coverageUpdateParam = new CustomCoverageUpdateParameter() { Batch = anyBatch };
-                customCoverageUpdater?.Invoke(coverageUpdateParam);
-
-                var objectName = anyBatch.ObjectName;
-                var filename = anyBatch.FileName;
-
-                // gen file header
-                builder.AppendLine(Unquote($"    <class name='{objectName}' filename='{filename}' lines-valid='{lines}' lines-covered='{coveredLines}' line-rate='{coveredLines / (float)lines}' >"));
-                builder.AppendLine("     <methods/>");
-                builder.AppendLine("     <lines>");
-
-                // gen lines info
-                foreach (var line in file.SelectMany(batch => batch.Statements))
+                builder.AppendLine(Unquote($@"  <package name='{group.Replace("&","&amp;")}'>
+    <classes>"));
+                IEnumerable<Batch> batches;
+                if (group == packageName && _sqlGrouping.Count == 1)
+                    batches = _batches;
+                else
                 {
-                    var offsetInfo = GetOffsets(line.Offset + coverageUpdateParam.OffsetCorrection, line.Length, anyBatch.Text, lineStart: 1 + coverageUpdateParam.LineCorrection);
-                    int lNum = offsetInfo.StartLine;
-                    while (lNum <= offsetInfo.EndLine)
-                        builder.AppendLine(Unquote($"      <line number='{lNum++}' hits='{line.HitCount}' branch='false' />"));
+                    _sqlGrouping.TryGetValue(group, out List<string> groupedValues);
+                    batches = _batches.Where(b => groupedValues.Contains(b.ObjectName));
                 }
+                foreach (Batch b in batches)
+                {
+                    var lines = b.StatementCount;
+                    var coveredLines = b.CoveredStatementCount;
 
-                // gen file footer
-                builder.AppendLine("     </lines>");
-                builder.AppendLine("    </class>");
+                    var coverageUpdateParam = new CustomCoverageUpdateParameter() { Batch = b };
+                    customCoverageUpdater?.Invoke(coverageUpdateParam);
+
+                    var objectName = b.ObjectName;
+                    var filename = b.FileName;
+
+                    // gen file header
+                    builder.AppendLine(Unquote($"    <class name='{objectName}' filename='{filename}' lines-valid='{lines}' lines-covered='{coveredLines}' line-rate='{coveredLines / (float)lines}' >"));
+                    builder.AppendLine("     <methods/>");
+                    builder.AppendLine("     <lines>");
+
+                    // gen lines info
+                    foreach (var line in b.Statements)
+                    {
+                        var offsetInfo = GetOffsets(line.Offset + coverageUpdateParam.OffsetCorrection, line.Length, b.Text, lineStart: 1 + coverageUpdateParam.LineCorrection);
+                        int lNum = offsetInfo.StartLine;
+                        while (lNum <= offsetInfo.EndLine)
+                            builder.AppendLine(Unquote($"      <line number='{lNum++}' hits='{line.HitCount}' branch='false' />"));
+                    }
+
+                    // gen file footer
+                    builder.AppendLine("     </lines>");
+                    builder.AppendLine("    </class>");
+                }
+                builder.AppendLine(@"
+   </classes>
+  </package>");
             }
 
             // gen coverage footer
             builder.AppendLine(@"
-   </classes>
-  </package>
- </packages>
+</packages>
 </coverage>");
 
             return builder.ToString();
