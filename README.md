@@ -64,10 +64,12 @@ The second object is a:
 SQLCover.CoverageResult
 ```
 
-This has two public properties:
+This has four public properties:
 ```
 public long StatementCount;
 public long CoveredStatementCount;
+public long BranchesCount;
+public long CoveredBranchesCount;
 ```
 
 It also has two public methods:
