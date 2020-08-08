@@ -16,6 +16,8 @@ namespace SQLCover.Serializers
 
         #region " XNames "
 
+        private static readonly XName BranchPointElementName = XName.Get("BranchPoint");
+        private static readonly XName BranchPointsElementName = XName.Get("BranchPoints");
         private static readonly XName ClassesElementName = XName.Get("Classes");
         private static readonly XName ClassElementName = XName.Get("Class");
         private static readonly XName CoverageSessionElementName = XName.Get("CoverageSession");
@@ -51,7 +53,10 @@ namespace SQLCover.Serializers
         private static readonly XName numBranchPointsAttributeName = XName.Get("numBranchPoints");
         private static readonly XName numSequencePointsAttributeName = XName.Get("numSequencePoints");
         private static readonly XName offsetAttributeName = XName.Get("offset");
+        private static readonly XName offsetchainAttributeName = XName.Get("offsetchain");
+        private static readonly XName offsetendAttributeName = XName.Get("offsetend");
         private static readonly XName ordinalAttributeName = XName.Get("ordinal");
+        private static readonly XName pathAttributeName = XName.Get("path");
         private static readonly XName sequenceCoverageAttributeName = XName.Get("sequenceCoverage");
         private static readonly XName scAttributeName = XName.Get("sc");
         private static readonly XName slAttributeName = XName.Get("sl");
@@ -98,26 +103,32 @@ namespace SQLCover.Serializers
         private XElement CreateSummaryElement(CoverageResult result)
             => CreateSummaryElement(
                 numSequencePoints: result.Batches.Sum(p => p.StatementCount),
-                visitedSequencePoints: result.Batches.Sum(p => p.CoveredStatementCount)
+                visitedSequencePoints: result.Batches.Sum(p => p.CoveredStatementCount),
+                numBranchPoints: result.Batches.Sum(p => p.BranchesCount),
+                visitedBranchPoints: result.Batches.Sum(p => p.CoveredBranchesCount)
             );
 
         private XElement CreateSummaryElement(Batch batch)
             => CreateSummaryElement(
                 numSequencePoints: batch.StatementCount,
-                visitedSequencePoints: batch.CoveredStatementCount
+                visitedSequencePoints: batch.CoveredStatementCount,
+                numBranchPoints: batch.BranchesCount,
+                visitedBranchPoints: batch.CoveredBranchesCount
             );
 
         private XElement CreateSummaryElement(
             long numSequencePoints,
-            long visitedSequencePoints)
+            long visitedSequencePoints,
+            long numBranchPoints,
+            long visitedBranchPoints)
             => new XElement(
                 SummaryElementName,
                 new XAttribute(numSequencePointsAttributeName, numSequencePoints),
                 new XAttribute(visitedSequencePointsAttributeName, visitedSequencePoints),
-                new XAttribute(numBranchPointsAttributeName, "0"),
-                new XAttribute(visitedBranchPointsAttributeName, "0"),
+                new XAttribute(numBranchPointsAttributeName, numBranchPoints),
+                new XAttribute(visitedBranchPointsAttributeName, visitedBranchPoints),
                 new XAttribute(sequenceCoverageAttributeName, numSequencePoints == 0 ? 0 : visitedSequencePoints / (double)numSequencePoints * 100.0),
-                new XAttribute(branchCoverageAttributeName, "0"),
+                new XAttribute(branchCoverageAttributeName, numBranchPoints == 0 ? 0 : visitedBranchPoints / (double)numBranchPoints * 100.0),
                 new XAttribute(maxCyclomaticComplexityAttributeName, "0"),
                 new XAttribute(minCyclomaticComplexityAttributeName, "0")
             );
@@ -182,8 +193,8 @@ namespace SQLCover.Serializers
                     MethodNameElementName,
                     new XAttribute(visitedAttributeName, batch.CoveredStatementCount > 0),
                     new XAttribute(cyclomaticComplexityAttributeName, "0"),
-                    new XAttribute(sequenceCoverageAttributeName, batch.CoveredStatementCount / (double)batch.StatementCount * 100.0),
-                    new XAttribute(branchCoverageAttributeName, "0"),
+                    new XAttribute(sequenceCoverageAttributeName, batch.StatementCount == 0 ? 0 : batch.CoveredStatementCount / (double)batch.StatementCount * 100.0),
+                    new XAttribute(branchCoverageAttributeName, batch.BranchesCount == 0 ? 0 : batch.CoveredBranchesCount / (double)batch.BranchesCount * 100.0),
                     new XAttribute(isConstructorAttributeName, "false"),
                     new XAttribute(isStaticAttributeName, "false"),
                     new XAttribute(isGetterAttributeName, "true"),
@@ -195,7 +206,8 @@ namespace SQLCover.Serializers
                         FileRefName,
                         new XAttribute(uidAttributeName, batch.ObjectId)
                     ),
-                    CreateSequencePointsElement(batch)
+                    CreateSequencePointsElement(batch),
+                    CreateBranchPointsElement(batch)
                 )
             );
 
@@ -219,6 +231,39 @@ namespace SQLCover.Serializers
                 new XAttribute(scAttributeName, offsets.StartColumn),
                 new XAttribute(elAttributeName, offsets.EndLine),
                 new XAttribute(ecAttributeName, offsets.EndColumn)
+            );
+        }
+
+
+        private XElement CreateBranchPointsElement(Batch batch)
+        {
+            var ordinal = 1;
+
+            return new XElement(
+                BranchPointsElementName,
+                batch.Statements
+                    .Where(x => x.Branches.Any())
+                    .SelectMany((statement, i) =>
+                        statement.Branches.Select((branch, j) => CreateBranchPointElement(batch, statement, branch, ordinal++, j))
+                    )
+            );
+        }
+
+        private XElement CreateBranchPointElement(Batch batch, Statement statement, Branch branch, int ordinal, int path)
+        {
+            var offsets = CoverageResult.GetOffsets(statement, batch.Text);
+            var offsetEnd = branch.Offset + branch.Length;
+
+            return new XElement(
+                BranchPointElementName,
+                new XAttribute(vcAttributeName, branch.HitCount),
+                new XAttribute(uspidAttributeName, uniqueId++),
+                new XAttribute(ordinalAttributeName, ordinal),
+                new XAttribute(offsetAttributeName, branch.Offset),
+                new XAttribute(slAttributeName, offsets.StartLine),
+                new XAttribute(pathAttributeName, path),
+                new XAttribute(offsetchainAttributeName, ""),
+                new XAttribute(offsetendAttributeName, branch.Offset + branch.Length)
             );
         }
     }

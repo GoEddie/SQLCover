@@ -68,18 +68,45 @@ namespace SQLCover.Parsers
             {
                 var ifStatement = (IfStatement) statement;
 
+                var branches = new List<Branch>(2) {
+                    new Branch(
+                        _script.Substring(ifStatement.ThenStatement.StartOffset, ifStatement.ThenStatement.FragmentLength),
+                        ifStatement.ThenStatement.StartOffset,
+                        ifStatement.ThenStatement.FragmentLength
+                    )
+                };
+
+                if (ifStatement.ElseStatement != null)
+                {
+                    branches.Add(
+                        new Branch(
+                            _script.Substring(ifStatement.ElseStatement.StartOffset, ifStatement.ElseStatement.FragmentLength),
+                            ifStatement.ElseStatement.StartOffset,
+                            ifStatement.ElseStatement.FragmentLength
+                        )
+                    );
+                }
+
                 var offset = statement.StartOffset;
                 var length = ifStatement.Predicate.StartOffset + ifStatement.Predicate.FragmentLength - statement.StartOffset;
-                Statements.Add(new Statement (_script.Substring(offset, length), offset, length, CanBeCovered(statement)));
+                Statements.Add(new Statement(_script.Substring(offset, length), offset, length, CanBeCovered(statement), branches));
             }
 
             if (statement is WhileStatement)
             {
                 var whileStatement = (WhileStatement) statement;
 
+                var branches = new [] {
+                    new Branch(
+                        _script.Substring(whileStatement.Statement.StartOffset, whileStatement.Statement.FragmentLength),
+                        whileStatement.Statement.StartOffset,
+                        whileStatement.Statement.FragmentLength
+                    )
+                };
+
                 var offset = statement.StartOffset;
                 var length = whileStatement.Predicate.StartOffset + whileStatement.Predicate.FragmentLength - statement.StartOffset;
-                Statements.Add(new Statement (_script.Substring(offset, length), offset, length, CanBeCovered(statement)));
+                Statements.Add(new Statement (_script.Substring(offset, length), offset, length, CanBeCovered(statement), branches));
             }
         }
 

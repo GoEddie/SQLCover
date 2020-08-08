@@ -61,12 +61,27 @@ namespace SQLCover
 
             foreach (var batch in _batches)
             {
+                foreach (var item in batch.Statements)
+                {
+                    foreach (var branch in item.Branches)
+                    {
+                        var branchStatement = batch.Statements
+                            .Where(x => _statementChecker.Overlaps(x, branch.Offset, branch.Offset + branch.Length))
+                            .FirstOrDefault();
+
+                        branch.HitCount = branchStatement.HitCount;
+                    }
+                }
+
                 batch.CoveredStatementCount = batch.Statements.Count(p => p.HitCount > 0);
+                batch.CoveredBranchesCount = batch.Statements.SelectMany(p => p.Branches).Count(p => p.HitCount > 0);
                 batch.HitCount = batch.Statements.Sum(p => p.HitCount);
             }
 
             CoveredStatementCount = _batches.Sum(p => p.CoveredStatementCount);
             StatementCount = _batches.Sum(p => p.StatementCount);
+            CoveredBranchesCount = _batches.Sum(p => p.CoveredBranchesCount);
+            BranchesCount = _batches.Sum(p => p.BranchesCount);
             HitCount = _batches.Sum(p => p.HitCount);
 
 

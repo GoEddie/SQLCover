@@ -41,5 +41,18 @@ namespace SQLCover
             return false;
 
         }
+
+        public bool Overlaps(Statement statement, int offsetStart, int offsetEnd)
+        {
+            var statementStart = statement.Offset;
+            var statementEnd = statementStart + statement.Length;
+
+            if (statementStart >= offsetStart && statementEnd <= offsetEnd)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }
