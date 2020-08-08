@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using SQLCover.Objects;
 using SQLCover.Parsers;
+using SQLCover.Serializers;
 
 namespace SQLCover
 {
@@ -373,91 +374,7 @@ namespace SQLCover
 
         public string OpenCoverXml()
         {
-            var statements = _batches.Sum(p => p.StatementCount);
-            var coveredStatements = _batches.Sum(p => p.CoveredStatementCount);
-
-            var builder = new StringBuilder();
-
-            builder.AppendFormat(
-                "<CoverageSession xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-                "<Summary numSequencePoints=\"{0}\" visitedSequencePoints=\"{1}\" numBranchPoints=\"0\" visitedBranchPoints=\"0\" sequenceCoverage=\"{2}\" branchCoverage=\"0.0\" maxCyclomaticComplexity=\"0\" minCyclomaticComplexity=\"0\" /><Modules>\r\n"
-                , statements, coveredStatements, coveredStatements / (float)statements * 100.0);
-
-            builder.Append("<Module hash=\"ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE-ED-DE\">");
-            builder.AppendFormat("<FullName>{0}</FullName>", DatabaseName);
-            builder.AppendFormat("<ModuleName>{0}</ModuleName>", DatabaseName);
-
-            var fileMap = new Dictionary<string, int>();
-            var i = 1;
-            foreach (var batch in _batches)
-            {
-                fileMap[batch.ObjectName] = i++;
-            }
-
-            builder.Append("<Files>\r\n");
-            foreach (var pair in fileMap)
-            {
-                builder.AppendFormat("\t<File uid=\"{0}\" fullPath=\"{1}\" />\r\n", pair.Value, pair.Key);
-            }
-
-            builder.Append("</Files>\r\n<Classes>\r\n");
-
-            i = 1;
-            foreach (var batch in _batches)
-            {
-                builder.AppendFormat(
-                    "<Class><Summary numSequencePoints=\"{0}\" visitedSequencePoints=\"{1}\" numBranchPoints=\"0\" visitedBranchPoints=\"0\" sequenceCoverage=\"{2}\" branchCoverage=\"0\" maxCyclomaticComplexity=\"0\" minCyclomaticComplexity=\"0\" /><FullName>{3}</FullName><Methods>"
-                    , batch.Statements.Count, batch.CoveredStatementCount,
-                    (float)batch.CoveredStatementCount / (float)batch.StatementCount * 100.0
-                    , batch.ObjectName);
-
-
-                builder.AppendFormat(
-                    "\t\t<Method visited=\"{0}\" cyclomaticComplexity=\"0\" sequenceCoverage=\"{1}\" branchCoverage=\"0\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"true\" isSetter=\"false\">\r\n",
-                    batch.CoveredStatementCount > 0 ? "true" : "false",
-                    batch.CoveredStatementCount / (float)batch.StatementCount * 100.0);
-
-                builder.AppendFormat(
-                    "\t\t<Summary numSequencePoints=\"{1}\" visitedSequencePoints=\"0\" numBranchPoints=\"0\" visitedBranchPoints=\"0\" sequenceCoverage=\"{2}\" branchCoverage=\"0\" maxCyclomaticComplexity=\"0\" minCyclomaticComplexity=\"0\" />\r\n",
-                    batch.StatementCount, batch.CoveredStatementCount,
-                    batch.CoveredStatementCount / (float)batch.StatementCount * 100.0);
-
-
-                builder.AppendFormat(
-                    "\t\t<MetadataToken>01041980</MetadataToken><Name>{0}</Name><FileRef uid=\"{1}\" />\r\n",
-                    batch.ObjectName, fileMap[batch.ObjectName]);
-                builder.Append("\t\t<SequencePoints>\r\n");
-                var j = 1;
-                foreach (var statement in batch.Statements)
-                {
-                    // if (statement.HitCount > 0)
-                    // {
-
-                    var offsets = GetOffsets(statement, batch.Text);
-
-                    builder.AppendFormat(
-                        "\t\t\t<SequencePoint vc=\"{0}\" uspid=\"{1}\" ordinal=\"{2}\" offset=\"{3}\" sl=\"{4}\" sc=\"{5}\" el=\"{6}\" ec=\"{7}\" />\r\n",
-                        statement.HitCount
-                        , i++
-                        , j++
-                        , statement.Offset
-                        , offsets.StartLine, offsets.StartColumn, offsets.EndLine, offsets.EndColumn);
-                    // }
-                }
-
-                builder.Append("\t\t</SequencePoints>\r\n");
-                builder.Append("\t\t</Method>\r\n");
-                builder.Append("</Methods>\r\n");
-                builder.Append("</Class>\r\n");
-            }
-
-
-            builder.Append("</Classes></Module>\r\n");
-            builder.Append("</Modules>\r\n");
-            builder.Append("</CoverageSession>");
-            var s = builder.ToString();
-
-            return s;
+            return new OpenCoverXmlSerializer().Serialize(this);
         }
 
         public static OpenCoverOffsets GetOffsets(Statement statement, string text)
