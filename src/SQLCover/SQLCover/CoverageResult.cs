@@ -24,6 +24,12 @@ namespace SQLCover
         {
             get { return _sqlExceptions; }
         }
+
+        public IEnumerable<Batch> Batches
+        {
+            get { return _batches; }
+        }
+
         private readonly StatementChecker _statementChecker = new StatementChecker();
 
         public CoverageResult(IEnumerable<Batch> batches, List<string> xml, string database, string dataSource, List<string> sqlExceptions, string commandDetail)
@@ -454,10 +460,10 @@ namespace SQLCover
             return s;
         }
 
-        private OpenCoverOffsets GetOffsets(Statement statement, string text)
+        public static OpenCoverOffsets GetOffsets(Statement statement, string text)
             => GetOffsets(statement.Offset, statement.Length, text);
 
-        private OpenCoverOffsets GetOffsets(int offset, int length, string text, int lineStart = 1)
+        public static OpenCoverOffsets GetOffsets(int offset, int length, string text, int lineStart = 1)
         {
             var offsets = new OpenCoverOffsets();
 
@@ -504,7 +510,7 @@ namespace SQLCover
         }
     }
 
-    struct OpenCoverOffsets
+    public struct OpenCoverOffsets
     {
         public int StartLine;
         public int EndLine;
