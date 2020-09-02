@@ -2,9 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <SqlServerVersion>Sql150</SqlServerVersion>
+
   </PropertyGroup>
+
+  <!-- <ItemGroup>
+    <SqlCmdVariable Include="DbReaderPassword" />
+  </ItemGroup> -->
 
   <ItemGroup>
     <Content Include="..\DatabaseProject\dbo\**\*.sql" />
   </ItemGroup>
+  <!-- https://github.com/rr-wfm/MSBuild.Sdk.SqlProj#pre-and-post-deployment-scripts -->
+  <!-- <ItemGroup>
+    <PostDeploy Include="..\Database\Post-Deployment\Script.PostDeployment.sql" />
+  </ItemGroup> -->
 </Project>
