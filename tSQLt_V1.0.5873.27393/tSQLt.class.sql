@@ -13,6 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+-- modified as per https://hybriddbablog.com/2018/12/29/how-to-use-tsqlt-unit-test-framework-with-a-sql-server-database-in-a-docker-container/
 DECLARE @Msg NVARCHAR(MAX);SELECT @Msg = 'Installed at '+CONVERT(NVARCHAR,GETDATE(),121);RAISERROR(@Msg,0,1);
 GO
 
@@ -976,7 +977,7 @@ BEGIN
   BEGIN TRY
     IF @enable = 1
     BEGIN
-      EXEC('ALTER ASSEMBLY tSQLtCLR WITH PERMISSION_SET = EXTERNAL_ACCESS;');
+      EXEC('ALTER ASSEMBLY tSQLtCLR WITH PERMISSION_SET = SAFE;');
     END
     ELSE
     BEGIN
