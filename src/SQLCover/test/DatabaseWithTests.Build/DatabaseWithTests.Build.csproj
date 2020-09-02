@@ -1,0 +1,22 @@
+<Project Sdk="MSBuild.Sdk.SqlProj/1.1.0">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <SqlServerVersion>Sql150</SqlServerVersion>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\DatabaseWithTests\dbo\**\*.sql" />
+    <Content Include="..\DatabaseWithTests\Security\**\*.sql" />
+    <Content Include="..\DatabaseWithTests\Accelerator\**\*.sql" />
+
+  </ItemGroup>
+  <!-- tsql tests -->
+  <ItemGroup>
+    <Content Include="..\DatabaseWithTests\AcceleratorTests\**\*.sql" />
+    <Content Include="..\DatabaseWithTests\login tests\**\*.sql" />
+    <Content Include="..\DatabaseWithTests\tSQLt\**\*.sql" />
+  </ItemGroup>
+
+</Project>

@@ -27,7 +27,7 @@ jobs:
     - name: upload
       uses: actions/upload-artifact@v1
       with:
-        name: dacpac-package
+        name: dacpac-DatabaseProject-package
         path: ./src/SQLCover/DatabaseProject.Build/bin/Release/netstandard2.0/
   deploy-sqlpackage:
     runs-on: ubuntu-latest
@@ -52,7 +52,7 @@ jobs:
     - name: download-artifact
       uses: actions/download-artifact@v1
       with:
-        name: dacpac-package
+        name: dacpac-DatabaseProject-package
         path: ~/dacpac-package
     # Download sqlpackage
     - name: download sqlpackage
@@ -111,3 +111,45 @@ jobs:
       if: failure()
       uses: jwalton/gh-docker-logs@v1
 
+  deploy-publish-DatabaseWithTests:
+    runs-on: ubuntu-18.04
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: JdMsKZPBBA8kVFXVrj8d
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
+          --health-interval 10s
+          --health-timeout 3s
+          --health-retries 10
+          --health-start-period 10s
+    # Fetch sources
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.401
+    - name: build dacpac
+      run: |
+          cd src/SQLCover/test/DatabaseWithTests.Build
+          dotnet restore
+          dotnet build --configuration Release
+      # cd $GITHUB_WORKSPACE
+    # Upload dacpac
+    - name: upload
+      uses: actions/upload-artifact@v1
+      with:
+        name: dacpac-DatabaseWithTests-package
+        path: ./src/SQLCover/test/DatabaseWithTests.Build/bin/Release/netstandard2.0/
+    # Publish the project
+    - name: publish project
+      run: dotnet publish ./src/SQLCover/test/DatabaseWithTests.Build/DatabaseWithTests.Build.csproj /p:TargetUser=sa /p:TargetPassword=JdMsKZPBBA8kVFXVrj8d /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
+    # Dump logs of the container if something failed
+    - name: Dump docker logs on failure
+      if: failure()
+      uses: jwalton/gh-docker-logs@v1
