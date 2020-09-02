@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <Content Include="..\DatabaseWithTests\dbo\**\*.sql" />
-    <Content Include="..\DatabaseWithTests\Security\**\*.sql" />
+    <Content Include="..\DatabaseWithTests\security\**\*.sql" />
     <Content Include="..\DatabaseWithTests\Accelerator\**\*.sql" />
 
   </ItemGroup>
