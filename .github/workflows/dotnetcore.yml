@@ -93,18 +93,19 @@ jobs:
     needs: test
     # Service containers to run with `runner-job`
     services:
-      # Label used to access the service container
-      redis:
-        # Docker Hub image
+      sqlserver:
         image: mcr.microsoft.com/mssql/server:2019-latest
-        #
-        ports:
-          # Opens tcp port 6379 on the host and service container
-          - 1433:1433
         env:
-          GIT_SUBMODULE_STRATEGY: recursive
           ACCEPT_EULA: Y
-          SA_PASSWORD: yourStrong(!)Password
+          SA_PASSWORD: JdMsKZPBBA8kVFXVrj8d
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
+          --health-interval 10s
+          --health-timeout 3s
+          --health-retries 10
+          --health-start-period 10s
     steps:
     # Download artifacts
     - name: download-artifact
@@ -127,7 +128,7 @@ jobs:
         /Properties:IncludeCompositeObjects=True
         /TargetServerName:localhost
         /TargetUser:sa
-        /TargetPassword:yourStrong(!)Password
+        /TargetPassword:JdMsKZPBBA8kVFXVrj8d
         /TargetDatabaseName:DatabaseProject
 
     # Dump logs of the container if something failed
@@ -162,7 +163,7 @@ jobs:
         dotnet-version: 3.1.401
     # Publish the project
     - name: publish project
-      run: dotnet publish ./test/TestProjectWithSDKRef/TestProjectWithSDKRef.csproj /p:TargetUser=sa /p:TargetPassword=JdMsKZPBBA8kVFXVrj8d /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
+      run: dotnet publish ./src/SQLCover/DatabaseProject.Build/DatabaseProject.Build.csproj /p:TargetUser=sa /p:TargetPassword=JdMsKZPBBA8kVFXVrj8d /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
 
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure
