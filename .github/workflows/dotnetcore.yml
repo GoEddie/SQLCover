@@ -1,0 +1,113 @@
+name: .NET Core
+
+on: [push]
+
+# use https://marketplace.visualstudio.com/items?itemName=me-dutour-mathieu.vscode-github-actions to validate yml in vscode
+env:
+  NUGET_PACKAGES_DIRECTORY: '.nupkg'
+  DOCKER_DRIVER: overlay
+
+jobs:
+  
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.401
+    - name: build dacpac
+      run: |
+          cd src/SQLCover/DatabaseProject.Build
+          dotnet restore
+          dotnet build --configuration Release
+      # cd $GITHUB_WORKSPACE
+    # Upload dacpac
+    - name: upload
+      uses: actions/upload-artifact@v1
+      with:
+        name: dacpac-package
+        path: ./src/SQLCover/DatabaseProject.Build/bin/Release/netstandard2.0/
+  deploy-sqlpackage:
+    runs-on: ubuntu-latest
+    needs: test
+    # Service containers to run with `runner-job`
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: JdMsKZPBBA8kVFXVrj8d
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
+          --health-interval 10s
+          --health-timeout 3s
+          --health-retries 10
+          --health-start-period 10s
+    steps:
+    # Download artifacts
+    - name: download-artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: dacpac-package
+        path: ~/dacpac-package
+    # Download sqlpackage
+    - name: download sqlpackage
+      run: >
+        curl -L https://go.microsoft.com/fwlink/?linkid=2113331 --output sqlpackage.zip &&
+        unzip sqlpackage.zip -d ~/sqlpackage &&
+        chmod a+x ~/sqlpackage/sqlpackage
+    # Run sqlpackage
+    - name: sqlpackage publish
+      run: >
+        ~/sqlpackage/sqlpackage
+        /Action:Publish
+        /SourceFile:~/dacpac-package/DatabaseProject.Build.dacpac
+        /Properties:IncludeCompositeObjects=True
+        /TargetServerName:localhost
+        /TargetUser:sa
+        /TargetPassword:JdMsKZPBBA8kVFXVrj8d
+        /TargetDatabaseName:DatabaseProject
+
+    # Dump logs of the container if something failed
+    - name: Dump docker logs on failure
+      if: failure()
+      uses: jwalton/gh-docker-logs@v1
+
+  # Attempt to deploy a project to a SQL Server instance running in a container using dotnet publish
+  deploy-publish:
+    runs-on: ubuntu-18.04
+    needs: test
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: JdMsKZPBBA8kVFXVrj8d
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
+          --health-interval 10s
+          --health-timeout 3s
+          --health-retries 10
+          --health-start-period 10s
+    # Fetch sources
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.401
+    # Publish the project
+    - name: publish project
+      run: dotnet publish ./src/SQLCover/DatabaseProject.Build/DatabaseProject.Build.csproj /p:TargetUser=sa /p:TargetPassword=JdMsKZPBBA8kVFXVrj8d /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
+
+    # Dump logs of the container if something failed
+    - name: Dump docker logs on failure
+      if: failure()
+      uses: jwalton/gh-docker-logs@v1
+
