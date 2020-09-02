@@ -78,10 +78,20 @@ jobs:
         dotnet-version: 3.1.401
     # - name: enabledb
     #   run: cp ./src/SQLCover/Data/appSettings.bitbucket.mssql.json ./src/SQLCover/Data/AppSettings.json
-    - name: Tests
-      run: |
-        cd src/SQLCover
-        dotnet test --logger "junit" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='./TestResults/'
+    # - name: install nbgv
+    #   run: dotnet tool install --tool-path . nbgv
+    # - name: set version
+    #   run: ./nbgv cloud -p ./src/SQLCover/DatabaseProject/DatabaseProject.sqlproj/ --all-vars
+    # # Run build for SDK package
+    # - name: dotnet build SDK
+    #   run: dotnet build ./src/SQLCover/DatabaseProject/DatabaseProject.sqlproj -c Release
+    # # Package SDK
+    # - name: dotnet pack SDK
+    #   run: dotnet pack -c Release src/MSBuild.Sdk.SqlProj/MSBuild.Sdk.SqlProj.csproj
+    # - name: Tests
+    #   run: |
+    #     cd src/SQLCover
+    #     dotnet test --logger "junit" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='./TestResults/'
 
   security:
     runs-on: ubuntu-latest
