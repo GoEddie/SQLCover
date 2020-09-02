@@ -193,7 +193,7 @@ jobs:
     name: Snyk Security Scan
     steps:
       - uses: actions/checkout@v1
-      - name: Snyk CLI Action
-        uses: clarkio/snyk-cli-action@1.0.0
-        with: # Set the secret as an input
+        name: Snyk CLI Action
+      - uses: snyk/actions/node@master
+        env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
