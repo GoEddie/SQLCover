@@ -77,7 +77,7 @@ jobs:
       with:
         dotnet-version: 3.1.401
     - name: build dacpac
-        run: |
+      run: |
           cd src/SQLCover/DatabaseProject.Build
           dotnet restore
           dotnet build --configuration Release
