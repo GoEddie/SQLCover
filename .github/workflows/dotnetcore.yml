@@ -119,7 +119,11 @@ jobs:
       shell: cmd
       run: |
           echo %GITHUB_WORKSPACE%
+          dir %GITHUB_WORKSPACE%
+          echo %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests
+          dir %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests
           cd %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests
+          dir %GITHUB_WORKSPACE%\.github
           call %GITHUB_WORKSPACE%\.github\build.cmd
           dir %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests/bin/
     - name: upload
