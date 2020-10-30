@@ -11,8 +11,10 @@ namespace SQLCover.Core
             [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
             public bool Verbose { get; set; }
 
-            [Option('c', "command", Required = true, HelpText = "Choose command to run from:Get-CoverTSql, Get-CoverExe, Get-CoverRedgateCITest, Export-OpenXml, Start-ReportGenerator, Export-Html.")]
+            [Option('c', "command", Required = true, HelpText = "Choose command to run from:Get-CoverTSql, Get-CoverExe, Get-CoverRedgateCITest.")]
             public string Command { get; set; }
+            [Option('e', "exportCommand", Required = true, HelpText = "Choose command to run from:Export-OpenXml, Start-ReportGenerator, Export-Html.")]
+            public string ExportCommand { get; set; }
             [Option('b', "debug", Required = false, HelpText = "Prints out more output.")]
             public bool Debug { get; set; }
             [Option('p', "requiredParams", Required = false, HelpText = "Get required parameters for a command")]
@@ -59,7 +61,9 @@ namespace SQLCover.Core
                            Console.WriteLine(":::Running SqlCoverCore:::");
                        }
                        var cType = CommandType.Unknown;
+                       var eType = CommandType.Unknown;
                        string[] requiredParameters = null;
+                       string[] requiredExportParameters = null;
                        switch (o.Command)
                        {
                            case "Get-CoverTSql":
@@ -82,63 +86,91 @@ namespace SQLCover.Core
                                requiredParameters = new string[]{"result",
                                 "outputPath"};
                                break;
+                           default:
+                               Console.WriteLine("Command:" + o.Command + " is not supported");
+                               break;
+                       }
+
+                       switch (o.ExportCommand)
+                       {
                            case "Export-OpenXml":
-                               cType = CommandType.ExportOpenXml;
-                               requiredParameters = new string[]{"coverDllPath",
+                               eType = CommandType.ExportOpenXml;
+                               requiredExportParameters = new string[]{"coverDllPath",
                                 "connectionString",
                                 "databaseName",
                                 "exeName",
                                 "args"};
                                break;
                            case "Start-ReportGenerator":
-                               cType = CommandType.StartReportGenerator;
-                               requiredParameters = new string[]{"outputPath",
+                               eType = CommandType.StartReportGenerator;
+                               requiredExportParameters = new string[]{"outputPath",
                                 "reportGeneratorPath"};
                                break;
                            case "Export-Html":
-                               cType = CommandType.ExportHtml;
-                               requiredParameters = new string[]{"result",
+                               eType = CommandType.ExportHtml;
+                               requiredExportParameters = new string[]{"result",
                                 "outputPath"};
                                break;
                            default:
-                               Console.WriteLine(o.Command + " is not supported");
+                               Console.WriteLine("ExportCommand:" + o.Command + " is not supported");
                                break;
                        }
 
-                       var validParams = cType != CommandType.Unknown ? validateRequired(o, requiredParameters) : false;
+                       var validParams = eType != CommandType.Unknown && cType != CommandType.Unknown ? validateRequired(o, requiredParameters) : false;
+                       validParams = validParams ? validateRequired(o, requiredExportParameters) : validParams;
 
                        if (validParams)
                        {
                            if (o.GetRequiredParameters)
                            {
                                Console.WriteLine(o.Command + " requiredParameters are:" + string.Join(',', requiredParameters));
+                               Console.WriteLine(o.ExportCommand + " requiredParameters are:" + string.Join(',', requiredExportParameters));
                            }
                            else
                            {
+                               Console.WriteLine(":::Running command" + cType.ToString() + ":::");
+                               CodeCoverage coverage = null;
+                               CoverageResult results = null;
                                // run command
                                switch (cType)
                                {
                                    case CommandType.GetCoverTSql:
-                                        var coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
-                                        var results = coverage.Cover(o.Query);
 
-                                        break;
+                                       coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
+                                       results = coverage.Cover(o.Query);
+
+                                       break;
                                    case CommandType.GetCoverExe:
                                    case CommandType.GetCoverRedgateCITest:
-                                   case CommandType.ExportOpenXml:
-                                   case CommandType.StartReportGenerator:
-                                   case CommandType.ExportHtml:
                                        Console.WriteLine(cType.ToString() + " is not YET supported");
                                        break;
+                               }
+                               if (coverage != null)
+                               {
+                                   Console.WriteLine(":::Running exportCommand" + eType.ToString() + ":::");
+                                   var resultString = "";
+                                   switch (eType)
+                                   {
+                                       case CommandType.ExportOpenXml:
+                                           resultString = results.OpenCoverXml();
+                                           break;
+                                       case CommandType.ExportHtml:
+                                           resultString = results.Html();
+                                           break;
+                                       case CommandType.StartReportGenerator:
+                                           Console.WriteLine(eType.ToString() + " is not YET supported");
+                                           break;
+                                   }
                                }
                            }
                        }
                    });
         }
 
-        private static bool validateRequired(Options o, string[] requiredParameters)
+        private static bool validateRequired(Options o, string[] requiredParameters, bool export = false)
         {
             var valid = true;
+            var requiredString = export ? "is required for this exportCommand" : "is required for this command";
             foreach (var param in requiredParameters)
             {
                 switch (param)
@@ -146,35 +178,35 @@ namespace SQLCover.Core
                     case "connectionString":
                         if (string.IsNullOrWhiteSpace(o.ConnectionString))
                         {
-                            Console.WriteLine("connectionString is required for this command");
+                            Console.WriteLine("connectionString" + requiredString);
                             valid = false;
                         }
                         break;
                     case "databaseName":
                         if (string.IsNullOrWhiteSpace(o.databaseName))
                         {
-                            Console.WriteLine("databaseName is required for this command");
+                            Console.WriteLine("databaseName" + requiredString);
                             valid = false;
                         }
                         break;
                     case "query":
                         if (string.IsNullOrWhiteSpace(o.Query))
                         {
-                            Console.WriteLine("query is required for this command");
+                            Console.WriteLine("query" + requiredString);
                             valid = false;
                         }
                         break;
                     case "result":
                         if (string.IsNullOrWhiteSpace(o.Result))
                         {
-                            Console.WriteLine("result is required for this command");
+                            Console.WriteLine("result" + requiredString);
                             valid = false;
                         }
                         break;
                     case "outputPath":
                         if (string.IsNullOrWhiteSpace(o.OutputPath))
                         {
-                            Console.WriteLine("outputPath is required for this command");
+                            Console.WriteLine("outputPath" + requiredString);
                             valid = false;
                         }
                         break;
