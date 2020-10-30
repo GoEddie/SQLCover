@@ -34,7 +34,7 @@ jobs:
 
   deploy-sqlpackage-DatabaseProject:
     runs-on: ubuntu-latest
-    needs: test
+    needs: build-dacpac-dotnet
     # Service containers to run with `runner-job`
     services:
       sqlserver:
@@ -83,7 +83,7 @@ jobs:
   # Attempt to deploy a project to a SQL Server instance running in a container using dotnet publish
   deploy-publish-DatabaseProject:
     runs-on: ubuntu-18.04
-    needs: test
+    needs: build-dacpac-dotnet
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2019-latest
