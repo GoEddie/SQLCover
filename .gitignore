@@ -221,3 +221,5 @@ ModelManifest.xml
 *.css
 .store
 Coverage
+TestCoverageOpenXml
+TestCoverageOpenHtml

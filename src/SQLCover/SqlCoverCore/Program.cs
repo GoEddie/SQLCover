@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using Newtonsoft.Json;
 using SQLCoverCore;
 using System;
 using System.IO;
@@ -28,7 +29,7 @@ namespace SQLCover.Core
             public string Query { get; set; }
             // [Option('r', "result", Required = false, HelpText = "Result string")]
             // public string Result { get; set; }
-            [Option('p', "outputPath", Required = false, HelpText = "Output Path")]
+            [Option('o', "outputPath", Required = false, HelpText = "Output Path")]
             public string OutputPath { get; set; }
             [Option('a', "args", Required = false, HelpText = "Arguments for an exe file")]
             public string Args { get; set; }
@@ -48,6 +49,7 @@ namespace SQLCover.Core
         /// <summary>
         /// should minic arguments from example\SQLCover.ps1
         /// run by `dotnet run -- -c Get-CoverTSql -r`
+        /// `dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=yourStrong(!)Password" -d DatabaseWithTests -q "tSQLt.runAll" -p TestCoverageOpenXml`
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
@@ -58,7 +60,8 @@ namespace SQLCover.Core
                        if (o.Verbose)
                        {
                            Console.WriteLine($"Verbose output enabled. Current Arguments: -v {o.Verbose}");
-                           Console.WriteLine("Quick Start Example! App is in Verbose mode!");
+                           Console.WriteLine("Current Arguments Serialized::" + JsonConvert.SerializeObject(o));
+                           Console.WriteLine("SqlCoverCore! App is in Verbose mode!");
                        }
                        else
                        {
@@ -117,7 +120,7 @@ namespace SQLCover.Core
                                 "outputPath"};
                                break;
                            default:
-                               Console.WriteLine("ExportCommand:" + o.Command + " is not supported");
+                               Console.WriteLine("ExportCommand:" + o.ExportCommand + " is not supported");
                                break;
                        }
 
@@ -203,7 +206,7 @@ namespace SQLCover.Core
         private static bool validateRequired(Options o, string[] requiredParameters, bool export = false)
         {
             var valid = true;
-            var requiredString = export ? "is required for this exportCommand" : "is required for this command";
+            var requiredString = export ? " is required for this exportCommand" : " is required for this command";
             foreach (var param in requiredParameters)
             {
                 switch (param)
