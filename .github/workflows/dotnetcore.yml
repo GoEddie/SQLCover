@@ -231,9 +231,9 @@ jobs:
         cd src/SQLCover/SqlCoverCore
         dotnet restore
         mkdir -p TestCoverageOpenXml
-        dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=${pipelineDbPassword}" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageOpenXml
-        mkdir -p TestCoverageHtml
-        dotnet run -- -c Get-CoverTSql -e Export-Html -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=${pipelineDbPassword}" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageHtml
+        dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password='${pipelineDbPassword}'" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageOpenXml
+        mkdir -p TestCoverageHtml -v
+        dotnet run -- -c Get-CoverTSql -e Export-Html -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password='${pipelineDbPassword}'" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageHtml -v
 
     - name: upload TestCoverageHtml
       uses: actions/upload-artifact@v1
