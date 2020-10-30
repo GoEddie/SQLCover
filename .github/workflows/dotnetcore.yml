@@ -209,10 +209,12 @@ jobs:
     - name: tSQLt remove new lines
       run: |
         ls
-        perl -p -i -e 's/\R//g;' SelfBuildPipelineDV_tSQLt.xml
+        tr -d '\n' < SelfBuildPipelineDV_tSQLt.xml
+      # paste -sd "" SelfBuildPipelineDV_tSQLt.xml
+      # perl -v
+      # perl -p -i -e 's/\R//g;' SelfBuildPipelineDV_tSQLt.xml
 
-    - name: on failure upload junit report
-      if: failure()
+    - name: upload junit report
       uses: actions/upload-artifact@v1
       with:
         name: junit-report
