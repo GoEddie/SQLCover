@@ -1,6 +1,6 @@
 name: .NET Core
 
-on: [push]
+on: [pull_request]
 
 # use https://marketplace.visualstudio.com/items?itemName=me-dutour-mathieu.vscode-github-actions to validate yml in vscode
 env:
@@ -27,7 +27,7 @@ jobs:
     - name: upload
       uses: actions/upload-artifact@v1
       with:
-        name: dacpac-package
+        name: dacpac-DatabaseProject-package
         path: ./src/SQLCover/DatabaseProject.Build/bin/Release/netstandard2.0/
   deploy-sqlpackage:
     runs-on: ubuntu-latest
@@ -52,7 +52,7 @@ jobs:
     - name: download-artifact
       uses: actions/download-artifact@v1
       with:
-        name: dacpac-package
+        name: dacpac-DatabaseProject-package
         path: ~/dacpac-package
     # Download sqlpackage
     - name: download sqlpackage
@@ -105,6 +105,117 @@ jobs:
     # Publish the project
     - name: publish project
       run: dotnet publish ./src/SQLCover/DatabaseProject.Build/DatabaseProject.Build.csproj /p:TargetUser=sa /p:TargetPassword=JdMsKZPBBA8kVFXVrj8d /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
+
+    # Dump logs of the container if something failed
+    - name: Dump docker logs on failure
+      if: failure()
+      uses: jwalton/gh-docker-logs@v1
+
+# msbuild on windows machine until ported over to dotnet core linux
+  test-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Setup VSTest Path
+      uses: darenm/Setup-VSTest@v1
+    - name: Setup NuGet.exe
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: latest
+    - name: nuget restore
+      working-directory: src\SQLCover
+      run: nuget restore SQLCover.sln
+    - name: Debug Build UWP app
+      working-directory: src\SQLCover
+      run: msbuild SQLCover.sln /p:Configuration=Debug /p:AppxBundlePlatforms="x86|x64|ARM" /p:AppxPackageDir=".\AppxPackages" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload
+    - name: VSTest
+      working-directory: src\SQLCover
+      run: vstest.console.exe test\SQLCover.UnitTests\bin\Debug\SQLCover.UnitTests.dll
+
+# can only build dacpac that include master and tsqlt tests on a windows machine
+  build-dacpac-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Setup NuGet.exe
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: latest
+    - name: nuget restore
+      working-directory: src\SQLCover
+      run: nuget restore SQLCover.sln
+    - name: MSBuild
+      working-directory: src\SQLCover
+      run: msbuild SQLCover.sln /property:Configuration=Release
+          # cd %GITHUB_WORKSPACE%\src\SQLCover
+          # msbuild SQLCover.sln
+    - name: build dacpac
+      shell: cmd
+      run: |
+          echo %GITHUB_WORKSPACE%
+          dir %GITHUB_WORKSPACE%
+          dir %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests\bin\
+    - name: upload
+      uses: actions/upload-artifact@v1
+      with:
+        name: dacpac-DatabaseWithTests-package
+        path: ./src/SQLCover/test/DatabaseWithTests/bin/Release/
+
+# run tsqlt create.sql script, tsqlt tests in db, and export junit xml report against a live db
+  deploy-publish-DatabaseWithTests:
+    runs-on: ubuntu-latest
+    needs: build-dacpac-windows
+    # Service containers to run with `runner-job`
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: JdMsKZPBBA8kVFXVrj8d
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
+          --health-interval 10s
+          --health-timeout 3s
+          --health-retries 10
+          --health-start-period 10s
+    steps:
+    # Download artifacts
+    - name: download-artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: dacpac-DatabaseWithTests-package
+        path: ~/dacpac-package
+    - name: deploy db
+      run: |
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -i '~/dacpac-package/DatabaseWithTests_Create.sql' || exit 1
+
+    - name: tSQLt tests
+      run: |
+        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'EXEC tSQLt.RunAll' || exit 1
+
+    - name: tSQLt XmlResultFormatter
+      run: |
+        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "TEST-SelfBuildPipelineDV_tSQLt.xml" || exit 1
+
+    - name: tSQLt remove new lines
+      run: |
+        ls
+        tr -d '\n' < TEST-SelfBuildPipelineDV_tSQLt.xml
+      # paste -sd "" TEST-SelfBuildPipelineDV_tSQLt.xml
+      # perl -v
+      # perl -p -i -e 's/\R//g;' TEST-SelfBuildPipelineDV_tSQLt.xml
+
+    - name: upload junit report
+      uses: actions/upload-artifact@v1
+      with:
+        name: junit-report
+        path: TEST-SelfBuildPipelineDV_tSQLt.xml
 
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure
