@@ -7,7 +7,7 @@ BEGIN
   
   SELECT @NumParticles = COUNT(1) FROM Accelerator.Particle;
   
-  IF @NumParticles > 2
+  IF @NumParticles >= 2
     RETURN 1;
 
   RETURN 0;

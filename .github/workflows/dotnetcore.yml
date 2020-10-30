@@ -172,7 +172,7 @@ jobs:
 
     - name: tSQLt tests
       run: |
-        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'EXEC tSQLt.RunAll' || exit 1
+        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'EXEC tSQLt.RunAll'
         /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "SelfBuildPipelineDV_tSQLt.xml" || exit 1
         ls
         perl -p -i -e 's/\R//g;' SelfBuildPipelineDV_tSQLt.xml
