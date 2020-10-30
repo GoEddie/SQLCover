@@ -104,10 +104,7 @@ namespace SQLCover.Core
                            case "Export-OpenXml":
                                eType = CommandType.ExportOpenXml;
                                requiredExportParameters = new string[]{
-                                "connectionString",
-                                "databaseName",
-                                "exeName",
-                                "args"};
+                                "outputPath"};
                                break;
                            case "Start-ReportGenerator":
                                eType = CommandType.StartReportGenerator;
