@@ -201,27 +201,27 @@ jobs:
 
     - name: tSQLt XmlResultFormatter
       run: |
-        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "SelfBuildPipelineDV_tSQLt.xml" || exit 1
+        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "TEST-SelfBuildPipelineDV_tSQLt.xml" || exit 1
 
     - name: tSQLt remove new lines
       run: |
         ls
-        tr -d '\n' < SelfBuildPipelineDV_tSQLt.xml
-      # paste -sd "" SelfBuildPipelineDV_tSQLt.xml
+        tr -d '\n' < TEST-SelfBuildPipelineDV_tSQLt.xml
+      # paste -sd "" TEST-SelfBuildPipelineDV_tSQLt.xml
       # perl -v
-      # perl -p -i -e 's/\R//g;' SelfBuildPipelineDV_tSQLt.xml
+      # perl -p -i -e 's/\R//g;' TEST-SelfBuildPipelineDV_tSQLt.xml
 
     - name: upload junit report
       uses: actions/upload-artifact@v1
       with:
         name: junit-report
-        path: SelfBuildPipelineDV_tSQLt.xml
+        path: TEST-SelfBuildPipelineDV_tSQLt.xml
       
     - uses: ashley-taylor/junit-report-annotations-action@1.3
       if: always()
       with:
         access-token: ${{ secrets.GITHUB_TOKEN }}
-        path: "*.xml"
+        path: "**/TEST-*.xml"
 
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure
