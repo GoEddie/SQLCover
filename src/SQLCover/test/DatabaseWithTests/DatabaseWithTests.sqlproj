@@ -139,6 +139,7 @@
     <Folder Include="AcceleratorTests\Stored Procedures\" />
     <Folder Include="tSQLt\User Defined Types\" />
     <Folder Include="Assemblies\" />
+    <Folder Include="Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\users.sql">
@@ -851,5 +852,8 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PreDeploy Include="Scripts\Script.PreDeployment.sql" />
   </ItemGroup>
 </Project>
