@@ -167,11 +167,11 @@ jobs:
         name: dacpac-DatabaseWithTests-package
         path: ~/dacpac-package
     - name: deploy db
-      run: >
+      run: |
         /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -i '~/dacpac-package/DatabaseWithTests_Create.sql'
 
     - name: tSQLt tests
-      run: >
+      run: |
         /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'EXEC tSQLt.RunAll'
         /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "SelfBuildPipelineDV_tSQLt.xml"
         ls
