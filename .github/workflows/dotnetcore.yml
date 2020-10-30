@@ -74,7 +74,7 @@ jobs:
         /Properties:IncludeCompositeObjects=True
         /TargetServerName:localhost
         /TargetUser:sa
-        /TargetPassword:${pipelineDbPassword}
+        /TargetPassword:${{env.pipelineDbPassword}}
         /TargetDatabaseName:DatabaseProject
 
     # Dump logs of the container if something failed
@@ -184,7 +184,7 @@ jobs:
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '{pipelineDbPassword}' -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 3s
           --health-retries 10
@@ -248,6 +248,23 @@ jobs:
       with:
         name: TestCoverageOpenXml
         path: src/SQLCover/SqlCoverCore/TestCoverageOpenXml
+
+    - name: reportgenerator opencover
+      run: |
+        export DOTNET_CLI_TELEMETRY_OPTOUT=1
+        cd ${GITHUB_WORKSPACE}
+        dotnet tool install dotnet-reportgenerator-globaltool --tool-path tools
+        cd src/SQLCover/SqlCoverCore/TestCoverageOpenXml
+        ./tools/reportgenerator "-reports:Coverage.opencover.xml;" "-targetdir:${GITHUB_WORKSPACE}/Reports" -reportTypes:Html;
+        cd ${GITHUB_WORKSPACE}
+
+    # .\tools\reportgenerator.exe "-reports:src\SQLCover\SqlCoverCore\TestCoverageOpenXml\Coverage.opencover.xml;" "-targetdir:Reports" -reportTypes:Html;
+
+    - name: upload Reports
+      uses: actions/upload-artifact@v1
+      with:
+        name: Reports-reportgenerator
+        path: Reports
 
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure

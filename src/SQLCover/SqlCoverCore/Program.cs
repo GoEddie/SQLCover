@@ -181,7 +181,7 @@ namespace SQLCover.Core
                                    {
                                        case CommandType.ExportOpenXml:
                                            resultString = results.OpenCoverXml();
-                                           results.SaveResult(outputPath + "Coverage.opencoverxml", resultString);
+                                           results.SaveResult(outputPath + "Coverage.opencover.xml", resultString);
                                            results.SaveSourceFiles(outputPath);
                                            break;
                                        case CommandType.ExportHtml:
