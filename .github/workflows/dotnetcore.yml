@@ -254,7 +254,9 @@ jobs:
         export DOTNET_CLI_TELEMETRY_OPTOUT=1
         cd ${GITHUB_WORKSPACE}
         dotnet tool install dotnet-reportgenerator-globaltool --tool-path tools
-        ./tools/reportgenerator "-reports:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/Coverage.opencover.xml;" "-targetdir:${GITHUB_WORKSPACE}/Reports" -reportTypes:Html; -sourcedirs:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/"
+        ls
+        ./tools/reportgenerator
+        ./tools/reportgenerator "-reports:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/Coverage.opencover.xml;" "-targetdir:${GITHUB_WORKSPACE}/Reports" -reportTypes:Html; "-sourcedirs:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/"
         cd ${GITHUB_WORKSPACE}
 
     # .\tools\reportgenerator.exe "-reports:src\SQLCover\SqlCoverCore\TestCoverageOpenXml\Coverage.opencover.xml;" "-targetdir:Reports" -reportTypes:Html; -sourcedirs:src\SQLCover\SqlCoverCore\TestCoverageOpenXml\"
