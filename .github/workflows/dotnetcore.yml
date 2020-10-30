@@ -177,7 +177,7 @@ jobs:
       run: >
         ~/sqlpackage/sqlpackage
         /Action:Publish
-        /SourceFile:~/dacpac-package/DatabaseWithTests.dacpac
+        /SourceFile:~/dacpac-package/DatabaseWithTests_Create.sql
         /Properties:IncludeCompositeObjects=True
         /TargetServerName:localhost
         /TargetUser:sa
