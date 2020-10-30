@@ -41,11 +41,11 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           ACCEPT_EULA: Y
-          SA_PASSWORD: ${pipelineDbPassword}
+          SA_PASSWORD: JdMsKZPBBA8kVFXVrj8d
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 3s
           --health-retries 10
@@ -231,9 +231,9 @@ jobs:
         cd src/SQLCover/SqlCoverCore
         dotnet restore
         mkdir -p TestCoverageOpenXml
-        dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password='${pipelineDbPassword}'" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageOpenXml -v
         mkdir -p TestCoverageHtml
-        dotnet run -- -c Get-CoverTSql -e Export-Html -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password='${pipelineDbPassword}'" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageHtml -v
+        dotnet run -- -c Get-CoverTSql -e Export-Html -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=JdMsKZPBBA8kVFXVrj8d" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageHtml -v
+        dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=JdMsKZPBBA8kVFXVrj8d" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageOpenXml -v
 
     - name: upload TestCoverageHtml
       uses: actions/upload-artifact@v1
