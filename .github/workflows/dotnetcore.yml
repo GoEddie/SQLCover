@@ -111,8 +111,27 @@ jobs:
       if: failure()
       uses: jwalton/gh-docker-logs@v1
 
+  build-dacpac-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: build dacpac
+      shell: cmd
+      run: |
+          echo %GITHUB_WORKSPACE%
+          cd %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests
+          call %GITHUB_WORKSPACE%\.github\build.cmd
+          dir %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests/bin/
+    - name: upload
+      uses: actions/upload-artifact@v1
+      with:
+        name: dacpac-DatabaseWithTests-package
+        path: ./src/SQLCover/test/DatabaseWithTests/bin/Release/
+
   deploy-publish-DatabaseWithTests:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
+    needs: build-dacpac-windows
+    # Service containers to run with `runner-job`
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2019-latest
@@ -127,29 +146,46 @@ jobs:
           --health-timeout 3s
           --health-retries 10
           --health-start-period 10s
-    # Fetch sources
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.401
-    - name: build dacpac
-      run: |
-          cd src/SQLCover/test/DatabaseWithTests.Build
-          dotnet restore
-          dotnet build --configuration Release
-      # cd $GITHUB_WORKSPACE
-    # Upload dacpac
-    - name: upload
-      uses: actions/upload-artifact@v1
+    # Download artifacts
+    - name: download-artifact
+      uses: actions/download-artifact@v1
       with:
         name: dacpac-DatabaseWithTests-package
-        path: ./src/SQLCover/test/DatabaseWithTests.Build/bin/Release/netstandard2.0/
-    # Publish the project
-    - name: publish project
-      run: dotnet publish ./src/SQLCover/test/DatabaseWithTests.Build/DatabaseWithTests.Build.csproj /p:TargetUser=sa /p:TargetPassword=JdMsKZPBBA8kVFXVrj8d /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
+        path: ~/dacpac-package
+    # Download sqlpackage
+    - name: download sqlpackage
+      run: >
+        curl -L https://go.microsoft.com/fwlink/?linkid=2113331 --output sqlpackage.zip &&
+        unzip sqlpackage.zip -d ~/sqlpackage &&
+        chmod a+x ~/sqlpackage/sqlpackage
+    # Run sqlpackage
+    - name: sqlpackage publish
+      run: >
+        ~/sqlpackage/sqlpackage
+        /Action:Publish
+        /SourceFile:~/dacpac-package/DatabaseWithTests.dacpac
+        /Properties:IncludeCompositeObjects=True
+        /TargetServerName:localhost
+        /TargetUser:sa
+        /TargetPassword:JdMsKZPBBA8kVFXVrj8d
+        /TargetDatabaseName:DatabaseProject
+
+    - name: tSQLt tests
+      run: >
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'EXEC tSQLt.RunAll'
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "SelfBuildPipelineDV_tSQLt.xml"
+        ls
+        perl -p -i -e 's/\R//g;' SelfBuildPipelineDV_tSQLt.xml
+      
+    - uses: ashley-taylor/junit-report-annotations-action@1.3
+      if: always()
+      with:
+        access-token: ${{ secrets.GITHUB_TOKEN }}
+        path: "SelfBuildPipelineDV_tSQLt.xml"
+
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure
       if: failure()
       uses: jwalton/gh-docker-logs@v1
+
