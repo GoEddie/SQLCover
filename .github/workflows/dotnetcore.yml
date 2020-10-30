@@ -111,6 +111,25 @@ jobs:
       if: failure()
       uses: jwalton/gh-docker-logs@v1
 
+# msbuild on windows machine until ported over to dotnet core linux
+  test-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Setup NuGet.exe
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: latest
+    - name: nuget restore
+      working-directory: src\SQLCover
+      run: nuget restore SQLCover.sln
+    - name: MSTest
+      working-directory: src\SQLCover
+      run: '& "$(vswhere -property installationPath)\Common7\IDE\MSTest.exe" SQLCover.sln'
+
+# can only build dacpac that include master and tsqlt tests on a windows machine
   build-dacpac-windows:
     runs-on: windows-latest
     steps:
@@ -141,6 +160,7 @@ jobs:
         name: dacpac-DatabaseWithTests-package
         path: ./src/SQLCover/test/DatabaseWithTests/bin/Release/
 
+# run tsqlt create.sql script, tsqlt tests in db, and export junit xml report against a live db
   deploy-publish-DatabaseWithTests:
     runs-on: ubuntu-latest
     needs: build-dacpac-windows
@@ -172,10 +192,23 @@ jobs:
 
     - name: tSQLt tests
       run: |
-        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'EXEC tSQLt.RunAll'
+        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'EXEC tSQLt.RunAll' || exit 1
+
+    - name: tSQLt XmlResultFormatter
+      run: |
         /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "SelfBuildPipelineDV_tSQLt.xml" || exit 1
+
+    - name: tSQLt remove new lines
+      run: |
         ls
         perl -p -i -e 's/\R//g;' SelfBuildPipelineDV_tSQLt.xml
+
+    - name: on failure upload junit report
+      if: failure()
+      uses: actions/upload-artifact@v1
+      with:
+        name: junit-report
+        path: SelfBuildPipelineDV_tSQLt.xml
       
     - uses: ashley-taylor/junit-report-annotations-action@1.3
       if: always()
