@@ -74,7 +74,7 @@ jobs:
         /Properties:IncludeCompositeObjects=True
         /TargetServerName:localhost
         /TargetUser:sa
-        /TargetPassword:${{env.pipelineDbPassword}}
+        /TargetPassword:JdMsKZPBBA8kVFXVrj8d
         /TargetDatabaseName:DatabaseProject
 
     # Dump logs of the container if something failed
@@ -203,15 +203,15 @@ jobs:
         dotnet-version: ${{ env.dotnetVersion}}
     - name: deploy db
       run: |
-        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${pipelineDbPassword} -i '~/dacpac-package/DatabaseWithTests_Create.sql' || exit 1
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -i '~/dacpac-package/DatabaseWithTests_Create.sql' || exit 1
 
     - name: tSQLt tests
       run: |
-        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P ${pipelineDbPassword} -Q 'EXEC tSQLt.RunAll' || exit 1
+        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P '${pipelineDbPassword}' -Q 'EXEC tSQLt.RunAll' || exit 1
 
     - name: tSQLt XmlResultFormatter
       run: |
-        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P ${pipelineDbPassword} -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "TEST-SelfBuildPipelineDV_tSQLt.xml" || exit 1
+        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P '${pipelineDbPassword}' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "TEST-SelfBuildPipelineDV_tSQLt.xml" || exit 1
 
     - name: tSQLt remove new lines
       run: |
