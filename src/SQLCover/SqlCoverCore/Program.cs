@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using SQLCoverCore;
 using System;
 
 namespace SQLCover.Core
@@ -12,6 +13,8 @@ namespace SQLCover.Core
 
             [Option('c', "command", Required = true, HelpText = "Choose command to run from:Get-CoverTSql, Get-CoverExe, Get-CoverRedgateCITest, Export-OpenXml, Start-ReportGenerator, Export-Html.")]
             public string Command { get; set; }
+            [Option('b', "debug", Required = false, HelpText = "Prints out more output.")]
+            public bool Debug { get; set; }
             [Option('p', "requiredParams", Required = false, HelpText = "Get required parameters for a command")]
             public bool GetRequiredParameters { get; set; }
             [Option('k', "connectionString", Required = false, HelpText = "Connection String to the sql server")]
@@ -116,6 +119,10 @@ namespace SQLCover.Core
                                switch (cType)
                                {
                                    case CommandType.GetCoverTSql:
+                                        var coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
+                                        var results = coverage.Cover(o.Query);
+
+                                        break;
                                    case CommandType.GetCoverExe:
                                    case CommandType.GetCoverRedgateCITest:
                                    case CommandType.ExportOpenXml:
