@@ -44,7 +44,7 @@ jobs:
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 3s
           --health-retries 10
@@ -71,7 +71,7 @@ jobs:
         /Properties:IncludeCompositeObjects=True
         /TargetServerName:localhost
         /TargetUser:sa
-        /TargetPassword:${{ env.pipelineDbPassword}}
+        /TargetPassword:${pipelineDbPassword}
         /TargetDatabaseName:DatabaseProject
 
     # Dump logs of the container if something failed
@@ -92,7 +92,7 @@ jobs:
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${{ env.pipelineDbPassword}}' -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 3s
           --health-retries 10
@@ -106,7 +106,7 @@ jobs:
         dotnet-version: ${{ env.dotnetVersion}}
     # Publish the project
     - name: publish project
-      run: dotnet publish ./src/SQLCover/DatabaseProject.Build/DatabaseProject.Build.csproj /p:TargetUser=sa /p:TargetPassword=${{ env.pipelineDbPassword}} /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
+      run: dotnet publish ./src/SQLCover/DatabaseProject.Build/DatabaseProject.Build.csproj /p:TargetUser=sa /p:TargetPassword=${pipelineDbPassword} /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
 
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure
@@ -181,7 +181,7 @@ jobs:
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${{ env.pipelineDbPassword}}' -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 3s
           --health-retries 10
@@ -199,15 +199,15 @@ jobs:
         dotnet-version: ${{ env.dotnetVersion}}
     - name: deploy db
       run: |
-        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${{ env.pipelineDbPassword}}' -i '~/dacpac-package/DatabaseWithTests_Create.sql' || exit 1
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -i '~/dacpac-package/DatabaseWithTests_Create.sql' || exit 1
 
     - name: tSQLt tests
       run: |
-        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P '${{ env.pipelineDbPassword}}' -Q 'EXEC tSQLt.RunAll' || exit 1
+        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P '${pipelineDbPassword}' -Q 'EXEC tSQLt.RunAll' || exit 1
 
     - name: tSQLt XmlResultFormatter
       run: |
-        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P '${{ env.pipelineDbPassword}}' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "TEST-SelfBuildPipelineDV_tSQLt.xml" || exit 1
+        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P '${pipelineDbPassword}' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "TEST-SelfBuildPipelineDV_tSQLt.xml" || exit 1
 
     - name: tSQLt remove new lines
       run: |
@@ -229,9 +229,9 @@ jobs:
         cd src/SQLCover/SqlCoverCore
         dotnet restore
         mkdir -p TestCoverageOpenXml
-        dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=${{ env.pipelineDbPassword}}" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageOpenXml
+        dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=${pipelineDbPassword}" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageOpenXml
         mkdir -p TestCoverageHtml
-        dotnet run -- -c Get-CoverTSql -e Export-Html -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=${{ env.pipelineDbPassword}}" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageHtml
+        dotnet run -- -c Get-CoverTSql -e Export-Html -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=${pipelineDbPassword}" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageHtml
 
     - name: upload TestCoverageHtml
       uses: actions/upload-artifact@v1
