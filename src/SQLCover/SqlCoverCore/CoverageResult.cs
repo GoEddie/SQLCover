@@ -300,6 +300,11 @@ namespace SQLCoverCore
             }
         }
 
+        public void SaveResult(string path, string resultString)
+        {
+            File.WriteAllText(path, resultString);
+        }
+
         /// <summary>
         /// https://raw.githubusercontent.com/jenkinsci/cobertura-plugin/master/src/test/resources/hudson/plugins/cobertura/coverage-with-data.xml
         /// http://cobertura.sourceforge.net/xml/coverage-03.dtd

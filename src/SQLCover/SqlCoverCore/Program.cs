@@ -26,8 +26,8 @@ namespace SQLCover.Core
             public string databaseName { get; set; }
             [Option('q', "query", Required = false, HelpText = "Sql Query, try tSQLt.runAll")]
             public string Query { get; set; }
-            [Option('r', "result", Required = false, HelpText = "Result string")]
-            public string Result { get; set; }
+            // [Option('r', "result", Required = false, HelpText = "Result string")]
+            // public string Result { get; set; }
             [Option('p', "outputPath", Required = false, HelpText = "Output Path")]
             public string OutputPath { get; set; }
             [Option('a', "args", Required = false, HelpText = "Arguments for an exe file")]
@@ -88,7 +88,7 @@ namespace SQLCover.Core
                                break;
                            case "Get-CoverRedgateCITest":
                                cType = CommandType.GetCoverRedgateCITest;
-                               requiredParameters = new string[]{"result",
+                               requiredParameters = new string[]{
                                 "outputPath"};
                                break;
                            default:
@@ -113,7 +113,7 @@ namespace SQLCover.Core
                                break;
                            case "Export-Html":
                                eType = CommandType.ExportHtml;
-                               requiredExportParameters = new string[]{"result",
+                               requiredExportParameters = new string[]{
                                 "outputPath"};
                                break;
                            default:
@@ -169,16 +169,25 @@ namespace SQLCover.Core
                                            outputPath += Path.DirectorySeparatorChar;
                                        }
                                    }
-                                   string.IsNullOrWhiteSpace(o.OutputPath) ? "" :
+                                   else
+                                   {
+                                       outputPath = "Coverage" + Path.DirectorySeparatorChar;
+                                       if (!Directory.Exists(outputPath))
+                                       {
+                                           Directory.CreateDirectory(outputPath);
+                                       }
+                                   }
                                    switch (eType)
                                    {
                                        case CommandType.ExportOpenXml:
                                            resultString = results.OpenCoverXml();
-                                           results.SaveSourceFiles(outputPath + "Coverage.opencoverxml");
+                                           results.SaveResult(outputPath + "Coverage.opencoverxml", resultString);
+                                           results.SaveSourceFiles(outputPath);
                                            break;
                                        case CommandType.ExportHtml:
                                            resultString = results.Html();
-                                           results.SaveSourceFiles(outputPath + "Coverage.html");
+                                           results.SaveResult(outputPath + "Coverage.html", resultString);
+                                           results.SaveSourceFiles(outputPath);
                                            break;
                                        // thinking this should be separate from program, called directly from ci/cd
                                        case CommandType.StartReportGenerator:
@@ -217,13 +226,6 @@ namespace SQLCover.Core
                         if (string.IsNullOrWhiteSpace(o.Query))
                         {
                             Console.WriteLine("query" + requiredString);
-                            valid = false;
-                        }
-                        break;
-                    case "result":
-                        if (string.IsNullOrWhiteSpace(o.Result))
-                        {
-                            Console.WriteLine("result" + requiredString);
                             valid = false;
                         }
                         break;
