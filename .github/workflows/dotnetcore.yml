@@ -126,7 +126,7 @@ jobs:
       run: nuget restore SQLCover.sln
     - name: MSBuild
       working-directory: src\SQLCover
-      run: msbuild SQLCover.sln
+      run: msbuild SQLCover.sln /property:Configuration=Release
           # cd %GITHUB_WORKSPACE%\src\SQLCover
           # msbuild SQLCover.sln
     - name: build dacpac
