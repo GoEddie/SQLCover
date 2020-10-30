@@ -41,7 +41,7 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           ACCEPT_EULA: Y
-          SA_PASSWORD: ${{ env.pipelineDbPassword}}
+          SA_PASSWORD: ${pipelineDbPassword}
         ports:
           - 1433:1433
         options: >-
@@ -89,7 +89,7 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           ACCEPT_EULA: Y
-          SA_PASSWORD: ${{ env.pipelineDbPassword}}
+          SA_PASSWORD: ${pipelineDbPassword}
         ports:
           - 1433:1433
         options: >-
@@ -178,7 +178,7 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           ACCEPT_EULA: Y
-          SA_PASSWORD: ${{ env.pipelineDbPassword}}
+          SA_PASSWORD: ${pipelineDbPassword}
         ports:
           - 1433:1433
         options: >-
