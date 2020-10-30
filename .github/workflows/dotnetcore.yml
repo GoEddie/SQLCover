@@ -72,7 +72,7 @@ jobs:
         /Properties:IncludeCompositeObjects=True
         /TargetServerName:localhost
         /TargetUser:sa
-        /TargetPassword:${pipelineDbPassword}
+        /TargetPassword:%pipelineDbPassword%
         /TargetDatabaseName:DatabaseProject
 
     # Dump logs of the container if something failed
@@ -189,6 +189,7 @@ jobs:
           --health-start-period 10s
     steps:
     # Download artifacts
+    - uses: actions/checkout@v1
     - name: download-artifact
       uses: actions/download-artifact@v1
       with:
