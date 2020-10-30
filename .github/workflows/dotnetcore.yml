@@ -166,23 +166,9 @@ jobs:
       with:
         name: dacpac-DatabaseWithTests-package
         path: ~/dacpac-package
-    # Download sqlpackage
-    - name: download sqlpackage
+    - name: deploy db
       run: >
-        curl -L https://go.microsoft.com/fwlink/?linkid=2113331 --output sqlpackage.zip &&
-        unzip sqlpackage.zip -d ~/sqlpackage &&
-        chmod a+x ~/sqlpackage/sqlpackage
-    # Run sqlpackage
-    - name: sqlpackage publish
-      run: >
-        ~/sqlpackage/sqlpackage
-        /Action:Publish
-        /SourceFile:~/dacpac-package/DatabaseWithTests_Create.sql
-        /Properties:IncludeCompositeObjects=True
-        /TargetServerName:localhost
-        /TargetUser:sa
-        /TargetPassword:JdMsKZPBBA8kVFXVrj8d
-        /TargetDatabaseName:DatabaseProject
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -i '~/dacpac-package/DatabaseWithTests_Create.sql'
 
     - name: tSQLt tests
       run: >
