@@ -115,11 +115,13 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Setup MSBuild.exe
-      uses: warrenbuckley/Setup-MSBuild@v1
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
     - name: MSBuild
       working-directory: src\SQLCover
-      run: msbuild SQLCover.csproj
+      run: msbuild SQLCover.sln
+          # cd %GITHUB_WORKSPACE%\src\SQLCover
+          # msbuild SQLCover.sln
     - name: build dacpac
       shell: cmd
       run: |
