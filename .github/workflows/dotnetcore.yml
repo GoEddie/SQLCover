@@ -43,11 +43,11 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           ACCEPT_EULA: Y
-          SA_PASSWORD: ${pipelineDbPassword}
+          SA_PASSWORD: JdMsKZPBBA8kVFXVrj8d
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 3s
           --health-retries 10
@@ -180,11 +180,11 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           ACCEPT_EULA: Y
-          SA_PASSWORD: ${pipelineDbPassword}
+          SA_PASSWORD: JdMsKZPBBA8kVFXVrj8d
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 3s
           --health-retries 10
@@ -203,15 +203,15 @@ jobs:
         dotnet-version: ${{ env.dotnetVersion}}
     - name: deploy db
       run: |
-        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -i '~/dacpac-package/DatabaseWithTests_Create.sql' || exit 1
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -i '~/dacpac-package/DatabaseWithTests_Create.sql' || exit 1
 
     - name: tSQLt tests
       run: |
-        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P '${pipelineDbPassword}' -Q 'EXEC tSQLt.RunAll' || exit 1
+        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'EXEC tSQLt.RunAll' || exit 1
 
     - name: tSQLt XmlResultFormatter
       run: |
-        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P '${pipelineDbPassword}' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "TEST-SelfBuildPipelineDV_tSQLt.xml" || exit 1
+        /opt/mssql-tools/bin/sqlcmd -d DatabaseWithTests -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -y0 -Q 'SET NOCOUNT ON; EXEC tSQLt.XmlResultFormatter' -o "TEST-SelfBuildPipelineDV_tSQLt.xml" || exit 1
 
     - name: tSQLt remove new lines
       run: |
@@ -234,8 +234,8 @@ jobs:
         dotnet restore
         mkdir -p TestCoverageOpenXml
         mkdir -p TestCoverageHtml
-        dotnet run -- -c Get-CoverTSql -e Export-Html -k "Server=localhost;Database=master;User ID=sa;Password=${pipelineDbPassword}" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageHtml -v
-        dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Server=localhost;Database=master;User ID=sa;Password=${pipelineDbPassword}" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageOpenXml -v
+        dotnet run -- -c Get-CoverTSql -e Export-Html -k "Server=localhost;Database=master;User ID=sa;Password=JdMsKZPBBA8kVFXVrj8d" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageHtml -v
+        dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Server=localhost;Database=master;User ID=sa;Password=JdMsKZPBBA8kVFXVrj8d" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageOpenXml -v
 
     - name: upload TestCoverageHtml
       uses: actions/upload-artifact@v1
@@ -254,11 +254,10 @@ jobs:
         export DOTNET_CLI_TELEMETRY_OPTOUT=1
         cd ${GITHUB_WORKSPACE}
         dotnet tool install dotnet-reportgenerator-globaltool --tool-path tools
-        cd src/SQLCover/SqlCoverCore/TestCoverageOpenXml
-        ./tools/reportgenerator "-reports:Coverage.opencover.xml;" "-targetdir:${GITHUB_WORKSPACE}/Reports" -reportTypes:Html;
+        ./tools/reportgenerator "-reports:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/Coverage.opencover.xml;" "-targetdir:${GITHUB_WORKSPACE}/Reports" -reportTypes:Html; -sourcedirs:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/"
         cd ${GITHUB_WORKSPACE}
 
-    # .\tools\reportgenerator.exe "-reports:src\SQLCover\SqlCoverCore\TestCoverageOpenXml\Coverage.opencover.xml;" "-targetdir:Reports" -reportTypes:Html;
+    # .\tools\reportgenerator.exe "-reports:src\SQLCover\SqlCoverCore\TestCoverageOpenXml\Coverage.opencover.xml;" "-targetdir:Reports" -reportTypes:Html; -sourcedirs:src\SQLCover\SqlCoverCore\TestCoverageOpenXml\"
 
     - name: upload Reports
       uses: actions/upload-artifact@v1
