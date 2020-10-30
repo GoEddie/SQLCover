@@ -1,0 +1,26 @@
+<Project Sdk="MSBuild.Sdk.SqlProj/1.1.0">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <SqlServerVersion>Sql150</SqlServerVersion>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\DatabaseWithTests\dbo\**\*.sql" />
+    <Content Include="..\DatabaseWithTests\security\**\*.sql" />
+    <Content Include="..\DatabaseWithTests\Accelerator\**\*.sql" />
+
+  </ItemGroup>
+  <!-- tsql tests -->
+  <ItemGroup>
+    <PreDeploy Include="..\..\..\..\tSQLt_V1.0.5873.27393\SetClrEnabled-linux.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\..\tSQLt_V1.0.5873.27393\tSQLt.class.sql" />
+    <Content Include="..\DatabaseWithTests\AcceleratorTests\**\*.sql" />
+    <Content Include="..\DatabaseWithTests\login tests\**\*.sql" />
+    <Content Include="..\DatabaseWithTests\tSQLt\**\*.sql" />
+  </ItemGroup>
+
+</Project>
