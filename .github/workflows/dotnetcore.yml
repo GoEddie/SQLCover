@@ -216,12 +216,6 @@ jobs:
       with:
         name: junit-report
         path: TEST-SelfBuildPipelineDV_tSQLt.xml
-      
-    - uses: ashley-taylor/junit-report-annotations-action@1.3
-      if: always()
-      with:
-        access-token: ${{ secrets.GITHUB_TOKEN }}
-        path: "**/TEST-*.xml"
 
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure
