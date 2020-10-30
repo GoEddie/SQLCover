@@ -118,8 +118,8 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
     - name: MSBuild
-      working-directory: src\SQLCover
-      run: msbuild SQLCover.sln
+      working-directory: src\SQLCover\test\DatabaseWithTests
+      run: msbuild DatabaseWithTests.sqlproj
           # cd %GITHUB_WORKSPACE%\src\SQLCover
           # msbuild SQLCover.sln
     - name: build dacpac
