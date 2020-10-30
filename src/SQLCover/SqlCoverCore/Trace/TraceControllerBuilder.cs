@@ -1,7 +1,7 @@
-using System;
 using SQLCoverCore.Gateway;
 using SQLCoverCore.Objects;
 using SQLCoverCore.Source;
+using System;
 
 namespace SQLCoverCore.Trace
 {
@@ -10,8 +10,8 @@ namespace SQLCoverCore.Trace
         public TraceController GetTraceController(DatabaseGateway gateway, string databaseName, TraceControllerType type)
         {
 
-         
-            switch(type)
+
+            switch (type)
             {
                 case TraceControllerType.Azure:
                     return new AzureTraceController(gateway, databaseName);
@@ -31,12 +31,12 @@ namespace SQLCoverCore.Trace
 
             var isAzure = source.IsAzure();
 
-            if(!isAzure)
+            if (!isAzure)
                 return new SqlTraceController(gateway, databaseName);
-            
+
             var version = source.GetVersion();
-            if(version < SqlServerVersion.Sql120)
-                throw  new Exception("SQL Azure is only supported from Version 12");
+            if (version < SqlServerVersion.Sql120)
+                throw new Exception("SQL Azure is only supported from Version 12");
 
             return new AzureTraceController(gateway, databaseName);
         }

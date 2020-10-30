@@ -33,7 +33,7 @@ namespace SQLCoverCore
             _filterIllegalChars = filterIllegalChars;
         }
 
-       
+
         public static string Encode(string s)
         {
             using (var stream = new StringReader(s))
@@ -63,30 +63,30 @@ namespace SQLCoverCore
             while (_buf.Count == 0 && _source.Peek() != endSentinel)
             {
                 // Strings in .NET are assumed to be UTF-16 encoded [1].
-                var c = (char) _source.Read();
+                var c = (char)_source.Read();
                 if (Entities.ContainsKey(c))
                 {
                     // Encode all entities defined in the XML spec [2].
                     foreach (var i in Entities[c]) _buf.Enqueue(i);
                 }
                 else if (!(0x0 <= c && c <= 0x8) &&
-                         !new[] {0xB, 0xC}.Contains(c) &&
+                         !new[] { 0xB, 0xC }.Contains(c) &&
                          !(0xE <= c && c <= 0x1F) &&
                          !(0x7F <= c && c <= 0x84) &&
                          !(0x86 <= c && c <= 0x9F) &&
                          !(0xD800 <= c && c <= 0xDFFF) &&
-                         !new[] {0xFFFE, 0xFFFF}.Contains(c))
+                         !new[] { 0xFFFE, 0xFFFF }.Contains(c))
                 {
                     // Allow if the Unicode codepoint is legal in XML [3].
                     _buf.Enqueue(c);
                 }
                 else if (char.IsHighSurrogate(c) &&
                          _source.Peek() != endSentinel &&
-                         char.IsLowSurrogate((char) _source.Peek()))
+                         char.IsLowSurrogate((char)_source.Peek()))
                 {
                     // Allow well-formed surrogate pairs [1].
                     _buf.Enqueue(c);
-                    _buf.Enqueue((char) _source.Read());
+                    _buf.Enqueue((char)_source.Read());
                 }
                 else if (!_filterIllegalChars)
                 {
@@ -94,7 +94,7 @@ namespace SQLCoverCore
                     // references due to the "Legal Character" constraint of
                     // XML [4]. Nor are they allowed in CDATA sections [5].
                     throw new ArgumentException(
-                        string.Format("Illegal character: '{0:X}'", (int) c));
+                        string.Format("Illegal character: '{0:X}'", (int)c));
                 }
             }
         }

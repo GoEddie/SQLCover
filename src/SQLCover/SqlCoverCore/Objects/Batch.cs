@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using SQLCoverCore.Parsers;
+﻿using SQLCoverCore.Parsers;
+using System.Collections.Generic;
 
 namespace SQLCoverCore.Objects
 {
@@ -12,16 +12,16 @@ namespace SQLCoverCore.Objects
             FileName = fileName;
             ObjectName = objectName;
             ObjectId = objectId;
-            
+
             Statements = parser.GetChildStatements(text, quotedIdentifier);
         }
-            
+
         public bool QuotedIdentifier;
         public string Text;
         public string FileName;
         public string ObjectName;
         public int ObjectId;
 
-        public readonly  List<Statement> Statements;
+        public readonly List<Statement> Statements;
     }
 }

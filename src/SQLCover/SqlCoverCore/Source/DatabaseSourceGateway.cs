@@ -1,12 +1,12 @@
+using SQLCoverCore.Gateway;
+using SQLCoverCore.Objects;
+using SQLCoverCore.Parsers;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using SQLCoverCore.Gateway;
-using SQLCoverCore.Objects;
-using SQLCoverCore.Parsers;
 
 namespace SQLCoverCore.Source
 {
@@ -39,35 +39,35 @@ namespace SQLCoverCore.Source
         }
 
 
-public IEnumerable<Batch> GetBatches(List<string> objectFilter)
+        public IEnumerable<Batch> GetBatches(List<string> objectFilter)
         {
             var table =
                 _databaseGateway.GetRecords(
-                           
+
                             "SELECT sm.object_id, ISNULL('[' + OBJECT_SCHEMA_NAME(sm.object_id) + '].[' + OBJECT_NAME(sm.object_id) + ']', '[' + st.name + ']')  object_name, sm.definition, sm.uses_quoted_identifier FROM sys.sql_modules sm LEFT JOIN sys.triggers st ON st.object_id = sm.object_id WHERE sm.object_id NOT IN(SELECT object_id FROM sys.objects WHERE type = 'IF'); ");
 
             var batches = new List<Batch>();
-            
+
             var version = GetVersion();
             var excludedObjects = GetExcludedObjects();
-            if(objectFilter == null)
+            if (objectFilter == null)
                 objectFilter = new List<string>();
 
             objectFilter.Add(".*tSQLt.*");
 
             foreach (DataRow row in table.Rows)
             {
-                var quoted = (bool) row["uses_quoted_identifier"];
-                
+                var quoted = (bool)row["uses_quoted_identifier"];
+
                 var name = row["object_name"] as string;
-                
-                if (name != null && row["object_id"] as int? != null &&  DoesNotMatchFilter(name, objectFilter, excludedObjects))
+
+                if (name != null && row["object_id"] as int? != null && DoesNotMatchFilter(name, objectFilter, excludedObjects))
                 {
                     batches.Add(
-                        new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine(GetDefinition(row)), name, name, (int) row["object_id"]));
+                        new Batch(new StatementParser(version), quoted, EndDefinitionWithNewLine(GetDefinition(row)), name, name, (int)row["object_id"]));
 
                 }
-                
+
             }
 
             table.Dispose();
@@ -77,7 +77,7 @@ public IEnumerable<Batch> GetBatches(List<string> objectFilter)
                 batch.StatementCount = batch.Statements.Count(p => p.IsCoverable);
             }
 
-            return batches.Where(p=>p.StatementCount > 0);
+            return batches.Where(p => p.StatementCount > 0);
         }
 
         private static string GetDefinition(DataRow row)
@@ -91,8 +91,8 @@ public IEnumerable<Batch> GetBatches(List<string> objectFilter)
             }
 
             return String.Empty;
-            
-  }
+
+        }
         public string GetWarnings()
         {
             var warnings = new StringBuilder();
@@ -104,7 +104,7 @@ public IEnumerable<Batch> GetBatches(List<string> objectFilter)
 
             foreach (DataRow row in table.Rows)
             {
-                if(row["object_name"] == null || row["object_name"] as string == null)
+                if (row["object_name"] == null || row["object_name"] as string == null)
                 {
                     warnings.AppendFormat("An object_name was not found, unable to provide code coverage results, I don't even know the name to tell you what it was - check sys.sql_modules where definition is null and the object is not an inline function");
 
@@ -157,7 +157,7 @@ select major_id from sys.extended_properties ep
 
             foreach (var filter in objectFilter)
             {
-                if (Regex.IsMatch(name, (string) (filter ?? ".*")))
+                if (Regex.IsMatch(name, (string)(filter ?? ".*")))
                     return false;
             }
 
@@ -166,7 +166,7 @@ select major_id from sys.extended_properties ep
                 if (filter == lowerName)
                     return false;
             }
-            
+
             return true;
         }
     }

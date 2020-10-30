@@ -1,6 +1,6 @@
+using SQLCoverCore.Gateway;
 using System;
 using System.Collections.Generic;
-using SQLCoverCore.Gateway;
 
 namespace SQLCoverCore.Trace
 {
@@ -9,9 +9,9 @@ namespace SQLCoverCore.Trace
         protected readonly string DatabaseId;
         protected readonly DatabaseGateway Gateway;
         protected string FileName;
-        
+
         protected readonly string Name;
-        
+
         public TraceController(DatabaseGateway gateway, string databaseName)
         {
             Gateway = gateway;
@@ -25,7 +25,7 @@ namespace SQLCoverCore.Trace
         public abstract void Drop();
 
 
-        protected void RunScript(string query, string error, int timeout =30)
+        protected void RunScript(string query, string error, int timeout = 30)
         {
             var script = GetScript(query);
             try

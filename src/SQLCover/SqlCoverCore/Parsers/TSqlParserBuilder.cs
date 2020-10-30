@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 using SQLCoverCore.Objects;
+using System;
 
 namespace SQLCoverCore.Parsers
 {

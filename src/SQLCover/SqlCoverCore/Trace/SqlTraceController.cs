@@ -1,14 +1,14 @@
-﻿using System;
+﻿using SQLCoverCore.Gateway;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using SQLCoverCore.Gateway;
 
 namespace SQLCoverCore.Trace
 {
     class SqlTraceController : TraceController
     {
-        
+
         protected const string CreateTrace = @"CREATE EVENT SESSION [{0}] ON SERVER 
 ADD EVENT sqlserver.sp_statement_starting(action (sqlserver.plan_handle, sqlserver.tsql_stack) where ([sqlserver].[database_id]=({1})))
 ADD TARGET package0.asynchronous_file_target(
@@ -29,10 +29,10 @@ WITH (MAX_MEMORY=100 MB,EVENT_RETENTION_MODE=NO_EVENT_LOSS,MAX_DISPATCH_LATENCY=
 FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
 
         private const string GetLogDir = @"EXEC xp_readerrorlog 0, 1, N'Logging SQL Server messages in file'";
-        
+
         public SqlTraceController(DatabaseGateway gateway, string databaseName) : base(gateway, databaseName)
         {
-            
+
         }
 
         protected virtual void Create()
@@ -88,6 +88,6 @@ FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
             }
         }
 
-        
+
     }
 }

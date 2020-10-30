@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using SQLCoverCore.Objects;
+﻿using SQLCoverCore.Objects;
+using System.Collections.Generic;
 
 namespace SQLCoverCore.Source
 {

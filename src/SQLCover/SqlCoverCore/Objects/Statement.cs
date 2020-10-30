@@ -30,7 +30,7 @@ namespace SQLCoverCore.Objects
         private void NormalizeStatement()
         {
             int chopOff = 0;
-            var index = Length-1;
+            var index = Length - 1;
             if (index <= 0)
                 return;
             if (Text.Length == 0)

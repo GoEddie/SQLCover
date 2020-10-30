@@ -1,8 +1,8 @@
-﻿using System;
+﻿using SQLCoverCore.Gateway;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading;
-using SQLCoverCore.Gateway;
 
 namespace SQLCoverCore.Trace
 {
@@ -73,7 +73,7 @@ select  v.value('(/event/@timestamp)[1]', 'datetime'), v from a
                 try
                 {
                     var records = Gateway.GetRecords(string.Format(ReadTraceFormat, Name, maxDateReceived.ToString("yyyy-MM-dd HH:mm:ss.fff")));
-                    
+
                     foreach (DataRow row in records.Rows)
                     {
                         _events.Add(row.ItemArray[1].ToString());

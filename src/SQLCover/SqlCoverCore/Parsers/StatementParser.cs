@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
 using SQLCoverCore.Objects;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SQLCoverCore.Parsers
 {
@@ -52,7 +52,7 @@ namespace SQLCoverCore.Parsers
 
             if (ShouldNotEnumerateChildren(statement))
             {
-                Statements.Add(new Statement (_script.Substring(statement.StartOffset, statement.FragmentLength),  statement.StartOffset, statement.FragmentLength, false));
+                Statements.Add(new Statement(_script.Substring(statement.StartOffset, statement.FragmentLength), statement.StartOffset, statement.FragmentLength, false));
                 _stopEnumerating = true;       //maybe ExplicitVisit would be simpler??
                 return;
             }
@@ -61,25 +61,25 @@ namespace SQLCoverCore.Parsers
 
             if (!IsIgnoredType(statement))
             {
-                Statements.Add(new Statement (_script.Substring(statement.StartOffset, statement.FragmentLength), statement.StartOffset, statement.FragmentLength, CanBeCovered(statement)));
+                Statements.Add(new Statement(_script.Substring(statement.StartOffset, statement.FragmentLength), statement.StartOffset, statement.FragmentLength, CanBeCovered(statement)));
             }
 
             if (statement is IfStatement)
             {
-                var ifStatement = (IfStatement) statement;
+                var ifStatement = (IfStatement)statement;
 
                 var offset = statement.StartOffset;
                 var length = ifStatement.Predicate.StartOffset + ifStatement.Predicate.FragmentLength - statement.StartOffset;
-                Statements.Add(new Statement (_script.Substring(offset, length), offset, length, CanBeCovered(statement)));
+                Statements.Add(new Statement(_script.Substring(offset, length), offset, length, CanBeCovered(statement)));
             }
 
             if (statement is WhileStatement)
             {
-                var whileStatement = (WhileStatement) statement;
+                var whileStatement = (WhileStatement)statement;
 
                 var offset = statement.StartOffset;
                 var length = whileStatement.Predicate.StartOffset + whileStatement.Predicate.FragmentLength - statement.StartOffset;
-                Statements.Add(new Statement (_script.Substring(offset, length), offset, length, CanBeCovered(statement)));
+                Statements.Add(new Statement(_script.Substring(offset, length), offset, length, CanBeCovered(statement)));
             }
         }
 
@@ -114,7 +114,7 @@ namespace SQLCoverCore.Parsers
 
             if (statement is TryCatchStatement)
                 return false;
-                        
+
             if (statement is CreateProcedureStatement)
                 return false;
 

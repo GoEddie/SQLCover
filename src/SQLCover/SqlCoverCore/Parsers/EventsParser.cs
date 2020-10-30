@@ -1,7 +1,7 @@
+using SQLCoverCore.Objects;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using SQLCoverCore.Objects;
 
 namespace SQLCoverCore.Parsers
 {
@@ -20,7 +20,7 @@ namespace SQLCoverCore.Parsers
                 _xmlEvents = new List<string>();
                 return;
             }
-            
+
             _doc = XDocument.Parse(xmlEvents[_stringNumber++]);
         }
 
@@ -40,7 +40,7 @@ namespace SQLCoverCore.Parsers
                 _doc = XDocument.Parse(_xmlEvents[_stringNumber++]);
             else
                 _stringNumber++;
-            
+
             return statement;
         }
 
