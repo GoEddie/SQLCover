@@ -7,7 +7,7 @@ env:
   NUGET_PACKAGES_DIRECTORY: '.nupkg'
   DOCKER_DRIVER: overlay
   dotnetVersion: 3.1.401
-  pipelineDbPassword: JdMsKZPBBA8kVFXVrj8d
+  pipelineDbPassword: 'JdMsKZPBBA8kVFXVrj8d'
 
 jobs:
   
@@ -47,7 +47,7 @@ jobs:
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${pipelineDbPassword} -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 3s
           --health-retries 10
@@ -74,7 +74,7 @@ jobs:
         /Properties:IncludeCompositeObjects=True
         /TargetServerName:localhost
         /TargetUser:sa
-        /TargetPassword:JdMsKZPBBA8kVFXVrj8d
+        /TargetPassword:${pipelineDbPassword}
         /TargetDatabaseName:DatabaseProject
 
     # Dump logs of the container if something failed
@@ -203,7 +203,7 @@ jobs:
         dotnet-version: ${{ env.dotnetVersion}}
     - name: deploy db
       run: |
-        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -i '~/dacpac-package/DatabaseWithTests_Create.sql' || exit 1
+        /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${pipelineDbPassword} -i '~/dacpac-package/DatabaseWithTests_Create.sql' || exit 1
 
     - name: tSQLt tests
       run: |
@@ -234,8 +234,8 @@ jobs:
         dotnet restore
         mkdir -p TestCoverageOpenXml
         mkdir -p TestCoverageHtml
-        dotnet run -- -c Get-CoverTSql -e Export-Html -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=JdMsKZPBBA8kVFXVrj8d" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageHtml -v
-        dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Data Source=localhost;Initial Catalog=master;User ID=sa;Password=JdMsKZPBBA8kVFXVrj8d" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageOpenXml -v
+        dotnet run -- -c Get-CoverTSql -e Export-Html -k "Server=localhost;Database=master;User ID=sa;Password=JdMsKZPBBA8kVFXVrj8d" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageHtml -v
+        dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Server=localhost;Database=master;User ID=sa;Password=JdMsKZPBBA8kVFXVrj8d" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageOpenXml -v
 
     - name: upload TestCoverageHtml
       uses: actions/upload-artifact@v1
