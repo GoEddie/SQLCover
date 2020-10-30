@@ -148,10 +148,15 @@ namespace SQLCover.Core
                                        results = coverage.CoverExe(o.ExeName, o.Args);
                                        break;
                                    case CommandType.GetCoverRedgateCITest:
+                                       //    coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
+                                       //    coverage.Start();
+                                       // run Redgate SQLRelease Module
+
+                                       //    results = coverage.Stop();
                                        Console.WriteLine(cType.ToString() + " is not YET supported");
                                        break;
                                }
-                               if (coverage != null)
+                               if (coverage != null && results != null)
                                {
                                    Console.WriteLine(":::Running exportCommand" + eType.ToString() + ":::");
                                    var resultString = "";
