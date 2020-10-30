@@ -221,7 +221,7 @@ jobs:
       if: always()
       with:
         access-token: ${{ secrets.GITHUB_TOKEN }}
-        path: "SelfBuildPipelineDV_tSQLt.xml"
+        path: "*.xml"
 
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure
