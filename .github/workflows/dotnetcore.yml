@@ -120,10 +120,8 @@ jobs:
       run: |
           echo %GITHUB_WORKSPACE%
           dir %GITHUB_WORKSPACE%
-          echo %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests
-          dir %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests
-          cd %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests
-          dir %GITHUB_WORKSPACE%\.github
+          cd %GITHUB_WORKSPACE%\src\SQLCover
+          dir
           call %GITHUB_WORKSPACE%\.github\build.cmd
           dir %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests/bin/
     - name: upload
