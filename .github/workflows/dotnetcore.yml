@@ -118,6 +118,8 @@ jobs:
     - uses: actions/checkout@v1
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
+    - name: Setup VSTest Path
+      uses: darenm/Setup-VSTest@v1
     - name: Setup NuGet.exe
       uses: nuget/setup-nuget@v1
       with:
@@ -128,6 +130,12 @@ jobs:
     - name: MSTest
       working-directory: src\SQLCover
       run: '& "$(vswhere -property installationPath)\Common7\IDE\MSTest.exe" SQLCover.sln'
+    - name: Debug Build UWP app
+      working-directory: src\SQLCover
+      run: msbuild SQLCover.sln /p:Configuration=Debug /p:AppxBundlePlatforms="x86|x64|ARM" /p:AppxPackageDir=".\AppxPackages" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload
+    - name: VSTest
+      working-directory: src\SQLCover
+      run: vstest.console.exe test\SQLCover.UnitTests\bin\Debug\SQLCover.UnitTests.dll
 
 # can only build dacpac that include master and tsqlt tests on a windows machine
   build-dacpac-windows:
