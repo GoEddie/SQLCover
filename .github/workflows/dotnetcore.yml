@@ -118,9 +118,9 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
     - name: Setup NuGet.exe
-        uses: nuget/setup-nuget@v1
-        with:
-          nuget-version: latest
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: latest
     - name: nuget restore
       working-directory: src\SQLCover
       run: nuget restore SQLCover.sln
