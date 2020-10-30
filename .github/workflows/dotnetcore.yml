@@ -32,6 +32,8 @@ jobs:
         name: dacpac-DatabaseProject-package
         path: ./src/SQLCover/DatabaseProject.Build/bin/Release/netstandard2.0/
 
+  # use sqlpackage to deploy dacpac file
+  # does not work well with env db password for some reason
   deploy-sqlpackage-DatabaseProject:
     runs-on: ubuntu-latest
     needs: build-dacpac-dotnet
@@ -178,11 +180,11 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           ACCEPT_EULA: Y
-          SA_PASSWORD: ${pipelineDbPassword}
+          SA_PASSWORD: JdMsKZPBBA8kVFXVrj8d
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 3s
           --health-retries 10
@@ -225,7 +227,7 @@ jobs:
         name: junit-report
         path: TEST-SelfBuildPipelineDV_tSQLt.xml
 
-    - name: SQLCover Get-CoverTSql Export-Html
+    - name: SQLCover Get-CoverTSql Export-Html Export-OpenXml
       run: |
         export DOTNET_CLI_TELEMETRY_OPTOUT=1
         cd src/SQLCover/SqlCoverCore
