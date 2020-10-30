@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using SQLCoverCore;
 using System;
+using System.IO;
 
 namespace SQLCover.Core
 {
@@ -29,6 +30,10 @@ namespace SQLCover.Core
             public string Result { get; set; }
             [Option('p', "outputPath", Required = false, HelpText = "Output Path")]
             public string OutputPath { get; set; }
+            [Option('a', "args", Required = false, HelpText = "Arguments for an exe file")]
+            public string Args { get; set; }
+            [Option('t', "exeName", Required = false, HelpText = "executable name")]
+            public string ExeName { get; set; }
         }
         private enum CommandType
         {
@@ -68,14 +73,14 @@ namespace SQLCover.Core
                        {
                            case "Get-CoverTSql":
                                cType = CommandType.GetCoverTSql;
-                               requiredParameters = new string[]{"coverDllPath",
+                               requiredParameters = new string[]{
                                 "connectionString",
                                 "databaseName",
                                 "query"};
                                break;
                            case "Get-CoverExe":
                                cType = CommandType.GetCoverExe;
-                               requiredParameters = new string[]{"coverDllPath",
+                               requiredParameters = new string[]{
                                 "connectionString",
                                 "databaseName",
                                 "exeName",
@@ -95,7 +100,7 @@ namespace SQLCover.Core
                        {
                            case "Export-OpenXml":
                                eType = CommandType.ExportOpenXml;
-                               requiredExportParameters = new string[]{"coverDllPath",
+                               requiredExportParameters = new string[]{
                                 "connectionString",
                                 "databaseName",
                                 "exeName",
@@ -135,12 +140,13 @@ namespace SQLCover.Core
                                switch (cType)
                                {
                                    case CommandType.GetCoverTSql:
-
                                        coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
                                        results = coverage.Cover(o.Query);
-
                                        break;
                                    case CommandType.GetCoverExe:
+                                       coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
+                                       results = coverage.CoverExe(o.ExeName, o.Args);
+                                       break;
                                    case CommandType.GetCoverRedgateCITest:
                                        Console.WriteLine(cType.ToString() + " is not YET supported");
                                        break;
@@ -149,14 +155,27 @@ namespace SQLCover.Core
                                {
                                    Console.WriteLine(":::Running exportCommand" + eType.ToString() + ":::");
                                    var resultString = "";
+                                   var outputPath = "";
+                                   if (!string.IsNullOrWhiteSpace(o.OutputPath))
+                                   {
+                                       outputPath = o.OutputPath;
+                                       if (outputPath.Substring(outputPath.Length - 1, 1) != Path.DirectorySeparatorChar.ToString())
+                                       {
+                                           outputPath += Path.DirectorySeparatorChar;
+                                       }
+                                   }
+                                   string.IsNullOrWhiteSpace(o.OutputPath) ? "" :
                                    switch (eType)
                                    {
                                        case CommandType.ExportOpenXml:
                                            resultString = results.OpenCoverXml();
+                                           results.SaveSourceFiles(outputPath + "Coverage.opencoverxml");
                                            break;
                                        case CommandType.ExportHtml:
                                            resultString = results.Html();
+                                           results.SaveSourceFiles(outputPath + "Coverage.html");
                                            break;
+                                       // thinking this should be separate from program, called directly from ci/cd
                                        case CommandType.StartReportGenerator:
                                            Console.WriteLine(eType.ToString() + " is not YET supported");
                                            break;
@@ -204,12 +223,36 @@ namespace SQLCover.Core
                         }
                         break;
                     case "outputPath":
-                        if (string.IsNullOrWhiteSpace(o.OutputPath))
+                        if (!string.IsNullOrWhiteSpace(o.OutputPath))
                         {
-                            Console.WriteLine("outputPath" + requiredString);
+                            if (!Directory.Exists(o.OutputPath))
+                            {
+                                Console.WriteLine("outputPath:" + o.OutputPath + " is not a valid directory.");
+                                valid = false;
+                            }
+
+                        }
+                        else
+                        {
+                            o.OutputPath = "";
+                        }
+                        break;
+                    case "args":
+                        if (string.IsNullOrWhiteSpace(o.Args))
+                        {
+                            Console.WriteLine("args" + requiredString);
                             valid = false;
                         }
                         break;
+
+                    case "exeName":
+                        if (string.IsNullOrWhiteSpace(o.ExeName))
+                        {
+                            Console.WriteLine("exeName" + requiredString);
+                            valid = false;
+                        }
+                        break;
+
                     default:
                         Console.WriteLine("Required check on:" + param + " ignored");
                         // will always be invalid for commands not validated on a required param
