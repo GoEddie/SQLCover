@@ -12,8 +12,18 @@ namespace SQLCover.Core
 
             [Option('c', "command", Required = true, HelpText = "Choose command to run from:Get-CoverTSql, Get-CoverExe, Get-CoverRedgateCITest, Export-OpenXml, Start-ReportGenerator, Export-Html.")]
             public string Command { get; set; }
-            [Option('r', "requiredParams", Required = false, HelpText = "Get required parameters for a command")]
+            [Option('p', "requiredParams", Required = false, HelpText = "Get required parameters for a command")]
             public bool GetRequiredParameters { get; set; }
+            [Option('k', "connectionString", Required = false, HelpText = "Connection String to the sql server")]
+            public string ConnectionString { get; set; }
+            [Option('d', "databaseName", Required = false, HelpText = "Default Database")]
+            public string databaseName { get; set; }
+            [Option('q', "query", Required = false, HelpText = "Sql Query, try tSQLt.runAll")]
+            public string Query { get; set; }
+            [Option('r', "result", Required = false, HelpText = "Result string")]
+            public string Result { get; set; }
+            [Option('p', "outputPath", Required = false, HelpText = "Output Path")]
+            public string OutputPath { get; set; }
         }
         private enum CommandType
         {
@@ -92,7 +102,9 @@ namespace SQLCover.Core
                                break;
                        }
 
-                       if (cType != CommandType.Unknown)
+                       var validParams = cType != CommandType.Unknown ? validateRequired(o, requiredParameters) : false;
+
+                       if (validParams)
                        {
                            if (o.GetRequiredParameters)
                            {
@@ -115,6 +127,58 @@ namespace SQLCover.Core
                            }
                        }
                    });
+        }
+
+        private static bool validateRequired(Options o, string[] requiredParameters)
+        {
+            var valid = true;
+            foreach (var param in requiredParameters)
+            {
+                switch (param)
+                {
+                    case "connectionString":
+                        if (string.IsNullOrWhiteSpace(o.ConnectionString))
+                        {
+                            Console.WriteLine("connectionString is required for this command");
+                            valid = false;
+                        }
+                        break;
+                    case "databaseName":
+                        if (string.IsNullOrWhiteSpace(o.databaseName))
+                        {
+                            Console.WriteLine("databaseName is required for this command");
+                            valid = false;
+                        }
+                        break;
+                    case "query":
+                        if (string.IsNullOrWhiteSpace(o.Query))
+                        {
+                            Console.WriteLine("query is required for this command");
+                            valid = false;
+                        }
+                        break;
+                    case "result":
+                        if (string.IsNullOrWhiteSpace(o.Result))
+                        {
+                            Console.WriteLine("result is required for this command");
+                            valid = false;
+                        }
+                        break;
+                    case "outputPath":
+                        if (string.IsNullOrWhiteSpace(o.OutputPath))
+                        {
+                            Console.WriteLine("outputPath is required for this command");
+                            valid = false;
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("Required check on:" + param + " ignored");
+                        // will always be invalid for commands not validated on a required param
+                        valid = false;
+                        break;
+                }
+            }
+            return valid;
         }
     }
 }
