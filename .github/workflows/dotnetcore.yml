@@ -115,15 +115,17 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
+    - name: MSBuild
+      working-directory: src\SQLCover
+      run: msbuild SQLCover.csproj
     - name: build dacpac
       shell: cmd
       run: |
           echo %GITHUB_WORKSPACE%
           dir %GITHUB_WORKSPACE%
-          cd %GITHUB_WORKSPACE%\src\SQLCover
-          dir
-          call %GITHUB_WORKSPACE%\.github\build.cmd
-          dir %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests/bin/
+          dir %GITHUB_WORKSPACE%\src\SQLCover\test\DatabaseWithTests\bin\
     - name: upload
       uses: actions/upload-artifact@v1
       with:
