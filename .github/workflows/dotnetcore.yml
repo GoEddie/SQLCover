@@ -117,9 +117,16 @@ jobs:
     - uses: actions/checkout@v1
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
+    - name: Setup NuGet.exe
+        uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: latest
+    - name: nuget restore
+      working-directory: src\SQLCover
+      run: nuget restore SQLCover.sln
     - name: MSBuild
-      working-directory: src\SQLCover\test\DatabaseWithTests
-      run: msbuild DatabaseWithTests.sqlproj
+      working-directory: src\SQLCover
+      run: msbuild SQLCover.sln
           # cd %GITHUB_WORKSPACE%\src\SQLCover
           # msbuild SQLCover.sln
     - name: build dacpac
