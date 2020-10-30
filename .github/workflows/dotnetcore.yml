@@ -127,9 +127,6 @@ jobs:
     - name: nuget restore
       working-directory: src\SQLCover
       run: nuget restore SQLCover.sln
-    - name: MSTest
-      working-directory: src\SQLCover
-      run: '& "$(vswhere -property installationPath)\Common7\IDE\MSTest.exe" SQLCover.sln'
     - name: Debug Build UWP app
       working-directory: src\SQLCover
       run: msbuild SQLCover.sln /p:Configuration=Debug /p:AppxBundlePlatforms="x86|x64|ARM" /p:AppxPackageDir=".\AppxPackages" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload
