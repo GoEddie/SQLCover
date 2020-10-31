@@ -84,16 +84,16 @@
     <Compile Include="Source\FilesSystemSourceGatewayTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SQLCover\SQLCover.csproj">
-      <Project>{2ab093c7-88ae-4f6b-940e-9ae6dbc4cc87}</Project>
-      <Name>SQLCover</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SQLCover\SQLCover.csproj">
+      <Project>{2ab093c7-88ae-4f6b-940e-9ae6dbc4cc87}</Project>
+      <Name>SQLCover</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

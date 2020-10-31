@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLCover", "SQLCover\SQLCover.csproj", "{2AB093C7-88AE-4F6B-940E-9AE6DBC4CC87}"
 EndProject
@@ -22,6 +22,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLib", "test\TestLib\TestLib.csproj", "{892698FB-618A-4D80-B035-3520148603BF}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DatabaseWithTests", "test\DatabaseWithTests\DatabaseWithTests.sqlproj", "{021EDCB7-E7A1-4F6E-BF0D-73AA4DA7B62A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlCoverCore", "SqlCoverCore\SqlCoverCore.csproj", "{B357F256-EC99-4132-A198-83DE1F1D34B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlCoverCore.UnitTests", "SqlCoverCore.UnitTests\SqlCoverCore.UnitTests.csproj", "{3DE5F44C-8BE9-49D2-9196-3F6A6161FEF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLCoverLib", "SQLCoverLib\SQLCoverLib.csproj", "{5AE8E98A-0A7C-44D7-99C1-BB0C940DDF3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +63,18 @@ Global
 		{021EDCB7-E7A1-4F6E-BF0D-73AA4DA7B62A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{021EDCB7-E7A1-4F6E-BF0D-73AA4DA7B62A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{021EDCB7-E7A1-4F6E-BF0D-73AA4DA7B62A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{B357F256-EC99-4132-A198-83DE1F1D34B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B357F256-EC99-4132-A198-83DE1F1D34B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B357F256-EC99-4132-A198-83DE1F1D34B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B357F256-EC99-4132-A198-83DE1F1D34B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DE5F44C-8BE9-49D2-9196-3F6A6161FEF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DE5F44C-8BE9-49D2-9196-3F6A6161FEF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DE5F44C-8BE9-49D2-9196-3F6A6161FEF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DE5F44C-8BE9-49D2-9196-3F6A6161FEF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AE8E98A-0A7C-44D7-99C1-BB0C940DDF3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AE8E98A-0A7C-44D7-99C1-BB0C940DDF3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AE8E98A-0A7C-44D7-99C1-BB0C940DDF3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AE8E98A-0A7C-44D7-99C1-BB0C940DDF3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +85,7 @@ Global
 		{25389F17-3E61-491E-B99A-B845AE8529BA} = {DB9215AD-D611-49A3-8061-2AA1E957F12C}
 		{892698FB-618A-4D80-B035-3520148603BF} = {DB9215AD-D611-49A3-8061-2AA1E957F12C}
 		{021EDCB7-E7A1-4F6E-BF0D-73AA4DA7B62A} = {DB9215AD-D611-49A3-8061-2AA1E957F12C}
+		{3DE5F44C-8BE9-49D2-9196-3F6A6161FEF3} = {DB9215AD-D611-49A3-8061-2AA1E957F12C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5524B744-8BA0-4B61-8D23-CD1685FEE6F0}

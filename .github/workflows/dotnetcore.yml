@@ -1,22 +1,28 @@
-name: .NET Core
+name: SQLCover Pipeline
 
-on: [pull_request]
+on: 
+  pull_request:
+  push:
+    branches:
+    - master # Push events on master branch
 
 # use https://marketplace.visualstudio.com/items?itemName=me-dutour-mathieu.vscode-github-actions to validate yml in vscode
 env:
   NUGET_PACKAGES_DIRECTORY: '.nupkg'
   DOCKER_DRIVER: overlay
+  dotnetVersion: 3.1.401
+  pipelineDbPassword: 'JdMsKZPBBA8kVFXVrj8d'
 
 jobs:
   
-  test:
+  build-dacpac-dotnet:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.401
+        dotnet-version: ${{ env.dotnetVersion}}
     - name: build dacpac
       run: |
           cd src/SQLCover/DatabaseProject.Build
@@ -29,9 +35,12 @@ jobs:
       with:
         name: dacpac-DatabaseProject-package
         path: ./src/SQLCover/DatabaseProject.Build/bin/Release/netstandard2.0/
-  deploy-sqlpackage:
+
+  # use sqlpackage to deploy dacpac file
+  # does not work well with env db password for some reason
+  deploy-sqlpackage-DatabaseProject:
     runs-on: ubuntu-latest
-    needs: test
+    needs: build-dacpac-dotnet
     # Service containers to run with `runner-job`
     services:
       sqlserver:
@@ -78,19 +87,19 @@ jobs:
       uses: jwalton/gh-docker-logs@v1
 
   # Attempt to deploy a project to a SQL Server instance running in a container using dotnet publish
-  deploy-publish:
+  deploy-publish-DatabaseProject:
     runs-on: ubuntu-18.04
-    needs: test
+    needs: build-dacpac-dotnet
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           ACCEPT_EULA: Y
-          SA_PASSWORD: JdMsKZPBBA8kVFXVrj8d
+          SA_PASSWORD: ${pipelineDbPassword}
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${pipelineDbPassword}' -Q 'SELECT 1' || exit 1"
           --health-interval 10s
           --health-timeout 3s
           --health-retries 10
@@ -101,10 +110,10 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.401
+        dotnet-version: ${{ env.dotnetVersion}}
     # Publish the project
     - name: publish project
-      run: dotnet publish ./src/SQLCover/DatabaseProject.Build/DatabaseProject.Build.csproj /p:TargetUser=sa /p:TargetPassword=JdMsKZPBBA8kVFXVrj8d /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
+      run: dotnet publish ./src/SQLCover/DatabaseProject.Build/DatabaseProject.Build.csproj /p:TargetUser=sa /p:TargetPassword=${pipelineDbPassword} /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
 
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure
@@ -166,7 +175,8 @@ jobs:
         path: ./src/SQLCover/test/DatabaseWithTests/bin/Release/
 
 # run tsqlt create.sql script, tsqlt tests in db, and export junit xml report against a live db
-  deploy-publish-DatabaseWithTests:
+# also run SQLCoverCore to generate coverage reports!
+  deploy-DatabaseWithTests-SQLCover:
     runs-on: ubuntu-latest
     needs: build-dacpac-windows
     # Service containers to run with `runner-job`
@@ -186,11 +196,16 @@ jobs:
           --health-start-period 10s
     steps:
     # Download artifacts
+    - uses: actions/checkout@v1
     - name: download-artifact
       uses: actions/download-artifact@v1
       with:
         name: dacpac-DatabaseWithTests-package
         path: ~/dacpac-package
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.dotnetVersion}}
     - name: deploy db
       run: |
         /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'JdMsKZPBBA8kVFXVrj8d' -i '~/dacpac-package/DatabaseWithTests_Create.sql' || exit 1
@@ -217,8 +232,45 @@ jobs:
         name: junit-report
         path: TEST-SelfBuildPipelineDV_tSQLt.xml
 
+    - name: SQLCover Get-CoverTSql Export-Html Export-OpenXml
+      run: |
+        export DOTNET_CLI_TELEMETRY_OPTOUT=1
+        cd src/SQLCover/SqlCoverCore
+        dotnet restore
+        mkdir -p TestCoverageOpenXml
+        mkdir -p TestCoverageHtml
+        dotnet run -- -c Get-CoverTSql -e Export-Html -k "Server=localhost;Database=master;User ID=sa;Password=JdMsKZPBBA8kVFXVrj8d" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageHtml
+        dotnet run -- -c Get-CoverTSql -e Export-OpenXml -k "Server=localhost;Database=master;User ID=sa;Password=JdMsKZPBBA8kVFXVrj8d" -d DatabaseWithTests -q "tSQLt.runAll" -o TestCoverageOpenXml
+
+    - name: upload TestCoverageHtml
+      uses: actions/upload-artifact@v1
+      with:
+        name: TestCoverageHtml
+        path: src/SQLCover/SqlCoverCore/TestCoverageHtml
+
+    - name: upload TestCoverageOpenXml
+      uses: actions/upload-artifact@v1
+      with:
+        name: TestCoverageOpenXml
+        path: src/SQLCover/SqlCoverCore/TestCoverageOpenXml
+
+    - name: reportgenerator opencover
+      run: |
+        export DOTNET_CLI_TELEMETRY_OPTOUT=1
+        cd ${GITHUB_WORKSPACE}
+        dotnet tool install dotnet-reportgenerator-globaltool --tool-path tools
+        echo ./tools/reportgenerator "-reports:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/Coverage.opencover.xml;" "-targetdir:${GITHUB_WORKSPACE}/Reports" "-sourcedirs:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/" -reportTypes:Html;
+        ./tools/reportgenerator "-reports:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/Coverage.opencover.xml;" "-targetdir:${GITHUB_WORKSPACE}/Reports" "-sourcedirs:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/" -reportTypes:Html; 
+
+    # .\tools\reportgenerator.exe "-reports:src\SQLCover\SqlCoverCore\TestCoverageOpenXml\Coverage.opencover.xml;" "-targetdir:Reports" -reportTypes:Html; -sourcedirs:src\SQLCover\SqlCoverCore\TestCoverageOpenXml\"
+
+    - name: upload Reports
+      uses: actions/upload-artifact@v1
+      with:
+        name: Reports-reportgenerator
+        path: Reports
+
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure
       if: failure()
       uses: jwalton/gh-docker-logs@v1
-
