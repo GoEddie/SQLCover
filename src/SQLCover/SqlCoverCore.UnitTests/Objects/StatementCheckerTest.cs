@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using SQLCoverCore;
-using SQLCoverCore.Objects;
+using SQLCover.Objects;
 
 namespace SQLCover.UnitTests.Objects
 {

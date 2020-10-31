@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlCoverCore", "SqlCoverCor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlCoverCore.UnitTests", "SqlCoverCore.UnitTests\SqlCoverCore.UnitTests.csproj", "{3DE5F44C-8BE9-49D2-9196-3F6A6161FEF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLCoverLib", "SQLCoverLib\SQLCoverLib.csproj", "{5AE8E98A-0A7C-44D7-99C1-BB0C940DDF3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{3DE5F44C-8BE9-49D2-9196-3F6A6161FEF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DE5F44C-8BE9-49D2-9196-3F6A6161FEF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DE5F44C-8BE9-49D2-9196-3F6A6161FEF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AE8E98A-0A7C-44D7-99C1-BB0C940DDF3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AE8E98A-0A7C-44D7-99C1-BB0C940DDF3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AE8E98A-0A7C-44D7-99C1-BB0C940DDF3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AE8E98A-0A7C-44D7-99C1-BB0C940DDF3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using SQLCoverCore.Objects;
-using SQLCoverCore.Parsers;
+using SQLCover.Objects;
+using SQLCover.Parsers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -124,7 +124,6 @@ function Export-Html{
     $result.SaveSourceFiles($outputPath)    
 }
 
-
 #EXAMPLE:
 <#
     #Use the Redgate DLM suite to deploy a nuget package and run the tSQLt tests
@@ -143,6 +142,19 @@ function Export-Html{
     Start-ReportGenerator "output\path\for\xml\results" "path\to\reportgenerator.exe"
 
 
+#>
+
+# Set-ExecutionPolicy RemoteSigned
+# mkdir Log
+# launch docker sql server
+# docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=yourStrong(!)Password" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
+# deploy DatabaseWithTests project to sql server
+# call .\example\SQLCover.ps1 from powershell
+#EXAMPLE2: uncomment
+<#
+    $result = Get-CoverTSql "src\SQLCover\SQLCover\bin\Debug\SQLCover.dll" "Server=localhost;Database=master;User ID=sa;Password=yourStrong(!)Password" "DatabaseWithTests" "tSQLt.RunAll"
+    #Output the results as a basic html file
+    Export-Html $result "Log"
 #>
 
 

@@ -293,6 +293,11 @@ namespace SQLCover
 
             return builder.ToString();
         }
+
+        public void SaveResult(string path, string resultString)
+        {
+            File.WriteAllText(path, resultString);
+        }
         
         public void SaveSourceFiles(string path)
         {
