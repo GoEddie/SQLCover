@@ -27,8 +27,6 @@ namespace SQLCover.Core
             public string databaseName { get; set; }
             [Option('q', "query", Required = false, HelpText = "Sql Query, try tSQLt.runAll")]
             public string Query { get; set; }
-            // [Option('r', "result", Required = false, HelpText = "Result string")]
-            // public string Result { get; set; }
             [Option('o', "outputPath", Required = false, HelpText = "Output Path")]
             public string OutputPath { get; set; }
             [Option('a', "args", Required = false, HelpText = "Arguments for an exe file")]
