@@ -69,6 +69,7 @@
     <Compile Include="Parsers\TSqlParserBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Parsers\StatementParser.cs" />
+    <Compile Include="Serializers\OpenCoverXmlSerializer.cs" />
     <Compile Include="Source\DatabaseSourceGateway.cs" />
     <Compile Include="Source\SourceGateway.cs" />
     <Compile Include="Objects\SqlServerVersion.cs" />

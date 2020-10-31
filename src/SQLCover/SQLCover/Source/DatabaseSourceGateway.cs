@@ -75,6 +75,7 @@ public IEnumerable<Batch> GetBatches(List<string> objectFilter)
             foreach (var batch in batches)
             {
                 batch.StatementCount = batch.Statements.Count(p => p.IsCoverable);
+                batch.BranchesCount = batch.Statements.SelectMany(x => x.Branches).Count();
             }
 
             return batches.Where(p=>p.StatementCount > 0);

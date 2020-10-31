@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace SQLCover.Objects
 {
@@ -13,16 +15,37 @@ namespace SQLCover.Objects
     {
         public long StatementCount;
         public long CoveredStatementCount;
+        public long BranchesCount;
+        public long CoveredBranchesCount;
+    }
+
+    public class Branch : CoverageInformation
+    {
+        public Branch(string text, int offset, int length)
+        {
+            Text = text;
+            Offset = offset;
+            Length = length;
+        }
+
+        public string Text;
+        public int Offset;
+        public int Length;
     }
 
     public class Statement : CoverageInformation
     {
         public Statement(string text, int offset, int length, bool isCoverable)
+            : this(text, offset, length, isCoverable, Array.Empty<Branch>())
+        { }
+
+        public Statement(string text, int offset, int length, bool isCoverable, IEnumerable<Branch> branches)
         {
             Text = text;
             Offset = offset;
             Length = length;
             IsCoverable = isCoverable;
+            Branches = branches;
 
             NormalizeStatement();
         }
@@ -70,5 +93,6 @@ namespace SQLCover.Objects
         public int Length;
 
         public bool IsCoverable;
+        public IEnumerable<Branch> Branches;
     }
 }

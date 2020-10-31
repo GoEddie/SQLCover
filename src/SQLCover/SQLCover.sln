@@ -8,7 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DB9215AD-D611-49A3-8061-2AA1E957F12C}"
 	ProjectSection(SolutionItems) = preProject
 		test\CreateDockerDbInstance.ps1 = test\CreateDockerDbInstance.ps1
-		DeployDatabasesForTesting.ps1 = DeployDatabasesForTesting.ps1
+		test\CreateLocalDbInstance.ps1 = test\CreateLocalDbInstance.ps1
 		test\deployLocal.ps1 = test\deployLocal.ps1
 		test\testLocal.ps1 = test\testLocal.ps1
 	EndProjectSection
