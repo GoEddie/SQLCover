@@ -255,7 +255,6 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         dotnet tool install dotnet-reportgenerator-globaltool --tool-path tools
         echo ./tools/reportgenerator "-reports:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/Coverage.opencover.xml;" "-targetdir:${GITHUB_WORKSPACE}/Reports" "-sourcedirs:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/" -reportTypes:Html;
-        dotnet tool install dotnet-reportgenerator-globaltool --tool-path tools
         ./tools/reportgenerator "-reports:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/Coverage.opencover.xml;" "-targetdir:${GITHUB_WORKSPACE}/Reports" "-sourcedirs:src/SQLCover/SqlCoverCore/TestCoverageOpenXml/" -reportTypes:Html; 
 
     # .\tools\reportgenerator.exe "-reports:src\SQLCover\SqlCoverCore\TestCoverageOpenXml\Coverage.opencover.xml;" "-targetdir:Reports" -reportTypes:Html; -sourcedirs:src\SQLCover\SqlCoverCore\TestCoverageOpenXml\"
