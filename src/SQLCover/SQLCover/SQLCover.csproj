@@ -60,30 +60,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Objects\Batch.cs" />
-    <Compile Include="CodeCoverage.cs" />
-    <Compile Include="CoverageResult.cs" />
-    <Compile Include="Objects\CoveredStatement.cs" />
-    <Compile Include="Parsers\EventsParser.cs" />
-    <Compile Include="Gateway\DatabaseGateway.cs" />
-    <Compile Include="Parsers\TSqlParserBuilder.cs" />
+    <Compile Include="..\SQLCoverLib\Objects\Batch.cs" />
+    <Compile Include="..\SQLCoverLib\CodeCoverage.cs" />
+    <Compile Include="..\SQLCoverLib\CoverageResult.cs" />
+    <Compile Include="..\SQLCoverLib\Objects\CoveredStatement.cs" />
+    <Compile Include="..\SQLCoverLib\Parsers\EventsParser.cs" />
+    <Compile Include="..\SQLCoverLib\Gateway\DatabaseGateway.cs" />
+    <Compile Include="..\SQLCoverLib\Parsers\TSqlParserBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Parsers\StatementParser.cs" />
-    <Compile Include="Source\DatabaseSourceGateway.cs" />
-    <Compile Include="Source\SourceGateway.cs" />
-    <Compile Include="Objects\SqlServerVersion.cs" />
-    <Compile Include="Objects\Statement.cs" />
-    <Compile Include="SqlCoverException.cs" />
-    <Compile Include="StatementChecker.cs" />
-    <Compile Include="Trace\AzureTraceController.cs" />
-    <Compile Include="Trace\SqlLocalDbTraceController.cs" />
-    <Compile Include="Trace\SqlTraceController.cs" />
-    <Compile Include="Trace\TraceController.cs" />
-    <Compile Include="Trace\TraceControllerBuilder.cs" />
-    <Compile Include="Utils\XmlTextEncoder.cs" />
+    <Compile Include="..\SQLCoverLib\Parsers\StatementParser.cs" />
+    <Compile Include="..\SQLCoverLib\Source\DatabaseSourceGateway.cs" />
+    <Compile Include="..\SQLCoverLib\Source\SourceGateway.cs" />
+    <Compile Include="..\SQLCoverLib\Objects\SqlServerVersion.cs" />
+    <Compile Include="..\SQLCoverLib\Objects\Statement.cs" />
+    <Compile Include="..\SQLCoverLib\SqlCoverException.cs" />
+    <Compile Include="..\SQLCoverLib\StatementChecker.cs" />
+    <Compile Include="..\SQLCoverLib\Trace\AzureTraceController.cs" />
+    <Compile Include="..\SQLCoverLib\Trace\SqlLocalDbTraceController.cs" />
+    <Compile Include="..\SQLCoverLib\Trace\SqlTraceController.cs" />
+    <Compile Include="..\SQLCoverLib\Trace\TraceController.cs" />
+    <Compile Include="..\SQLCoverLib\Trace\TraceControllerBuilder.cs" />
+    <Compile Include="..\SQLCoverLib\Utils\XmlTextEncoder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SQLCoverLib\SQLCoverLib.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

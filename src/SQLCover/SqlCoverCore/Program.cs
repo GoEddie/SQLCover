@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 using Newtonsoft.Json;
-using SQLCoverCore;
+using SQLCover;
 using System;
 using System.IO;
 

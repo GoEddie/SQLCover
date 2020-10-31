@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
 using SQLCover.Gateway;
 using SQLCover.Source;
 using SQLCover.Trace;
