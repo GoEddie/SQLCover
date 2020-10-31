@@ -5,7 +5,6 @@ on:
   push:
     branches:
     - master # Push events on master branch
-    - tf/inherit # remove b4 pr
 
 # use https://marketplace.visualstudio.com/items?itemName=me-dutour-mathieu.vscode-github-actions to validate yml in vscode
 env:
