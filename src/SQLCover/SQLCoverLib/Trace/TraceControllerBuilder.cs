@@ -43,7 +43,8 @@ namespace SQLCover.Trace
 
         private bool LooksLikeLocalDb(string dataSource)
         {
-            return dataSource.ToLowerInvariant().Contains("(localdb)");
+            dataSource = dataSource.ToLowerInvariant();
+            return dataSource.Contains("(localdb)") || dataSource.StartsWith("np:\\\\.\\pipe\\localdb");
         }
     }
 
