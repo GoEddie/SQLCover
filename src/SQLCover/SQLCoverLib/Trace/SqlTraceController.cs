@@ -35,7 +35,12 @@ FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
             
         }
 
-        protected virtual void Create()
+        public SqlTraceController(DatabaseGateway gateway, string databaseName, string name) : base(gateway, databaseName, name)
+        {
+
+        }
+
+        public override void ComposeLogFileName()
         {
             var logDir = Gateway.GetRecords(GetLogDir).Rows[0].ItemArray[2].ToString();
             if (string.IsNullOrEmpty(logDir))
@@ -45,7 +50,11 @@ FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
 
             logDir = logDir.ToUpper().Replace("Logging SQL Server messages in file '".ToUpper(), "").Replace("'", "").Replace("ERRORLOG.", "").Replace("ERROR.LOG", "");
             FileName = Path.Combine(logDir, Name);
+        }
 
+        protected virtual void Create()
+        {
+            ComposeLogFileName();
             RunScript(CreateTrace, "Error creating the extended events trace, error: {0}");
         }
 

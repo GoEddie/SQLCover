@@ -13,9 +13,9 @@ namespace SQLCover.Core
             [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
             public bool Verbose { get; set; }
 
-            [Option('c', "command", Required = true, HelpText = "Choose command to run from:Get-CoverTSql, Get-CoverExe, Get-CoverRedgateCITest.")]
+            [Option('c', "command", Required = true, HelpText = "Choose command to run from: Get-CoverTSql, Get-CoverExe, Get-CoverRedgateCITest.")]
             public string Command { get; set; }
-            [Option('e', "exportCommand", Required = true, HelpText = "Choose command to run from:Export-OpenXml, Start-ReportGenerator, Export-Html.")]
+            [Option('e', "exportCommand", Required = true, HelpText = "Choose command to run from: Export-OpenXml, Start-ReportGenerator, Export-Html.")]
             public string ExportCommand { get; set; }
             [Option('b', "debug", Required = false, HelpText = "Prints out more output.")]
             public bool Debug { get; set; }
@@ -33,6 +33,11 @@ namespace SQLCover.Core
             public string Args { get; set; }
             [Option('t', "exeName", Required = false, HelpText = "executable name")]
             public string ExeName { get; set; }
+
+            [Option('m', "mode", Required = false, HelpText = "Choose operation mode to run from: Normal (default), OnlyStart, OnlyStop (applicable only when command = GetCoverTSql)")]
+            public string Mode { get; set; }
+            [Option('s', "sessionName", Required = false, HelpText = "Specify unique event session name (required when mode = OnlyStart|OnlyStop)")]
+            public string SessionName { get; set; }
         }
         private enum CommandType
         {
@@ -43,6 +48,12 @@ namespace SQLCover.Core
             StartReportGenerator,
             ExportHtml,
             Unknown
+        }
+        public enum Mode // is considered only when command = GetCoverTSql
+        {
+            Normal,           // normal work mode (tests are launched right from this executable; option --query is mandatory)
+            OnlyStart,        // this executable only starts session; requires option --sessionName to be specified, and option --query is meaningless
+            OnlyStopAndReport // this executable only stops session and generates report; requires option --sessionName to be specified, and option --query is meaningless
         }
         /// <summary>
         /// should minic arguments from example\SQLCover.ps1
@@ -68,8 +79,28 @@ namespace SQLCover.Core
                        }
                        var cType = CommandType.Unknown;
                        var eType = CommandType.Unknown;
+                       var mType = Mode.Normal;
                        string[] requiredParameters = null;
                        string[] requiredExportParameters = null;
+
+                       switch (o.Mode)
+                       {
+                           case "OnlyStart":
+                               mType = Mode.OnlyStart;
+                               requiredParameters = new string[]{
+                                "sessionName"};
+                               break;
+                           case "OnlyStopAndReport":
+                               mType = Mode.OnlyStopAndReport;
+                               requiredParameters = new string[]{
+                                "sessionName"};
+                               break;
+                           default:
+                               mType = Mode.Normal;
+                               Console.WriteLine("Option '--mode' not supplied or invalid, assuming 'Normal' mode");
+                               break;
+                       }
+
                        switch (o.Command)
                        {
                            case "Get-CoverTSql":
@@ -119,7 +150,7 @@ namespace SQLCover.Core
                                break;
                        }
 
-                       var validParams = eType != CommandType.Unknown && cType != CommandType.Unknown ? validateRequired(o, requiredParameters) : false;
+                       var validParams = eType != CommandType.Unknown && cType != CommandType.Unknown ? validateRequired(o, requiredParameters, mType) : false;
                        validParams = validParams ? validateRequired(o, requiredExportParameters) : validParams;
 
                        if (validParams)
@@ -139,7 +170,21 @@ namespace SQLCover.Core
                                {
                                    case CommandType.GetCoverTSql:
                                        coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
-                                       results = coverage.Cover(o.Query);
+                                       switch (mType)
+                                       {
+                                           case Mode.Normal:
+                                               results = coverage.Cover(o.Query);
+                                               break;
+                                           case Mode.OnlyStart:
+                                               Console.WriteLine("Starting event session '" + o.SessionName + "'...");
+                                               coverage.Start(o.SessionName);
+                                               Console.WriteLine("Event session '" + o.SessionName + "' started. Exiting.");
+                                               return; // only start event session and exit immediately
+                                           case Mode.OnlyStopAndReport:
+                                               Console.WriteLine("Stopping event session '" + o.SessionName + "'...");
+                                               results = coverage.Stop(o.SessionName); // stop event session and then generate report (as we do for Mode.Normal)
+                                               break;
+                                       }
                                        break;
                                    case CommandType.GetCoverExe:
                                        coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
@@ -198,7 +243,7 @@ namespace SQLCover.Core
                    });
         }
 
-        private static bool validateRequired(Options o, string[] requiredParameters, bool export = false)
+        private static bool validateRequired(Options o, string[] requiredParameters, Mode mode = Mode.Normal, bool export = false)
         {
             var valid = true;
             var requiredString = export ? " is required for this exportCommand" : " is required for this command";
@@ -221,7 +266,7 @@ namespace SQLCover.Core
                         }
                         break;
                     case "query":
-                        if (string.IsNullOrWhiteSpace(o.Query))
+                        if (string.IsNullOrWhiteSpace(o.Query) && mode == Mode.Normal)
                         {
                             Console.WriteLine("query" + requiredString);
                             valid = false;
@@ -254,6 +299,14 @@ namespace SQLCover.Core
                         if (string.IsNullOrWhiteSpace(o.ExeName))
                         {
                             Console.WriteLine("exeName" + requiredString);
+                            valid = false;
+                        }
+                        break;
+
+                    case "sessionName":
+                        if (string.IsNullOrWhiteSpace(o.SessionName))
+                        {
+                            Console.WriteLine("sessionName" + requiredString);
                             valid = false;
                         }
                         break;
