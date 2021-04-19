@@ -61,14 +61,17 @@ namespace SQLCover
             _source = new DatabaseSourceGateway(_database);
         }
 
-        public bool Start(int timeOut = 30)
+        public bool Start(string sessionName = null, int timeOut = 30)
         {
             Exception = null;
             try
             {
                 _database.TimeOut = timeOut;
-                _trace = new TraceControllerBuilder().GetTraceController(_database, _databaseName, _traceType);
-                _trace.Start();
+                if (string.IsNullOrWhiteSpace(sessionName))
+                    _trace = new TraceControllerBuilder().GetTraceController(_database, _databaseName, _traceType);
+                else
+                    _trace = new TraceControllerBuilder().GetTraceController(_database, _databaseName, _traceType, sessionName);
+                _trace.Start(); // results in running ComposeLogFileName(), script CreateTrace, script StartTraceFormat
                 IsStarted = true;
                 return true;
             }
@@ -90,10 +93,20 @@ namespace SQLCover
             return events;
         }
 
-        public CoverageResult Stop()
+        public CoverageResult Stop(string sessionName = null)
         {
-            if(!IsStarted)
-                throw new SqlCoverException("SQL Cover was not started, or did not start correctly.");
+            if (string.IsNullOrWhiteSpace(sessionName))
+            {
+                if (!IsStarted)
+                    throw new SqlCoverException("SQL Cover was not started, or did not start correctly.");
+            }
+            else
+            {
+                // we're in the OnlyStopAndReport mode --> create SqlTraceController with THE SAME session name as was used in the OnlyStart mode:
+                _database.TimeOut = 30;
+                _trace = new TraceControllerBuilder().GetTraceController(_database, _databaseName, _traceType, sessionName);
+                _trace.ComposeLogFileName();
+            }
 
             IsStarted = false;
 

@@ -19,6 +19,14 @@ namespace SQLCover.Trace
             Name = string.Format("SQLCover-Trace-{0}", Guid.NewGuid().ToString().Replace("{", "").Replace("}", "").Replace("-", ""));
         }
 
+        public TraceController(DatabaseGateway gateway, string databaseName, string name)
+        {
+            Gateway = gateway;
+            DatabaseId = gateway.GetString(string.Format("select db_id('{0}')", databaseName));
+            Name = string.Format("SQLCover-Trace-{0}", name);
+        }
+
+        public abstract void ComposeLogFileName();
         public abstract void Start();
         public abstract void Stop();
         public abstract List<string> ReadTrace();

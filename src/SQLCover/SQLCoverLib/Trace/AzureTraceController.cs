@@ -51,6 +51,10 @@ select  v.value('(/event/@timestamp)[1]', 'datetime'), v from a
         {
         }
 
+        public override void ComposeLogFileName()
+        {
+
+        }
 
         private void Create()
         {
