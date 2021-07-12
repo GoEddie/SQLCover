@@ -34,8 +34,12 @@ namespace SQLCover.Core
             [Option('t', "exeName", Required = false, HelpText = "executable name")]
             public string ExeName { get; set; }
         }
+
+        private CodeCoverage _codeCoverage;
+
         private enum CommandType
         {
+            StartCoverage,
             GetCoverTSql,
             GetCoverExe,
             GetCoverRedgateCITest,
@@ -72,6 +76,13 @@ namespace SQLCover.Core
                        string[] requiredExportParameters = null;
                        switch (o.Command)
                        {
+                           case "StartCoverage":
+                               cType = CommandType.StartCoverage;
+                               requiredParameters = new string[]{
+                                   "connectionString",
+                                   "databaseName"
+                               };
+                               break;
                            case "Get-CoverTSql":
                                cType = CommandType.GetCoverTSql;
                                requiredParameters = new string[]{
@@ -137,6 +148,13 @@ namespace SQLCover.Core
                                // run command
                                switch (cType)
                                {
+                                   case CommandType.StartCoverage:
+                                       coverage = new CodeCoverage(o.ConnectionString, o.databaseName);
+                                       coverage.Start();
+                                       Console.WriteLine("started");
+                                       if (Console.ReadLine() == "StopCoverage")
+                                           results = coverage.Stop();
+                                       break;
                                    case CommandType.GetCoverTSql:
                                        coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
                                        results = coverage.Cover(o.Query);
