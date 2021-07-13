@@ -1,8 +1,8 @@
 ﻿using CommandLine;
 using Newtonsoft.Json;
-using SQLCover;
 using System;
 using System.IO;
+using System.Management.Automation;
 
 namespace SQLCover.Core
 {
@@ -33,13 +33,13 @@ namespace SQLCover.Core
             public string Args { get; set; }
             [Option('t', "exeName", Required = false, HelpText = "executable name")]
             public string ExeName { get; set; }
+            [Option('m', "testDLLPath", Required = false, HelpText = "test dll path")]
+            public string TestPath { get; set; }
         }
-
-        private CodeCoverage _codeCoverage;
 
         private enum CommandType
         {
-            StartCoverage,
+            GetCoverDotNetTests,
             GetCoverTSql,
             GetCoverExe,
             GetCoverRedgateCITest,
@@ -76,11 +76,12 @@ namespace SQLCover.Core
                        string[] requiredExportParameters = null;
                        switch (o.Command)
                        {
-                           case "StartCoverage":
-                               cType = CommandType.StartCoverage;
+                           case "Get-CoverDotNetTests":
+                               cType = CommandType.GetCoverDotNetTests;
                                requiredParameters = new string[]{
                                    "connectionString",
-                                   "databaseName"
+                                   "databaseName",
+                                   "testDLLPath"
                                };
                                break;
                            case "Get-CoverTSql":
@@ -148,12 +149,13 @@ namespace SQLCover.Core
                                // run command
                                switch (cType)
                                {
-                                   case CommandType.StartCoverage:
+                                   case CommandType.GetCoverDotNetTests:
                                        coverage = new CodeCoverage(o.ConnectionString, o.databaseName);
                                        coverage.Start();
-                                       Console.WriteLine("started");
-                                       if (Console.ReadLine() == "StopCoverage")
-                                           results = coverage.Stop();
+                                       var powerShell = PowerShell.Create();
+                                       powerShell.AddCommand("dotnet").AddArgument("test").AddArgument(o.TestPath);
+                                       powerShell.Invoke();
+                                       results = coverage.Stop();
                                        break;
                                    case CommandType.GetCoverTSql:
                                        coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
