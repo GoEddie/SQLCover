@@ -277,6 +277,13 @@ namespace SQLCover.Core
                             valid = false;
                         }
                         break;
+                    case "testDLLPath":
+                        if (string.IsNullOrWhiteSpace(o.ExeName))
+                        {
+                            Console.WriteLine("testDLLPath" + requiredString);
+                            valid = false;
+                        }
+                        break;
 
                     default:
                         Console.WriteLine("Required check on:" + param + " ignored");
