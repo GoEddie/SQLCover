@@ -34,7 +34,7 @@ namespace SQLCover.Core
             [Option('t', "exeName", Required = false, HelpText = "executable name")]
             public string ExeName { get; set; }
             [Option('m', "testDLLPath", Required = false, HelpText = "test dll path")]
-            public string TestPath { get; set; }
+            public string TestDLLPath { get; set; }
         }
 
         private enum CommandType
@@ -153,7 +153,7 @@ namespace SQLCover.Core
                                        coverage = new CodeCoverage(o.ConnectionString, o.databaseName);
                                        coverage.Start();
                                        var powerShell = PowerShell.Create();
-                                       powerShell.AddCommand("dotnet").AddArgument("test").AddArgument(o.TestPath);
+                                       powerShell.AddCommand("dotnet").AddArgument("test").AddArgument(o.TestDLLPath);
                                        powerShell.Invoke();
                                        results = coverage.Stop();
                                        break;
@@ -278,7 +278,7 @@ namespace SQLCover.Core
                         }
                         break;
                     case "testDLLPath":
-                        if (string.IsNullOrWhiteSpace(o.ExeName))
+                        if (string.IsNullOrWhiteSpace(o.TestDLLPath))
                         {
                             Console.WriteLine("testDLLPath" + requiredString);
                             valid = false;
