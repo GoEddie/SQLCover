@@ -33,13 +33,10 @@ namespace SQLCover.Core
             public string Args { get; set; }
             [Option('t', "exeName", Required = false, HelpText = "executable name")]
             public string ExeName { get; set; }
-            [Option('m', "testDLLPath", Required = false, HelpText = "test dll path")]
-            public string TestDLLPath { get; set; }
         }
 
         private enum CommandType
         {
-            GetCoverDotNetTests,
             GetCoverTSql,
             GetCoverExe,
             GetCoverRedgateCITest,
@@ -76,14 +73,6 @@ namespace SQLCover.Core
                        string[] requiredExportParameters = null;
                        switch (o.Command)
                        {
-                           case "Get-CoverDotNetTests":
-                               cType = CommandType.GetCoverDotNetTests;
-                               requiredParameters = new string[]{
-                                   "connectionString",
-                                   "databaseName",
-                                   "testDLLPath"
-                               };
-                               break;
                            case "Get-CoverTSql":
                                cType = CommandType.GetCoverTSql;
                                requiredParameters = new string[]{
@@ -149,14 +138,6 @@ namespace SQLCover.Core
                                // run command
                                switch (cType)
                                {
-                                   case CommandType.GetCoverDotNetTests:
-                                       coverage = new CodeCoverage(o.ConnectionString, o.databaseName);
-                                       coverage.Start();
-                                       var powerShell = PowerShell.Create();
-                                       powerShell.AddCommand("dotnet").AddArgument("test").AddArgument(o.TestDLLPath);
-                                       powerShell.Invoke();
-                                       results = coverage.Stop();
-                                       break;
                                    case CommandType.GetCoverTSql:
                                        coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
                                        results = coverage.Cover(o.Query);
@@ -274,13 +255,6 @@ namespace SQLCover.Core
                         if (string.IsNullOrWhiteSpace(o.ExeName))
                         {
                             Console.WriteLine("exeName" + requiredString);
-                            valid = false;
-                        }
-                        break;
-                    case "testDLLPath":
-                        if (string.IsNullOrWhiteSpace(o.TestDLLPath))
-                        {
-                            Console.WriteLine("testDLLPath" + requiredString);
                             valid = false;
                         }
                         break;
