@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Microsoft.Data.SqlClient;
 using SQLCover.Gateway;
 using SQLCover.Source;
 using SQLCover.Trace;
@@ -135,7 +136,7 @@ namespace SQLCover
             {
                 _database.Execute(command, timeOut); //todo read messages or rowcounts or something
             }
-            catch (System.Data.SqlClient.SqlException e)
+            catch (SqlException e)
             {
                 if (e.Number == -2)
                 {
