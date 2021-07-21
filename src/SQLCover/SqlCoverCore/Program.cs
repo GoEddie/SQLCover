@@ -1,8 +1,7 @@
 ﻿using CommandLine;
-using Newtonsoft.Json;
-using SQLCover;
 using System;
 using System.IO;
+using System.Text.Json;
 
 namespace SQLCover.Core
 {
@@ -34,6 +33,7 @@ namespace SQLCover.Core
             [Option('t', "exeName", Required = false, HelpText = "executable name")]
             public string ExeName { get; set; }
         }
+
         private enum CommandType
         {
             GetCoverTSql,
@@ -44,6 +44,7 @@ namespace SQLCover.Core
             ExportHtml,
             Unknown
         }
+
         /// <summary>
         /// should minic arguments from example\SQLCover.ps1
         /// run by `dotnet run -- -c Get-CoverTSql -r`
@@ -58,7 +59,7 @@ namespace SQLCover.Core
                        if (o.Verbose)
                        {
                            Console.WriteLine($"Verbose output enabled. Current Arguments: -v {o.Verbose}");
-                           Console.WriteLine("Current Arguments Serialized::" + JsonConvert.SerializeObject(o));
+                           Console.WriteLine("Current Arguments Serialized::" + JsonSerializer.Serialize(o));
                            Console.WriteLine("SqlCoverCore! App is in Verbose mode!");
                        }
                        else
