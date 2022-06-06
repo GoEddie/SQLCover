@@ -33,6 +33,8 @@ namespace SQLCover.Core
             public string Args { get; set; }
             [Option('t', "exeName", Required = false, HelpText = "executable name")]
             public string ExeName { get; set; }
+            [Option('T', "timeout", Required = false, HelpText = "Timeout for Get-CoverTsql (in secs, default 30)")]
+            public int Timeout { get; set; }
         }
         private enum CommandType
         {
@@ -139,7 +141,7 @@ namespace SQLCover.Core
                                {
                                    case CommandType.GetCoverTSql:
                                        coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
-                                       results = coverage.Cover(o.Query);
+                                       results = coverage.Cover(o.Query, o.Timeout);
                                        break;
                                    case CommandType.GetCoverExe:
                                        coverage = new CodeCoverage(o.ConnectionString, o.databaseName, null, true, o.Debug);
