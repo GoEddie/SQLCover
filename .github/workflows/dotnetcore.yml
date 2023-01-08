@@ -66,7 +66,7 @@ jobs:
     # Download sqlpackage
     - name: download sqlpackage
       run: >
-        curl -L https://go.microsoft.com/fwlink/?linkid=2113331 --output sqlpackage.zip &&
+        curl -L https://aka.ms/sqlpackage-linux --output sqlpackage.zip &&
         unzip sqlpackage.zip -d ~/sqlpackage &&
         chmod a+x ~/sqlpackage/sqlpackage
     # Run sqlpackage
@@ -80,6 +80,7 @@ jobs:
         /TargetUser:sa
         /TargetPassword:JdMsKZPBBA8kVFXVrj8d
         /TargetDatabaseName:DatabaseProject
+        /TargetTrustServerCertificate:True
 
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure
@@ -113,7 +114,7 @@ jobs:
         dotnet-version: ${{ env.dotnetVersion}}
     # Publish the project
     - name: publish project
-      run: dotnet publish ./src/SQLCover/DatabaseProject.Build/DatabaseProject.Build.csproj /p:TargetUser=sa /p:TargetPassword=${pipelineDbPassword} /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
+      run: dotnet publish ./src/SQLCover/DatabaseProject.Build/DatabaseProject.Build.csproj /p:TargetUser=sa /p:TargetPassword=${pipelineDbPassword} /p:TargetTrustServerCertificate=True /bl /p:DependencyVersion="1.*-*" /warnaserror:SQL71502
 
     # Dump logs of the container if something failed
     - name: Dump docker logs on failure
@@ -122,7 +123,7 @@ jobs:
 
 # msbuild on windows machine until ported over to dotnet core linux
   test-windows:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
     - name: Add msbuild to PATH
@@ -145,7 +146,7 @@ jobs:
 
 # can only build dacpac that include master and tsqlt tests on a windows machine
   build-dacpac-windows:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
     - uses: actions/checkout@v1
     - name: Add msbuild to PATH
