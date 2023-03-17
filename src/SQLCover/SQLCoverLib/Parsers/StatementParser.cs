@@ -52,7 +52,7 @@ namespace SQLCover.Parsers
 
             if (ShouldNotEnumerateChildren(statement))
             {
-                Statements.Add(new Statement (_script.Substring(statement.StartOffset, statement.FragmentLength),  statement.StartOffset, statement.FragmentLength, false));
+                Statements.Add(new Statement (_script.Substring(statement.StartOffset, statement.FragmentLength),  statement.StartOffset, statement.FragmentLength, false, false));
                 _stopEnumerating = true;       //maybe ExplicitVisit would be simpler??
                 return;
             }
@@ -61,7 +61,7 @@ namespace SQLCover.Parsers
 
             if (!IsIgnoredType(statement))
             {
-                Statements.Add(new Statement (_script.Substring(statement.StartOffset, statement.FragmentLength), statement.StartOffset, statement.FragmentLength, CanBeCovered(statement)));
+                Statements.Add(new Statement (_script.Substring(statement.StartOffset, statement.FragmentLength), statement.StartOffset, statement.FragmentLength, CanBeCovered(statement), HasRowCount(statement)));
             }
 
             if (statement is IfStatement)
@@ -70,7 +70,7 @@ namespace SQLCover.Parsers
 
                 var offset = statement.StartOffset;
                 var length = ifStatement.Predicate.StartOffset + ifStatement.Predicate.FragmentLength - statement.StartOffset;
-                Statements.Add(new Statement (_script.Substring(offset, length), offset, length, CanBeCovered(statement)));
+                Statements.Add(new Statement (_script.Substring(offset, length), offset, length, CanBeCovered(statement), false));
             }
 
             if (statement is WhileStatement)
@@ -79,7 +79,7 @@ namespace SQLCover.Parsers
 
                 var offset = statement.StartOffset;
                 var length = whileStatement.Predicate.StartOffset + whileStatement.Predicate.FragmentLength - statement.StartOffset;
-                Statements.Add(new Statement (_script.Substring(offset, length), offset, length, CanBeCovered(statement)));
+                Statements.Add(new Statement (_script.Substring(offset, length), offset, length, CanBeCovered(statement), HasRowCount(statement)));
             }
         }
 
@@ -134,6 +134,20 @@ namespace SQLCover.Parsers
                 return false;
 
             return true;
+        }
+
+        private bool HasRowCount(TSqlStatement statement)
+        {
+            if (statement is SelectStatement)
+                return true;
+            if (statement is UpdateStatement)
+                return true;
+            if (statement is DeleteStatement)
+                return true;
+            if (statement is MergeStatement)
+                return true;
+
+            return false;
         }
     }
 }

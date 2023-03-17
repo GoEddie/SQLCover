@@ -35,6 +35,7 @@ namespace SQLCover.Parsers
             statement.Offset = GetOffset();
             statement.OffsetEnd = GetOffsetEnd();
             statement.ObjectId = GetIntValue("object_id");
+            statement.RowCount = GetRowCount();
 
             if (_stringNumber < _xmlEvents.Count)
                 _doc = XDocument.Parse(_xmlEvents[_stringNumber++]);
@@ -65,6 +66,16 @@ namespace SQLCover.Parsers
 
             var offset = int.Parse(value);
             return offset;
+        }
+
+        private int GetRowCount()
+        {
+            var value = GetStringValue("row_count");
+            if (value == null)
+            {
+                value = Get2008StyleString("rowCount");
+            }
+            return int.Parse(value);
         }
 
         private string Get2008StyleString(string name)

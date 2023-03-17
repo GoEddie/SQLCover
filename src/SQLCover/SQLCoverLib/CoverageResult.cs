@@ -43,7 +43,7 @@ namespace SQLCover
                 if (batch != null)
                 {
                     var item = batch.Statements.FirstOrDefault(p => _statementChecker.Overlaps(p, statement));
-                    if (item != null)
+                    if (item != null && (!item.HasRowCount || statement.RowCount > 0))
                     {
                         item.HitCount++;
                     }

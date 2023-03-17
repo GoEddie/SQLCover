@@ -17,12 +17,13 @@ namespace SQLCover.Objects
 
     public class Statement : CoverageInformation
     {
-        public Statement(string text, int offset, int length, bool isCoverable)
+        public Statement(string text, int offset, int length, bool isCoverable, bool hasRowCount)
         {
             Text = text;
             Offset = offset;
             Length = length;
             IsCoverable = isCoverable;
+            HasRowCount = hasRowCount;
 
             NormalizeStatement();
         }
@@ -70,5 +71,6 @@ namespace SQLCover.Objects
         public int Length;
 
         public bool IsCoverable;
+        public bool HasRowCount;
     }
 }
