@@ -90,12 +90,14 @@ namespace SQLCover.Gateway
                             var objectId = xml.SelectNodes("/event/data[@name='object_id']").Item(0);
                             var offset = xml.SelectNodes("/event/data[@name='offset']").Item(0);
                             var offsetEnd = xml.SelectNodes("/event/data[@name='offset_end']").Item(0);
+                            var rowCount = xml.SelectNodes("/event/data[@name='row_count']").Item(0);
 
                             root.RemoveAll();
                                  
                             root.AppendChild(objectId);
                             root.AppendChild(offset);
                             root.AppendChild(offsetEnd);
+                            root.AppendChild(rowCount);
 
                             var row = ds.NewRow();
                             row["xml"] = root.OuterXml;

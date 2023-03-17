@@ -5,5 +5,6 @@
         public int Offset;
         public int OffsetEnd;
         public int ObjectId;
+        public int RowCount;
     }
 }

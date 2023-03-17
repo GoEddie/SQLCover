@@ -10,23 +10,19 @@ namespace SQLCover.Trace
     {
         
         protected const string CreateTrace = @"CREATE EVENT SESSION [{0}] ON SERVER 
-ADD EVENT sqlserver.sp_statement_starting(action (sqlserver.plan_handle, sqlserver.tsql_stack) where ([sqlserver].[database_id]=({1})))
+ADD EVENT sqlserver.sp_statement_completed(action (sqlserver.plan_handle, sqlserver.tsql_stack) where ([sqlserver].[database_id]=({1})))
 ADD TARGET package0.asynchronous_file_target(
      SET filename='{2}')
 WITH (MAX_MEMORY=100 MB,EVENT_RETENTION_MODE=NO_EVENT_LOSS,MAX_DISPATCH_LATENCY=1 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=NONE,TRACK_CAUSALITY=OFF,STARTUP_STATE=OFF) 
 ";
 
-        private const string StartTraceFormat = @"alter event session [{0}] on server state = start
-";
+        private const string StartTraceFormat = @"alter event session [{0}] on server state = start";
 
-        private const string StopTraceFormat = @"alter event session [{0}] on server state = stop
-";
+        private const string StopTraceFormat = @"alter event session [{0}] on server state = stop";
 
         private const string DropTraceFormat = @"drop EVENT SESSION [{0}] ON SERVER ";
 
-        private const string ReadTraceFormat = @"select
-    event_data
-FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
+        private const string ReadTraceFormat = @"select event_data FROM sys.fn_xe_file_target_read_file(N'{0}*.xel', N'{0}*.xem', null, null);";
 
         private const string GetLogDir = @"EXEC xp_readerrorlog 0, 1, N'Logging SQL Server messages in file'";
         
