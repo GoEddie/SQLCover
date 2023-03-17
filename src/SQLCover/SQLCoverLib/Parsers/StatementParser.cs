@@ -125,7 +125,14 @@ namespace SQLCover.Parsers
                 return false;
 
             if (statement is DeclareVariableStatement)
+            {
+                DeclareVariableStatement declStatement = statement as DeclareVariableStatement;
+                foreach (DeclareVariableElement declStatementElem in declStatement.Declarations) {
+                    if (declStatementElem.Value != null)
+                        return true;
+                }
                 return false;
+            }
 
             if (statement is DeclareTableVariableStatement)
                 return false;
