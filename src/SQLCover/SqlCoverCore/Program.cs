@@ -181,6 +181,14 @@ namespace SQLCover.Core
                                            resultString = results.OpenCoverXml();
                                            results.SaveResult(outputPath + "Coverage.opencover.xml", resultString);
                                            results.SaveSourceFiles(outputPath);
+                                           if (results.SqlExceptions.Count > 0)
+                                           {
+                                                foreach (var e in results.SqlExceptions)
+                                                {
+                                                    Console.WriteLine(e);
+                                                }
+                                                Environment.Exit(1);
+                                           }
                                            break;
                                        case CommandType.ExportHtml:
                                            resultString = results.Html();
